@@ -35,7 +35,16 @@ export default class TreeTable extends Component {
 
     //update width, when headRow changed;
     componentWillReceiveProps(nextProps) {
+        let data = props.data,
+            key = props.iskey,
+            dictionary = [];
+        data.forEach(item => {
+            item.level = 0;
+            dictionary.push(item[key])
+        });
         this.setState(old => {
+            old.renderedList = data;
+            old.dictionary = dictionary;
             old.width = 1 / nextProps.headRow.length * 100 + '%';
             return old;
         })
