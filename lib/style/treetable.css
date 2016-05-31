@@ -1,0 +1,84 @@
+*{
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+.clearfix:before, .clearfix:after{
+  content: '';
+  display: table;
+}
+.table{
+  width: 100%;
+  max-width: 100%;
+}
+.table-tree {
+  border: 1px solid #ddd;
+  border-bottom: 0;
+  border-radius: 2px;
+  display: table;
+  font-size: 14px;
+  line-height: 40px;
+  color: #333;
+}
+.table-tree .table-head {
+  border-bottom: 2px solid #ddd;
+  height: 40px;
+  font-weight: 800;
+}
+.table-tree .table-head .thead {
+  float: left;
+  height: 100%;
+  text-align: center;
+  display: table-cell;
+  border-right: 1px solid #ddd;
+  font-size: 18px;
+}
+.table-tree .table-head .thead span {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.table-tree .table-head .thead:last-child {
+  border-right: 0;
+}
+.table-tree .table-body .table-row {
+  border-bottom: 1px solid #ddd;
+  height: 40px;
+  line-height: 40px;
+}
+.table-tree .table-body .table-row .table-cell {
+  display: table-cell;
+  border-right: 1px solid #ddd;
+  height: 100%;
+  float: left;
+  cursor: pointer;
+  position: relative;
+}
+.table-tree .table-body .table-row .table-cell .table-arrow {
+  position: absolute;
+  top: 16px;
+  right: 10px;
+  color: dimgray;
+  transition: transform 0.2s ease-in;
+}
+.table-tree .table-body .table-row .table-cell > span {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding: 0 10px;
+}
+.table-tree .table-body .table-row .table-cell:last-child {
+  border-right: 0;
+}
+.table-tree .table-body .table-row:nth-of-type(odd) .table-cell {
+  background-color: #f9f9f9;
+}
+.table-tree .table-body .table-row.ancestor > .table-cell {
+  background-color: papayawhip !important;
+}
+.table-tree .table-body .table-row.ancestor > .table-cell span {
+  text-indent: 0 !important;
+  font-weight: 800;
+}
