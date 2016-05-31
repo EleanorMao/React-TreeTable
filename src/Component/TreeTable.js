@@ -12,7 +12,7 @@ import React from 'react';
 import TreeHead from './TreeHead.js';
 import TreeRow from './TreeRow.js';
 
-require('../stylesheets/treetable.css');
+require('./treetable.css');
 
 const Component = React.Component;
 

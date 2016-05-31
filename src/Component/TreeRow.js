@@ -1,5 +1,5 @@
 /**
- * Created by Elly on 2016/5/27.
+ * Created by BG236557 on 2016/5/27.
  */
 import React from 'react';
 
@@ -38,7 +38,8 @@ export default class TreeRow extends Component {
         let output = [];
         let data = this.props.data;
         let iskey = this.props.iskey;
-        this.props.cols.forEach((key, i) => {
+        this.props.cols.map((key, i) => {
+            let children = data.list || data.chdatalist || data.children;
             output.push(
                 <div className="table-cell"
                      style={{width: this.props.width}}
@@ -46,7 +47,7 @@ export default class TreeRow extends Component {
                 >
                     <span style={{marginLeft: this.props.level * 10 + 'px'}}>
                         {data[key.id || key]}
-                        {(data.list || data.chdatalist || data.children) && !i ?
+                        {(children && children.length > 0) && !i ?
                             <i
                                 className="table-arrow glyphicon glyphicon-menu-down"
                                 onClick={this.handleToggle.bind(this)}
@@ -62,7 +63,6 @@ export default class TreeRow extends Component {
         return (
             <div
                 className={!!this.props.level ? "table-row clearfix" : "table-row ancestor clearfix"}
-                id={this.props.data[this.props.iskey]}
             >
                 {this.cellRender()}
             </div>
