@@ -49,7 +49,7 @@ export default class TreeRow extends Component {
                         {data[key.id || key]}
                         {(children && children.length > 0) && !i ?
                             <i
-                                className="table-arrow glyphicon glyphicon-menu-down"
+                                className="table-arrow fa fa-chevron-down"
                                 onClick={this.handleToggle.bind(this)}
                             > </i> : '' }
                     </span>

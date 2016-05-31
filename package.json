@@ -1,8 +1,8 @@
 {
   "name": "react-treetable",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Table That Could Render Tree Structure",
-  "main": "lib/treetable.min.js",
+  "main": "lib/Index.js",
   "scripts": {
     "example": "webpack-dev-server --inline --hot --progress --colors --content-base ./examples --config webpack.config.example.js --port 9010",
     "test": "echo \"Error: no test specified\" && exit 1"

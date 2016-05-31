@@ -1,3 +1,16 @@
+*{
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+.clearfix:before, .clearfix:after{
+  content: '';
+  display: table;
+}
+.table{
+  width: 100%;
+  max-width: 100%;
+}
 .table-tree {
   border: 1px solid #ddd;
   border-bottom: 0;
