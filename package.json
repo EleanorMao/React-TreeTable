@@ -1,12 +1,13 @@
 {
   "name": "react-treetable",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "Table That Could Render Tree Structure",
   "main": "lib/Index.js",
   "scripts": {
     "build": "babel src --out-dir lib & cp -r src/style lib",
     "example": "webpack-dev-server --inline --hot --progress --colors --content-base ./examples --config webpack.config.example.js --port 9010",
-    "test": "mocha --compilers js:babel-register --require ./test/setup.js"
+    "test": "mocha --compilers js:babel-register --require ./test/setup.js",
+    "eslint": "eslint src"
   },
   "repository": {
     "type": "git",

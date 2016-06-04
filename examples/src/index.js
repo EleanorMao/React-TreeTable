@@ -87,7 +87,7 @@ class Main extends Component {
         let dataFormat = {
             "a": function (cell, level, row) {
                 if (level != 0) {
-                    return 'I am level ' + level;
+                    return '';
                 } else {
                     return cell + ' I am row a'
                 }

@@ -1,10 +1,11 @@
-test
+*.iml
+.idea
 .babelrc
 .npmignore
 .gitignore
-webpack.config.example.js
-examples
+.eslintrc.json
 src
-.idea
-*.iml
+test
+examples
+webpack.config.example.js
 .DS_Store

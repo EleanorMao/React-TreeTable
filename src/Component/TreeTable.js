@@ -41,7 +41,7 @@ export default class TreeTable extends Component {
             dictionary.push(item[key]);
         });
         this.state = {
-            width: 1 / (props.headRow.length) * 100 + '%',
+            width: 1 / props.headRow.length * 100 + '%',
             dictionary: dictionary,
             renderedList: data
         }
@@ -70,13 +70,13 @@ export default class TreeTable extends Component {
     }
 
     flatten(data) { //处理子节点数据
-        var output = [], index = 0;
+        let output = [], index = 0;
         data.forEach(item => {
             let children = item.list || item.chdatalist || item.children;
             if (children) {
                 output[index++] = item;
                 item = this.flatten(children);
-                var j = 0, len = item.length;
+                let j = 0, len = item.length;
                 output.length += len;
                 while (j < len) {
                     output[index++] = item[j++]

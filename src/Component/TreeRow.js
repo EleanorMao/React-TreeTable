@@ -5,10 +5,10 @@ import React from 'react';
 
 const Component = React.Component;
 
-var _extends = function (target) {
-    for (var i = 1; i < arguments.length; i++) {
-        var source = arguments[i];
-        for (var key in source) {
+let _extends = function (target) {
+    for (let i = 1; i < arguments.length; i++) {
+        let source = arguments[i];
+        for (let key in source) {
             if (Object.prototype.hasOwnProperty.call(source, key)) {
                 target[key] = source[key];
             }
@@ -40,11 +40,15 @@ export default class TreeRow extends Component {
         let iskey = this.props.iskey;
         let hashKey = this.props.hashKey;
         let dataFormat = this.props.dataFormat;
+        let arrow = -1;
         this.props.cols.map((key, i, col) => {
             let children = data.list || data.chdatalist || data.children;
             let cell = data[key.id || key];
-            if( dataFormat && dataFormat[key.id || key]){
+            if (dataFormat && dataFormat[key.id || key]) {
                 cell = dataFormat[key.id || key].call(null, data[key.id || key], data.level, data, i, col)
+            }
+            if (cell) {
+                arrow++;
             }
             output.push(
                 <div className="table-cell"
@@ -53,7 +57,7 @@ export default class TreeRow extends Component {
                 >
                     <span style={{marginLeft: this.props.level * 10 + 'px'}}>
                         {cell}
-                        {(children && children.length > 0) && !i ?
+                        {children && children.length > 0 && !!!arrow ?
                             <i
                                 className="table-arrow fa fa-chevron-down"
                                 onClick={this.handleToggle.bind(this)}
