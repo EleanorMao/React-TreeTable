@@ -14,7 +14,7 @@ export default class TreeHead extends Component {
         let headRow = this.props.headRow;
         headRow.forEach((item, index) => {
             output.push(
-                <div key={index} style={{width: this.props.width}} className="thead">
+                <div key={index} style={{width: item.width || this.props.width}} className="thead">
                     <span>{item.name || item.id || item }</span>
                 </div>
             )
@@ -24,9 +24,9 @@ export default class TreeHead extends Component {
 
     render() {
         return (
-            <div className="table-head clearfix">
-                {this.headRowRender()}
-            </div>
+                <div className="table-head clearfix">
+                    {this.headRowRender()}
+                </div>
         )
     }
 }

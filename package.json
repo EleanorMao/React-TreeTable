@@ -1,11 +1,12 @@
 {
   "name": "react-treetable",
-  "version": "3.0.1",
+  "version": "3.0.3",
   "description": "Table That Could Render Tree Structure",
   "main": "lib/Index.js",
   "scripts": {
+    "build": "babel src --out-dir lib & cp -r src/style lib",
     "example": "webpack-dev-server --inline --hot --progress --colors --content-base ./examples --config webpack.config.example.js --port 9010",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --compilers js:babel-register --require ./test/setup.js"
   },
   "repository": {
     "type": "git",
@@ -23,7 +24,7 @@
   },
   "homepage": "https://github.com/EleanorMao/React-TreeTable#readme",
   "dependencies": {
-    "react": "^15.1.0"
+    "react": ">=0.14.3"
   },
   "devDependencies": {
     "babel-cli": "^6.9.0",
@@ -32,7 +33,12 @@
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-react": "^6.5.0",
     "babel-preset-stage-1": "^6.5.0",
+    "chai": "^3.5.0",
     "css-loader": "^0.23.1",
+    "enzyme": "^2.3.0",
+    "jsdom": "^9.2.1",
+    "mocha": "^2.5.3",
+    "react-addons-test-utils": "^15.1.0",
     "react-dom": "^15.1.0",
     "style-loader": "^0.13.1",
     "webpack": "^1.13.1",

@@ -24,14 +24,14 @@ let data = [{
                 b: 2222,
                 c: 3333,
                 d: 4444
-            },{
+            }, {
                 a: 1112,
                 b: 2222,
                 c: 3333,
                 d: 4444
             }]
         }]
-    },{
+    }, {
         a: 12,
         b: 22,
         c: 32,
@@ -51,25 +51,84 @@ let data = [{
     }]
 }];
 
-class Main extends Component{
-    constructor(){
+let noKeyData = [
+    {
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4,
+        list: [{
+            a: 1,
+            b: 2,
+            c: 3,
+            d: 4
+        }]
+    },{
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4
+    }
+];
+
+class Main extends Component {
+    constructor() {
         super();
         this.state = {a: 0}
     }
 
-    render(){
+    render() {
         let headRow = [
-            {id: "a", name: "RowA"},
-            {id: "b", name: "RowB"},
-            {id: "c", name: "RowC"},
-            {id: "d", name: "RowD"}
+            {id: "a", name: "RowA", width: "200px"},
+            {id: "b", name: "RowB", width: "200px"},
+            {id: "c", name: "RowC", width: "300px"},
+            {id: "d", name: "RowD", width: "400px"}
         ];
+        let dataFormat = {
+            "a": function (cell, level, row) {
+                if (level != 0) {
+                    return 'I am level ' + level;
+                } else {
+                    return cell + ' I am row a'
+                }
+            },
+            "b": function (cell, level ,row, index, col) {
+                if (row.level != 0) {
+                    let key = col[index - 1];
+                    return row[key.id || key];
+                } else {
+                    return cell + ' I am row b'
+                }
+            },
+            "c": function (cell, level, row, index, col) {
+                if (row.level != 0) {
+                    let key = col[index - 1];
+                    return row[key.id || key];
+                } else {
+                    return cell
+                }
+            },
+            "d": function (cell, level, row, index, col) {
+                if(row.level != 0){
+                    let key = col[index - 1];
+                    return row[key.id || key];
+                }else{
+                    return cell + 1
+                }
+            }
+        };
         return (
             <div>
-                <TreeTable data={data} iskey="a" headRow={headRow}/>
+                <div style={{margin: "20px"}}>
+                    <TreeTable data={data} iskey="a" headRow={headRow} dataFormat={dataFormat}/>
+                </div>
+                <div style={{margin: "20px"}}>
+                    <TreeTable data={noKeyData} hashKey={true} headRow={headRow}/>
+                </div>
             </div>
         )
     }
 }
+
 
 ReactDOM.render(<Main/>, document.querySelector('.main'));

@@ -7,7 +7,8 @@ import { shallow, mount, render } from 'enzyme';
 import TreeTable from '../src/Index';
 
 describe("Shallow TreeTable", function() {
-    it("work well when data is empty", function() {
+    it("work well when no data", function() {
         expect(shallow(<TreeTable data={[]}/>).find('.table-row').text()).to.equal('暂无数据');
     });
+
 });
