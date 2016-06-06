@@ -54,10 +54,11 @@ export default class TreeTable extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        let data = props.data,
-            key = props.iskey,
-            hashKey = props.hashKey,
-            dictionary = [];
+        let data = nextProps.data,
+            key = nextProps.iskey,
+            hashKey = nextProps.hashKey,
+            dictionary = [],
+            crtPage = 1;
         data.forEach(item => {
             item.level = 0;
             if(hashKey){
@@ -65,14 +66,17 @@ export default class TreeTable extends Component {
                 dictionary.push(item.uid);
                 return;
             }
-            dictionary.push(item[key])
+            dictionary.push(item[key]);
         });
-        this.setState(old => {
-            old.renderedList = data;
-            old.dictionary = dictionary;
-            old.width = 1 / nextProps.headRow.length * 100 + '%';
-            return old;
-        })
+        if(nextProps.pagination && nextProps.options.page){
+            crtPage = nextProps.options.page;
+        }
+        this.state = {
+            width: 1 / nextProps.headRow.length * 100 + '%',
+            dictionary: dictionary,
+            renderedList: data,
+            crtPage: crtPage
+        }
     }
 
     flatten(data) { //处理子节点数据
