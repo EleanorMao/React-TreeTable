@@ -6,7 +6,12 @@
 * headRow[Array]   表头数据, 会根据提供的表头数据作为渲染data的依据, 格式可以是`[key, key, key...]` 或者 `[{id: key, name: name, width: width}] `, `name` 和 `width` 不是必须的, 如果有 `name` 会把 `name` 作为对应的表头名, 如果有 `width`, 那会吧 `width` 作为对应每个单元格的宽, 不然就是按百分比计算宽度
 * iskey[String]   作为key用的那个字段的名字
 * hashKey[Boolean]   默认是`fasle`, 如果没有唯一的id, 那就传`true`, 本表格会帮你造一个uid
-* dataFormat[Obeject]   格式化数据, 可以获取到 `cell`, `row`, `level`, `index`, `col` 5个参数, 分别是这个单元格是数据, 这一行的数据, 这行的等级, 当前单元格的角标, 还有headRow
+* dataFormat[Object]   格式化数据, 可以获取到 `cell`, `row`, `level`, `index`, `col` 5个参数, 分别是这个单元格是数据, 这一行的数据, 这行的等级, 当前单元格的角标, 还有headRow
+* pagination[boolean] 默认是`false`, 是否开启分页器
+* options[Object] 分页器配置
+    * page[int] 默认显示的当前页, 默认是第一页
+    * sizePerPage 每页多长, 默认是十条
+    * onPageChange(event, crtPage, nextPage) 点击分页器时调用
 
 ## 让我们用代码说话⬇
 ```javascript
@@ -129,13 +134,20 @@ class Main extends Component{
                     }
                 };
         //headRow可以是[key, key, ...] 或 [{id: '', name: '', width: ''}, ...]形式, name 和 width 不是必须
+        let options = {
+                    sizePerPage: 2,
+                    page: 2,
+                    onPageChange: function (event, crtPage, nextPage) {
+        
+                    }
+                };
         return (
             <div>
                 <div style={{margin: "20px"}}>
                     <TreeTable data={data} iskey="a" headRow={headRow} dataFormat={dataFormat}/>
                 </div>
                 <div style={{margin: "20px"}}>
-                    <TreeTable data={noKeyData} hashKey={true} headRow={headRow}/>
+                    <TreeTable data={noKeyData} hashKey={true} headRow={headRow} pagination={true} options={options}/>
                 </div>
                 </div>
         )
@@ -161,3 +173,4 @@ ReactDOM.render(<Main/>, document.querySelector('.main'));
 
 ## 另外
 本表格的样式除了单元格宽度以外都是用class控制的, 所以如果你看着不顺眼, 请自由的修改css
+分别调用组件可以访问 lib/Component 里面有TableRow TableHead 还有 Paging 三个小组件可分别使用 0w0 有什么参数等我哪天心情好再说 =L=

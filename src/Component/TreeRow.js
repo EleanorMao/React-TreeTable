@@ -20,17 +20,17 @@ let _extends = function (target) {
 export default class TreeRow extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            open: props.open
+        }
     }
 
     handleToggle(event) {
-        let target = event.target;
-        let rotate = target.style.transform;
-        if (rotate) {
-            target.style.transform = '';
-        } else {
-            target.style.transform = 'rotate(-90deg)';
-        }
-        let data = _extends({}, {display: rotate ? 1 : 0}, {data: this.props.data});
+        let data = _extends({}, {display: this.state.open}, {data: this.props.data});
+        this.setState(old => {
+            old.open = !old.open;
+            return old;
+        });
         this.props.onClick(data);
     }
 
@@ -40,6 +40,7 @@ export default class TreeRow extends Component {
         let iskey = this.props.iskey;
         let hashKey = this.props.hashKey;
         let dataFormat = this.props.dataFormat;
+        let open = this.state.open;
         let arrow = -1;
         this.props.cols.map((key, i, col) => {
             let children = data.list || data.chdatalist || data.children;
@@ -60,6 +61,7 @@ export default class TreeRow extends Component {
                         {children && children.length > 0 && !!!arrow ?
                             <i
                                 className="table-arrow fa fa-chevron-down"
+                                style={open ? {transform: 'rotate(-90deg)'} : {}}
                                 onClick={this.handleToggle.bind(this)}
                             > </i> : '' }
                     </span>
