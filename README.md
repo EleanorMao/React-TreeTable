@@ -12,6 +12,7 @@
     * page[int] 默认显示的当前页, 默认是第一页
     * sizePerPage 每页多长, 默认是十条
     * onPageChange(event, crtPage, nextPage) 点击分页器时调用
+* handleClick[function] 点击展开按钮的时候会把数据丢给你可以处理，会返回`opened`和`data`两个参数，务必要`return data`，或者干脆啥也别返回算惹。`opened`为`false`的时候意味着叶子节点是关闭状态，如果是`true`说明叶子节点是展开的
 
 ## 让我们用代码说话⬇
 ```javascript
@@ -138,7 +139,7 @@ class Main extends Component{
                     sizePerPage: 2,
                     page: 2,
                     onPageChange: function (event, crtPage, nextPage) {
-        
+
                     }
                 };
         return (
@@ -163,7 +164,7 @@ ReactDOM.render(<Main/>, document.querySelector('.main'));
 
 ```
     npm install
-    npm run example 
+    npm run example
 ```
 
 最后访问

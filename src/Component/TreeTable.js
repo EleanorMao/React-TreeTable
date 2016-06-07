@@ -34,10 +34,10 @@ export default class TreeTable extends Component {
             dictionary = [],
             crtPage = 1;
         data.forEach(item => {
-            item.level = 0;
+            item.__level = 0;
             if(hashKey){
-                item.uid = uniqueID();
-                dictionary.push(item.uid);
+                item.__uid = uniqueID();
+                dictionary.push(item.__uid);
                 return;
             }
             dictionary.push(item[key]);
@@ -60,10 +60,10 @@ export default class TreeTable extends Component {
             dictionary = [],
             crtPage = 1;
         data.forEach(item => {
-            item.level = 0;
+            item.__level = 0;
             if(hashKey){
-                item.uid = uniqueID();
-                dictionary.push(item.uid);
+                item.__uid = uniqueID();
+                dictionary.push(item.__uid);
                 return;
             }
             dictionary.push(item[key]);
@@ -100,27 +100,28 @@ export default class TreeTable extends Component {
 
     handleToggle(option) {
         const {
-            display,
+            opened,
             data
         } = option;
+        this.props.handleClick(opened, data) || data;
         let iskey = this.props.iskey;
         let hashKey = this.props.hashKey;
         let childList = data.list || data.chdatalist || data.children;
-        data.opened = !data.opened;
-        if (!display) {
-            let target = hashKey ? data.uid : data[iskey];
+        data.__opened = !data.__opened;
+        if (!opened) {
+            let target = hashKey ? data.__uid : data[iskey];
             let index = this.state.dictionary.indexOf(target) + 1;
             this.setState(old => {
                 childList.forEach(item => {
-                    item.parent = data;
-                    item.opened = false;
-                    item.level = data.level + 1;
+                    item.__parent = data;
+                    item.__opened = false;
+                    item.__level = data.__level + 1;
                     let id = item[iskey];
                     if(this.props.hashKey){
-                        if(!item.uid){
-                            item.uid = uniqueID();
+                        if(!item.__uid){
+                            item.__uid = uniqueID();
                         } 
-                        id = item.uid;
+                        id = item.__uid;
                     }
                     old.dictionary.splice(index, 0, id);
                     old.renderedList.splice(index++, 0, item);
@@ -131,8 +132,8 @@ export default class TreeTable extends Component {
             childList = this.flatten(childList);
             this.setState(old => {
                 childList.forEach(item => {
-                    item.opened = true;
-                    let id = this.props.hashKey ? item.uid : item[iskey];
+                    item.__opened = true;
+                    let id = this.props.hashKey ? item.__uid : item[iskey];
                     let i = old.dictionary.indexOf(id);
                     if (i > -1) {
                         old.dictionary.splice(i, 1);
@@ -176,15 +177,15 @@ export default class TreeTable extends Component {
         }
         renderedList.forEach(node => {
             output.push(<TreeRow
-                key={hashKey? node.uid : node[iskey]}
-                level={node.level}
+                key={hashKey? node.__uid : node[iskey]}
+                level={node.__level}
                 iskey={iskey}
                 hashKey={hashKey}
                 cols={headRow}
                 width={width}
-                parent={node.parent}
+                parent={node.__parent}
                 data={node}
-                open={node.opened}
+                open={node.__opened}
                 dataFormat={this.props.dataFormat}
                 onClick={this.handleToggle.bind(this)}
             />);
@@ -223,6 +224,9 @@ TreeTable.defaultProps = {
     headRow: [],
     options: {
         sizePerPage: 10
+    },
+    handleClick: function (opened, data) {
+        return data;
     }
 };
 

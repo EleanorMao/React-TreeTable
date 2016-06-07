@@ -52,8 +52,8 @@ let data = [{
 }];
 
 let noKeyData = [{
-    "a": 1,
-    "b": 2,
+    "a": 0,
+    "b": 0,
     "c": 3,
     "d": 4,
     "list": [{
@@ -149,9 +149,20 @@ class Main extends Component {
         this.state = {a: 0}
     }
 
+    handleClick(display, data){
+        if(!display){
+        data.list.push({
+            "a": 444 + Math.random(),
+            "b": 442,
+            "c": 441,
+            "d": 440
+        })
+        return data;}
+    }
+
     render() {
         let headRow = [
-            {id: "a", name: "RowA"},
+            {id: "a", name: "RowA", width: "200px"},
             {id: "b", name: "RowB"},
             {id: "c", name: "RowC"},
             {id: "d", name: "RowD"}
@@ -199,7 +210,7 @@ class Main extends Component {
         return (
             <div>
                 <div style={{margin: "20px"}}>
-                    <TreeTable data={data} iskey="a" headRow={headRow} dataFormat={dataFormat}/>
+                    <TreeTable data={data} iskey="a" headRow={headRow} dataFormat={dataFormat} handleClick={this.handleClick}/>
                 </div>
                 <div style={{margin: "20px"}}>
                     <TreeTable data={noKeyData} hashKey={true} headRow={headRow} pagination={true} options={options}/>

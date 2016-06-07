@@ -12,9 +12,10 @@ export default class TreeHead extends Component {
     headRowRender() {
         let output = [];
         let headRow = this.props.headRow;
+        let width = this.props.width;
         headRow.forEach((item, index) => {
             output.push(
-                <div key={index} style={{width: item.width || this.props.width}} className="thead">
+                <div key={index} style={{minWidth: item.width, width: width}} className="thead">
                     <span>{item.name || item.id || item }</span>
                 </div>
             )
