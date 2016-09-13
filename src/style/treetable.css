@@ -7,6 +7,9 @@
   content: '';
   display: table;
 }
+.fr{
+  float: right;
+}
 .table{
   width: auto;
   min-width: 100%;

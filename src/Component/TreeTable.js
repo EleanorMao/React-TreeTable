@@ -13,7 +13,7 @@
 import React from 'react';
 import TreeHead from './TreeHead.js';
 import TreeRow from './TreeRow.js';
-import Paging from './Paging.js';
+import Paging from './Pagination/Pagination.js';
 
 require('../style/treetable.css');
 
@@ -35,14 +35,14 @@ export default class TreeTable extends Component {
             crtPage = 1;
         data.forEach(item => {
             item.__level = 0;
-            if(hashKey){
+            if (hashKey) {
                 item.__uid = uniqueID();
                 dictionary.push(item.__uid);
                 return;
             }
             dictionary.push(item[key]);
         });
-        if(props.pagination && props.options.page){
+        if (props.pagination && props.options.page) {
             crtPage = props.options.page;
         }
         this.state = {
@@ -61,14 +61,14 @@ export default class TreeTable extends Component {
             crtPage = 1;
         data.forEach(item => {
             item.__level = 0;
-            if(hashKey){
+            if (hashKey) {
                 item.__uid = uniqueID();
                 dictionary.push(item.__uid);
                 return;
             }
             dictionary.push(item[key]);
         });
-        if(nextProps.pagination && nextProps.options.page){
+        if (nextProps.pagination && nextProps.options.page) {
             crtPage = nextProps.options.page;
         }
         this.state = {
@@ -80,13 +80,15 @@ export default class TreeTable extends Component {
     }
 
     flatten(data) { //处理子节点数据
-        let output = [], index = 0;
+        let output = [],
+            index = 0;
         data.forEach(item => {
             let children = item.list || item.chdatalist || item.children;
             if (children) {
                 output[index++] = item;
                 item = this.flatten(children);
-                let j = 0, len = item.length;
+                let j = 0,
+                    len = item.length;
                 output.length += len;
                 while (j < len) {
                     output[index++] = item[j++]
@@ -103,54 +105,57 @@ export default class TreeTable extends Component {
             opened,
             data
         } = option;
-        this.props.handleClick(opened, data) || data;
+        let that = this;
         let iskey = this.props.iskey;
         let hashKey = this.props.hashKey;
-        let childList = data.list || data.chdatalist || data.children;
-        data.__opened = !data.__opened;
-        if (!opened) {
-            let target = hashKey ? data.__uid : data[iskey];
-            let index = this.state.dictionary.indexOf(target) + 1;
-            this.setState(old => {
-                childList.forEach(item => {
-                    item.__parent = data;
-                    item.__opened = false;
-                    item.__level = data.__level + 1;
-                    let id = item[iskey];
-                    if(this.props.hashKey){
-                        if(!item.__uid){
-                            item.__uid = uniqueID();
-                        } 
-                        id = item.__uid;
-                    }
-                    old.dictionary.splice(index, 0, id);
-                    old.renderedList.splice(index++, 0, item);
-                });
-                return old;
-            })
-        } else { //close
-            childList = this.flatten(childList);
-            this.setState(old => {
-                childList.forEach(item => {
-                    item.__opened = true;
-                    let id = this.props.hashKey ? item.__uid : item[iskey];
-                    let i = old.dictionary.indexOf(id);
-                    if (i > -1) {
-                        old.dictionary.splice(i, 1);
-                        old.renderedList.splice(i, 1);
-                    }
-                });
-                return old;
-            })
+        let callback = function() {
+            let childList = data.list || data.chdatalist || data.children;
+            data.__opened = !data.__opened;
+            if (!opened) {
+                let target = hashKey ? data.__uid : data[iskey];
+                let index = that.state.dictionary.indexOf(target) + 1;
+                that.setState(old => {
+                    childList.forEach(item => {
+                        item.__parent = data;
+                        item.__opened = false;
+                        item.__level = data.__level + 1;
+                        let id = item[iskey];
+                        if (that.props.hashKey) {
+                            if (!item.__uid) {
+                                item.__uid = uniqueID();
+                            }
+                            id = item.__uid;
+                        }
+                        old.dictionary.splice(index, 0, id);
+                        old.renderedList.splice(index++, 0, item);
+                    });
+                    return old;
+                })
+            } else { //close
+                childList = that.flatten(childList);
+                that.setState(old => {
+                    childList.forEach(item => {
+                        item.__opened = true;
+                        let id = that.props.hashKey ? item.__uid : item[iskey];
+                        let i = old.dictionary.indexOf(id);
+                        if (i > -1) {
+                            old.dictionary.splice(i, 1);
+                            old.renderedList.splice(i, 1);
+                        }
+                    });
+                    return old;
+                })
+            }
         }
+        this.props.handleClick(opened, data, callback);
     }
 
-    handleClick(event, nextPage){
-        this.setState(old =>{
-            old.crtPage = nextPage;
+    handleClick(page, sizePerPage) {
+        this.setState(old => {
+            old.crtPage = page;
             return old;
         });
-        this.props.options.onPageChange(event, this.state.crtPage, nextPage);
+        this.props.options.onPageChange(page, sizePerPage);
     }
 
     bodyRender() {
@@ -171,9 +176,9 @@ export default class TreeTable extends Component {
             return <div className="table-row text-center clearfix"><span>暂无数据</span></div>;
         }
         let output = [];
-        if(pagination){
+        if (pagination) {
             let len = options.sizePerPage;
-            renderedList = renderedList.slice((crtPage - 1)*len, crtPage*len);
+            renderedList = renderedList.slice((crtPage - 1) * len, crtPage * len);
         }
         renderedList.forEach(node => {
             output.push(<TreeRow
@@ -193,11 +198,20 @@ export default class TreeTable extends Component {
         return output;
     }
 
-    pagingRender(){
-        if(this.props.pagination){
+    pagingRender() {
+        const {
+            pagination,
+            options,
+            remote,
+            dataSize
+        } = this.props;
+        if (pagination) {
             return (
-                <div className="paging">
-                    <Paging size={this.state.dictionary.length} length={this.props.options.sizePerPage} num={this.state.crtPage} click={this.handleClick.bind(this)}/>
+                <div className="fr">
+                {  remote ? 
+                      <Paging dataSize={dataSize} sizePerPage={options.sizePerPage} current={options.page} onPageChange={options.onPageChange}/>
+                    : <Paging dataSize={this.state.dictionary.length} sizePerPage={options.sizePerPage} current={this.state.crtPage} onPageChange={this.handleClick.bind(this)}/>
+                }
                 </div>
             )
         }
@@ -225,8 +239,8 @@ TreeTable.defaultProps = {
     options: {
         sizePerPage: 10
     },
-    handleClick: function (opened, data) {
-        return data;
+    dataSize: 0,
+    handleClick: function(opened, data, callback) {
+        callback(data);
     }
 };
-

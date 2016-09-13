@@ -96,7 +96,7 @@ let noKeyData = [{
         "d": 52,
         "list": []
     }]
-},{
+}, {
     "a": 3,
     "b": 2,
     "c": 3,
@@ -146,36 +146,49 @@ let noKeyData = [{
 class Main extends Component {
     constructor() {
         super();
-        this.state = {a: 0}
+        this.state = {
+            a: 0
+        }
     }
 
-    handleClick(display, data){
-        if(!display){
-        data.list.push({
-            "a": 444 + Math.random(),
-            "b": 442,
-            "c": 441,
-            "d": 440
-        })
-        return data;}
+    handleClick(display, data, callback) {
+        if (!display) {
+            data.list.push({
+                "a": 444 + Math.random(),
+                "b": 442,
+                "c": 441,
+                "d": 440
+            })
+            callback(data);
+        } else {
+            callback(data);
+        }
     }
 
     render() {
-        let headRow = [
-            {id: "a", name: "RowA", width: "200px"},
-            {id: "b", name: "RowB"},
-            {id: "c", name: "RowC"},
-            {id: "d", name: "RowD"}
-        ];
+        let headRow = [{
+            id: "a",
+            name: "RowA",
+            width: "200px"
+        }, {
+            id: "b",
+            name: "RowB"
+        }, {
+            id: "c",
+            name: "RowC"
+        }, {
+            id: "d",
+            name: "RowD"
+        }];
         let dataFormat = {
-            "a": function (cell, level, row) {
+            "a": function(cell, level, row) {
                 if (level != 0) {
                     return '';
                 } else {
                     return cell + ' I am row a'
                 }
             },
-            "b": function (cell, level ,row, index, col) {
+            "b": function(cell, level, row, index, col) {
                 if (row.level != 0) {
                     let key = col[index - 1];
                     return row[key.id || key];
@@ -183,7 +196,7 @@ class Main extends Component {
                     return cell + ' I am row b'
                 }
             },
-            "c": function (cell, level, row, index, col) {
+            "c": function(cell, level, row, index, col) {
                 if (row.level != 0) {
                     let key = col[index - 1];
                     return row[key.id || key];
@@ -191,11 +204,11 @@ class Main extends Component {
                     return cell
                 }
             },
-            "d": function (cell, level, row, index, col) {
-                if(row.level != 0){
+            "d": function(cell, level, row, index, col) {
+                if (row.level != 0) {
                     let key = col[index - 1];
                     return row[key.id || key];
-                }else{
+                } else {
                     return cell + 1
                 }
             }
@@ -203,7 +216,7 @@ class Main extends Component {
         let options = {
             sizePerPage: 2,
             page: 2,
-            onPageChange: function (event, crtPage, nextPage) {
+            onPageChange: function(page, sizePerPage) {
 
             }
         };
