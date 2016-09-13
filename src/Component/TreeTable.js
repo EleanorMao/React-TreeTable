@@ -10,14 +10,14 @@
  * dataFormat: {key: function, key: function, ...}
  * hashKey: default false, in case of don't have a id
  */
-import React from 'react';
-import TreeHead from './TreeHead.js';
+import React, {
+    Component,
+    PropTypes
+} from 'react';
 import TreeRow from './TreeRow.js';
 import Paging from './Pagination/Pagination.js';
 
 require('../style/treetable.css');
-
-const Component = React.Component;
 
 let idCounter = 0;
 
@@ -28,37 +28,19 @@ function uniqueID() {
 export default class TreeTable extends Component {
     constructor(props) {
         super(props);
-        let data = props.data,
-            key = props.iskey,
-            hashKey = props.hashKey,
-            dictionary = [],
-            crtPage = 1;
-        data.forEach(item => {
-            item.__level = 0;
-            if (hashKey) {
-                item.__uid = uniqueID();
-                dictionary.push(item.__uid);
-                return;
-            }
-            dictionary.push(item[key]);
-        });
-        if (props.pagination && props.options.page) {
-            crtPage = props.options.page;
-        }
         this.state = {
-            width: 1 / props.headRow.length * 100 + '%',
-            dictionary: dictionary,
-            renderedList: data,
-            crtPage: crtPage
+            renderedList: props.data.slice(),
+            dictionary: this._initDictionary(props),
+            width: 1 / this.props.children.length * 100 + '%',
+            crtPage: props.pagination && props.options.page || 1
         }
     }
 
-    componentWillReceiveProps(nextProps) {
-        let data = nextProps.data,
-            key = nextProps.iskey,
-            hashKey = nextProps.hashKey,
-            dictionary = [],
-            crtPage = 1;
+    _initDictionary(props) {
+        let data = props.data,
+            key = props.iskey,
+            hashKey = props.hashKey,
+            dictionary = [];
         data.forEach(item => {
             item.__level = 0;
             if (hashKey) {
@@ -68,14 +50,54 @@ export default class TreeTable extends Component {
             }
             dictionary.push(item[key]);
         });
-        if (nextProps.pagination && nextProps.options.page) {
-            crtPage = nextProps.options.page;
+        return dictionary;
+    }
+
+    _initColumnDate() {
+        let validData = [];
+        let columnDate = [];
+        let defWidth = 1 / this.props.children.length * 100 + '%';
+        React.Children.map(this.props.children, function(column) {
+            columnDate.push({
+                id: column.props.dataField,
+                name: column.props.children,
+                hidden: column.props.hidden,
+                showArrow: column.props.showArrow,
+                dataFormat: column.props.dataFormat,
+                width: column.props.width || defWidth
+            });
+            if (!column.props.hidden) {
+                validData.push({
+                    id: column.props.dataField,
+                    width: column.props.width
+                })
+            }
+        })
+        this.validData = validData;
+        this.columnDate = columnDate;
+    }
+
+    getChildContext() {
+        return {
+            width: this.state.width
         }
+    }
+
+    componentWillMount() {
+        this._initColumnDate();
+    }
+
+    componentDidMount() {
+        // window.addEventListener('resize', this._adjustTable);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this._initColumnDate();
+
         this.state = {
-            width: 1 / nextProps.headRow.length * 100 + '%',
-            dictionary: dictionary,
-            renderedList: data,
-            crtPage: crtPage
+            renderedList: nextProps.data.slice(),
+            dictionary: this._initDictionary(nextProps),
+            crtPage: nextProps.pagination && nextProps.options.page || this.state.crtPage
         }
     }
 
@@ -160,16 +182,15 @@ export default class TreeTable extends Component {
 
     bodyRender() {
         let {
-            width,
-            renderedList,
-            crtPage
+            crtPage,
+            renderedList
         } = this.state;
         let {
-            headRow,
             iskey,
+            options,
+            headRow,
             hashKey,
-            pagination,
-            options
+            pagination
         } = this.props;
 
         if (renderedList.length < 1) {
@@ -182,52 +203,100 @@ export default class TreeTable extends Component {
         }
         renderedList.forEach(node => {
             output.push(<TreeRow
-                key={hashKey? node.__uid : node[iskey]}
-                level={node.__level}
+                data={node}
                 iskey={iskey}
                 hashKey={hashKey}
-                cols={headRow}
-                width={width}
-                parent={node.__parent}
-                data={node}
+                level={node.__level}
                 open={node.__opened}
-                dataFormat={this.props.dataFormat}
+                parent={node.__parent}
+                cols={this.columnDate}
                 onClick={this.handleToggle.bind(this)}
+                key={hashKey? node.__uid : node[iskey]}
             />);
         });
         return output;
     }
 
+    paginationTotalRender() {
+        const {
+            data,
+            remote,
+            options,
+            dataSize,
+            pagination
+        } = this.props;
+        if (pagination && options.paginationShowsTotal) {
+            const len = options.sizePerPage;
+            const current = remote ? (options.page - 1) * len : (this.state.crtPage - 1) * len;
+            const start = remote ? current + 1 : Math.min(data.length, current + 1);
+            const to = remote ? current + data.length : Math.min(data.length, current + len);
+            return (
+                <div>
+                    {
+                        options.paginationShowsTotal === true ? 
+                            <div>当前第{start}条 至 第{to}条 共{data.length}条</div> : 
+                            options.paginationShowsTotal(start, to, dataSize)
+                    }
+                </div>
+            )
+        }
+    }
+
     pagingRender() {
         const {
-            pagination,
-            options,
             remote,
-            dataSize
+            options,
+            dataSize,
+            pagination
         } = this.props;
         if (pagination) {
             return (
                 <div className="fr">
-                {  remote ? 
-                      <Paging dataSize={dataSize} sizePerPage={options.sizePerPage} current={options.page} onPageChange={options.onPageChange}/>
-                    : <Paging dataSize={this.state.dictionary.length} sizePerPage={options.sizePerPage} current={this.state.crtPage} onPageChange={this.handleClick.bind(this)}/>
-                }
+                    {  remote ? 
+                          <Paging 
+                            dataSize={dataSize} 
+                            current={options.page} 
+                            sizePerPage={options.sizePerPage} 
+                            onPageChange={options.onPageChange}
+                            />
+                        : <Paging 
+                            current={this.state.crtPage} 
+                            sizePerPage={options.sizePerPage} 
+                            dataSize={this.state.dictionary.length} 
+                            onPageChange={this.handleClick.bind(this)}
+                            />
+                    }
                 </div>
             )
         }
     }
 
     render() {
+        const {
+            width,
+            height,
+            children
+        } = this.props;
         return (
-            <div style={{padding: "10px", margin: "10px"}}>
-                <div className="table-tree table" >
-                    <TreeHead headRow={this.props.headRow} width={this.state.width}/>
-
-                    <div className="table-body clearfix">
-                        {this.bodyRender()}
+            <div style={{padding: "10px", margin: "10px", width: width || '100%'}}>
+                <div className="table-tree table clearfix" >
+                    <div className="table-head clearfix" ref="header">
+                        {children}
+                    </div>
+                    <div className="table-body-container" style={{height: height || 'auto'}}>
+                        <div className="table-body clearfix">
+                            {this.bodyRender()}
+                        </div>
                     </div>
                 </div>
-                {this.pagingRender()}
+                <div className="row">
+                    <div className="col-sm-6">
+                        {this.paginationTotalRender()}
+                    </div>
+                    <div className="col-sm-6">
+                        {this.pagingRender()}
+                    </div>
+                </div>
             </div>
         )
     }
@@ -240,7 +309,11 @@ TreeTable.defaultProps = {
         sizePerPage: 10
     },
     dataSize: 0,
-    handleClick: function(opened, data, callback) {
+    handleClick: (opened, data, callback) => {
         callback(data);
     }
+};
+
+TreeTable.childContextTypes = {
+    width: React.PropTypes.string
 };

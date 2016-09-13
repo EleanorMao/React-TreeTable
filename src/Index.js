@@ -3,5 +3,9 @@
  */
 
 import TreeTable from './Component/TreeTable';
+import TreeHeadCol from './Component/TreeHeadCol';
 
-export default TreeTable;
+export {
+    TreeTable,
+    TreeHeadCol
+};

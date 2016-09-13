@@ -5,7 +5,7 @@ import React from 'react';
 
 const Component = React.Component;
 
-let _extends = function (target) {
+let _extends = function(target) {
     for (let i = 1; i < arguments.length; i++) {
         let source = arguments[i];
         for (let key in source) {
@@ -26,7 +26,11 @@ export default class TreeRow extends Component {
     }
 
     handleToggle(event) {
-        let data = _extends({}, {opened: this.state.open}, {data: this.props.data});
+        let data = _extends({}, {
+            opened: this.state.open
+        }, {
+            data: this.props.data
+        });
         this.setState(old => {
             old.open = !old.open;
             return old;
@@ -36,35 +40,47 @@ export default class TreeRow extends Component {
 
     cellRender() {
         let output = [];
-        let data = this.props.data;
-        let iskey = this.props.iskey;
-        let hashKey = this.props.hashKey;
-        let dataFormat = this.props.dataFormat;
-        let level = this.props.level;
-        let open = this.state.open;
         let arrow = -1;
-        this.props.cols.map((key, i, col) => {
+        let {
+            open,
+            data,
+            cols,
+            iskey,
+            level,
+            hashKey
+        } = this.props;
+        cols.map((key, i, col) => {
+            let cell = data[key.id];
+            let dataFormat = key.dataFormat;
             let children = data.list || data.chdatalist || data.children;
-            let cell = data[key.id || key];
-            if (dataFormat && dataFormat[key.id || key]) {
-                cell = dataFormat[key.id || key].call(null, data[key.id || key], level, data, i, col)
+            children = children && children.length > 0;
+            let style = {
+                minWidth: key.width
+            };
+            if (key.hidden) {
+                style.display = 'none';
+            }
+            if (dataFormat) {
+                cell = dataFormat.call(null, data[key.id], level, data, i, col)
             }
             if (cell !== "") {
                 arrow++;
             }
+            const showArrow = key.showArrow.call(null, data[key.id], level, data, i, col);
             output.push(
                 <div className="table-cell"
-                     style={{minWidth: key.width, width: this.props.width}}
+                     style={style}
                      key={hashKey ? data.__uid + i : data[iskey] + i}
                 >
                     <span style={{marginLeft: level * 10 + 'px'}}>
                         {cell}
-                        {children && children.length > 0 && !!!arrow ?
+                        {showArrow && !!children && !arrow &&
                             <i
                                 className="table-arrow fa fa-chevron-down"
                                 style={open ? {transform: 'rotate(-90deg)'} : {}}
                                 onClick={this.handleToggle.bind(this)}
-                            > </i> : '' }
+                            > </i>
+                        }
                     </span>
                 </div>
             )

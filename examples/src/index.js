@@ -1,6 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import TreeTable from '../../lib/Index.js';
+import {
+    TreeTable,
+    TreeHeadCol
+} from '../../src/Index.js';
 
 const Component = React.Component;
 
@@ -153,33 +156,18 @@ class Main extends Component {
 
     handleClick(display, data, callback) {
         if (!display) {
-            data.list.push({
-                "a": 444 + Math.random(),
-                "b": 442,
-                "c": 441,
-                "d": 440
+            fetch('http://localhost:3000/get?a=5').then(res => {
+                return res.json();
+            }).then(json => {
+                data.list.push(json[0]);
+                callback(data);
             })
-            callback(data);
         } else {
             callback(data);
         }
     }
 
     render() {
-        let headRow = [{
-            id: "a",
-            name: "RowA",
-            width: "200px"
-        }, {
-            id: "b",
-            name: "RowB"
-        }, {
-            id: "c",
-            name: "RowC"
-        }, {
-            id: "d",
-            name: "RowD"
-        }];
         let dataFormat = {
             "a": function(cell, level, row) {
                 if (level != 0) {
@@ -214,19 +202,32 @@ class Main extends Component {
             }
         };
         let options = {
+            page: 1,
             sizePerPage: 2,
-            page: 2,
+            paginationShowsTotal: true,
             onPageChange: function(page, sizePerPage) {
 
             }
         };
+        // <div style={{margin: "20px"}}>
+        // <TreeTable data={noKeyData} hashKey={true} headRow={headRow} pagination={true} options={options}/>
+        // </div>
         return (
             <div>
                 <div style={{margin: "20px"}}>
-                    <TreeTable data={data} iskey="a" headRow={headRow} dataFormat={dataFormat} handleClick={this.handleClick}/>
-                </div>
-                <div style={{margin: "20px"}}>
-                    <TreeTable data={noKeyData} hashKey={true} headRow={headRow} pagination={true} options={options}/>
+                    <TreeTable data={data} iskey="a" pagination={true} options={options}>
+                        <TreeHeadCol dataField="a" dataFormat={dataFormat.a} 
+                                     showArrow={
+                                        (cell, level, row, index, col)=>{
+                                            if(row.a ==1){
+                                                return false
+                                            }
+                                            return true;
+                                        }}>第一列</TreeHeadCol> 
+                        <TreeHeadCol dataField="b" dataFormat={dataFormat.b}>第二列</TreeHeadCol> 
+                        <TreeHeadCol dataField="c" width={300}>第三列</TreeHeadCol> 
+                        <TreeHeadCol dataField="d" hidden={true}>第四列</TreeHeadCol> 
+                    </TreeTable>
                 </div>
             </div>
         )
