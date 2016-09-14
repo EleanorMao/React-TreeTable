@@ -64,7 +64,7 @@ export default class TreeTable extends Component {
                 hidden: column.props.hidden,
                 showArrow: column.props.showArrow,
                 dataFormat: column.props.dataFormat,
-                width: column.props.width || defWidth
+                width: column.props.width //remove default width
             });
             if (!column.props.hidden) {
                 validData.push({
@@ -78,9 +78,9 @@ export default class TreeTable extends Component {
     }
 
     getChildContext() {
-        return {
-            width: this.state.width
-        }
+        // return {
+        //     width: this.state.width
+        // }
     }
 
     componentWillMount() {
@@ -88,7 +88,17 @@ export default class TreeTable extends Component {
     }
 
     componentDidMount() {
-        // window.addEventListener('resize', this._adjustTable);
+        const cells = this.refs.header.childNodes;
+        const container = this.refs.body.clientWidth;
+        for (let i = 0, len = cells.length; i < len; i++) {
+            const cell = cells[i];
+            const styles = getComputedStyle(cell);
+            let width = parseInt(styles.width.replace('px', ''));
+            const lastPadding = (len - 1 === i ? 20 : 0);
+            const result = width + lastPadding + 'px';
+            console.log(result)
+                // window.addEventListener('resize', this._adjustTable);
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -280,11 +290,9 @@ export default class TreeTable extends Component {
         return (
             <div style={{padding: "10px", margin: "10px", width: width || '100%'}}>
                 <div className="table-tree table clearfix" >
-                    <div className="table-head clearfix" ref="header">
-                        {children}
-                    </div>
+                    <div className="table-head clearfix" ref="header">{children}</div>
                     <div className="table-body-container" style={{height: height || 'auto'}}>
-                        <div className="table-body clearfix">
+                        <div className="table-body clearfix" ref="body">
                             {this.bodyRender()}
                         </div>
                     </div>

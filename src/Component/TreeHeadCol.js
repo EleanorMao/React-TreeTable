@@ -21,7 +21,7 @@ class TreeHeadCol extends Component {
             style.display = 'none';
         }
         return (
-            <div style={style} className="thead" ref="header"><span>{children}</span></div>
+            <div style={style} className="thead"><span>{children}</span></div>
         );
     }
 }
