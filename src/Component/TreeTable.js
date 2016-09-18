@@ -100,11 +100,12 @@ export default class TreeTable extends Component {
     componentDidMount() {
         this._adjustWidth();
         window.addEventListener('resize', this._adjustWidth.bind(this));
-        this.refs.container.addEventListener('scroll', this._scrollHeader.bind(this))
+        this.refs.container.addEventListener('scroll', this._scrollHeader.bind(this));
     }
 
     componentWillUnmount() {
         window.removeEventListener('resize', this._adjustWidth.bind(this));
+        this.refs.container.removeEventListener('scroll', this._scrollHeader.bind(this));
     }
 
     componentWillReceiveProps(nextProps) {

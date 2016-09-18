@@ -14,8 +14,8 @@
 * options[Object] 分页器配置
     * page[int] 默认显示的当前页, 默认是第一页
     * sizePerPage[int] 每页多长, 默认是十条
-    * paginationShowsTotal[boolean | function(start, to , total)] 显示条数导航
     * onPageChange(page, sizePerPage) 点击分页器时调用
+    * paginationShowsTotal[boolean | function(start, to , total)] 显示条数导航
 * handleClick[function] 点击展开按钮的时候会把数据丢给你可以处理，会返回`opened`,`data`两个参数和一个callback`callback`，务必要`callback(data)`(为了处理异步的情况暂别无他法)。`opened`为`false`的时候意味着叶子节点是关闭状态，如果是`true`说明叶子节点是展开的
 
 ### TreeHeadCol
