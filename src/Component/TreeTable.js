@@ -25,6 +25,12 @@ function uniqueID() {
     return idCounter++ + new Date().getTime() + Math.random();
 }
 
+function diff(a, b) {
+    return a.filter(x => {
+        return b.indexOf(x) === -1
+    });
+}
+
 export default class TreeTable extends Component {
     constructor(props) {
         super(props);
@@ -67,10 +73,25 @@ export default class TreeTable extends Component {
         this.columnDate = columnDate;
     }
 
+    _getLastChild(data) {
+        let unvaild = [],
+            list = [];
+        for (let i = 0, len = data.length; i < len; i++) {
+            if (data[i].hidden) {
+                unvaild.push(i);
+            }
+            list.push(i);
+        }
+        let diffList = diff(list, unvaild);
+        return diffList[diffList.length - 1];
+    }
+
+
     _adjustWidth() {
         const tbody = this.refs.tbody;
-        const firstRow = tbody.childNodes[0].childNodes;
         const cells = this.refs.thead.childNodes;
+        const firstRow = tbody.childNodes[0].childNodes;
+        const lastChild = this._getLastChild(this.columnDate);
         for (let i = 0, len = cells.length; i < len; i++) {
             const cell = cells[i];
             const target = firstRow[i];
@@ -83,7 +104,9 @@ export default class TreeTable extends Component {
                 const borderLeftWidth = parseFloat(computedStyle.borderLeftWidth.replace('px', ''));
                 width = width + paddingLeftWidth + paddingRightWidth + borderRightWidth + borderLeftWidth;
             }
-            const result = width + 'px';
+            const result = width  + 'px';
+            cell.style.width = result;
+            cell.style.minWidth = result;
             target.style.width = result;
             target.style.minWidth = result;
         }

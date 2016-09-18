@@ -16,8 +16,8 @@
 }
 .table-tree .table-container {
   overflow: auto;
-  border-left: 1px solid #ddd;
-  border-right: 1px solid #ddd;
+  border: 1px solid #ddd;
+  border-top: 0;
 }
 .table-tree .table-bordered, 
 .table-bordered>thead>tr>th, 

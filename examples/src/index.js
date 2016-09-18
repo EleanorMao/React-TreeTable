@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import {
     TreeTable,
     TreeHeadCol
-} from '../../lib/Index.js';
+} from '../../src/Index.js';
 
 const Component = React.Component;
 
@@ -220,7 +220,7 @@ class Main extends Component {
         return (
             <div>
                 <div style={{margin: "20px"}}>
-                    <TreeTable data={data} iskey="a" pagination={false} options={options}>
+                    <TreeTable data={data} iskey="a" pagination={false} options={options} nestedHead={[]}>
                         <TreeHeadCol dataField="a" dataFormat={dataFormat.a} showArrow={this.showArrow}>第一列</TreeHeadCol> 
                         <TreeHeadCol dataField="b" dataFormat={dataFormat.b}>第二列</TreeHeadCol> 
                         <TreeHeadCol dataField="c" width={300}>第三列</TreeHeadCol> 
@@ -228,7 +228,7 @@ class Main extends Component {
                     </TreeTable>
                 </div>
                  <div style={{margin: "20px"}}>
-                    <TreeTable data={noKeyData} hashKey={true} pagination={true} options={options}>
+                    <TreeTable data={noKeyData} hashKey={true} pagination={true} options={options} height="50px">
                         <TreeHeadCol dataField="a" >第一列</TreeHeadCol> 
                         <TreeHeadCol dataField="b" dataFormat={dataFormat.b}>第二列</TreeHeadCol> 
                         <TreeHeadCol dataField="c" >第三列</TreeHeadCol> 
