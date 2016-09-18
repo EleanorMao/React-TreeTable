@@ -322,7 +322,6 @@ export default class TreeTable extends Component {
 
 TreeTable.defaultProps = {
     data: [],
-    headRow: [],
     options: {
         sizePerPage: 10
     },

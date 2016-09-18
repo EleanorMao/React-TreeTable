@@ -2,23 +2,37 @@
 将树形结构数据渲染成表格形式
 
 ## 参数提供
+### TreeTable
 * data[Array]   数据入口, 子节点可命名为children 或者 list 或者 chdatalist
-* headRow[Array]   表头数据, 会根据提供的表头数据作为渲染data的依据, 格式可以是`[key, key, key...]` 或者 `[{id: key, name: name, width: width}] `, `name` 和 `width` 不是必须的, 如果有 `name` 会把 `name` 作为对应的表头名, 如果有 `width`, 那会吧 `width` 作为对应每个单元格的宽, 不然就是按百分比计算宽度
 * iskey[String]   作为key用的那个字段的名字
 * hashKey[Boolean]   默认是`fasle`, 如果没有唯一的id, 那就传`true`, 本表格会帮你造一个uid
-* dataFormat[Object]   格式化数据, 可以获取到 `cell`, `row`, `level`, `index`, `col` 5个参数, 分别是这个单元格是数据, 这一行的数据, 这行的等级, 当前单元格的角标, 还有headRow
+* width[number | string] 宽度
+* height[number | string] 高度
+* remote[boolean] 如果是true则将翻页的控制权交给父组件
+* dataSize 数据总条数，仅在开启remote后有用
 * pagination[boolean] 默认是`false`, 是否开启分页器
 * options[Object] 分页器配置
     * page[int] 默认显示的当前页, 默认是第一页
-    * sizePerPage 每页多长, 默认是十条
-    * onPageChange(event, crtPage, nextPage) 点击分页器时调用
-* handleClick[function] 点击展开按钮的时候会把数据丢给你可以处理，会返回`opened`和`data`两个参数，务必要`return data`，或者干脆啥也别返回算惹。`opened`为`false`的时候意味着叶子节点是关闭状态，如果是`true`说明叶子节点是展开的
+    * sizePerPage[int] 每页多长, 默认是十条
+    * paginationShowsTotal[boolean | function(start, to , total)] 显示条数导航
+    * onPageChange(page, sizePerPage) 点击分页器时调用
+* handleClick[function] 点击展开按钮的时候会把数据丢给你可以处理，会返回`opened`,`data`两个参数和一个callback`callback`，务必要`callback(data)`(为了处理异步的情况暂别无他法)。`opened`为`false`的时候意味着叶子节点是关闭状态，如果是`true`说明叶子节点是展开的
+
+### TreeHeadCol
+* dataField[string] 数据的key值
+* dataFormat[function(cell, level, row, index, col)] 自定义渲染方法
+* hidden[boolean] 是否隐藏
+* width[number | string] 宽度
+* showArraw[function(cell, level, row, index, col)] 是否显示箭头
 
 ## 让我们用代码说话⬇
 ```javascript
 import React from 'react';
 import ReactDOM from 'react-dom';
-import TreeTable from 'react-treetable';
+import {
+    TreeTable,
+    TreeHeadCol
+} from '../../lib/Index.js';
 
 const Component = React.Component;
 
@@ -89,68 +103,95 @@ let noKeyData = [
     }
 ];
 
-class Main extends Component{
-    constructor(){
+class Main extends Component {
+    constructor() {
         super();
+        this.state = {
+            a: 0
+        }
     }
 
-    render(){
-        let headRow = [
-            {id: "a", name: "RowA", width: "200px"},
-            {id: "b", name: "RowB"},
-            {id: "c", name: "RowC"},
-            {id: "d", name: "RowD"}
-        ];
-        let dataFormat = {
-                    "a": function (cell, level, row) {
-                        if (level != 0) {
-                            return 'I AM CHILD' + level;
-                        } else {
-                            return cell + ' I am row a'
-                        }
-                    },
-                    "b": function (cell, level ,row, index, col) {
-                        if (row.level != 0) {
-                            let key = col[index - 1];
-                            return row[key.id || key];
-                        } else {
-                            return cell + ' I am row b'
-                        }
-                    },
-                    "c": function (cell, level, row, index, col) {
-                        if (row.level != 0) {
-                            let key = col[index - 1];
-                            return row[key.id || key];
-                        } else {
-                            return cell
-                        }
-                    },
-                    "d": function (cell, level, row, index, col) {
-                        if(row.level != 0){
-                            let key = col[index - 1];
-                            return row[key.id || key];
-                        }else{
-                            return cell + 1
-                        }
-                    }
-                };
-        //headRow可以是[key, key, ...] 或 [{id: '', name: '', width: ''}, ...]形式, name 和 width 不是必须
-        let options = {
-                    sizePerPage: 2,
-                    page: 2,
-                    onPageChange: function (event, crtPage, nextPage) {
+    handleClick(display, data, callback) {
+        if (!display) {
+            fetch('http://localhost:3000/get?a=5').then(res => {
+                return res.json();
+            }).then(json => {
+                data.list.push(json[0]);
+                callback(data);
+            })
+        } else {
+            callback(data);
+        }
+    }
 
-                    }
-                };
+    showArrow(cell, level, row, index, col) {
+        if (row.a == 1) {
+            return false
+        }
+        return true;
+    }
+
+    render() {
+        let dataFormat = {
+            "a": function(cell, level, row) {
+                if (level != 0) {
+                    return '';
+                } else {
+                    return cell + ' I am row a'
+                }
+            },
+            "b": function(cell, level, row, index, col) {
+                if (row.level != 0) {
+                    let key = col[index - 1];
+                    return row[key.id || key];
+                } else {
+                    return cell + ' I am row b'
+                }
+            },
+            "c": function(cell, level, row, index, col) {
+                if (row.level != 0) {
+                    let key = col[index - 1];
+                    return row[key.id || key];
+                } else {
+                    return cell
+                }
+            },
+            "d": function(cell, level, row, index, col) {
+                if (row.level != 0) {
+                    let key = col[index - 1];
+                    return row[key.id || key];
+                } else {
+                    return cell + 1
+                }
+            }
+        };
+
+        let options = {
+            page: 1,
+            sizePerPage: 2,
+            paginationShowsTotal: true,
+            onPageChange: function(page, sizePerPage) {}
+        };
+
         return (
             <div>
                 <div style={{margin: "20px"}}>
-                    <TreeTable data={data} iskey="a" headRow={headRow} dataFormat={dataFormat}/>
+                    <TreeTable data={data} iskey="a" pagination={false} options={options}>
+                        <TreeHeadCol dataField="a" dataFormat={dataFormat.a}>第一列</TreeHeadCol> 
+                        <TreeHeadCol dataField="b" dataFormat={dataFormat.b}>第二列</TreeHeadCol> 
+                        <TreeHeadCol dataField="c" width={300}>第三列</TreeHeadCol> 
+                        <TreeHeadCol dataField="d" hidden={true}>第四列</TreeHeadCol> 
+                    </TreeTable>
                 </div>
-                <div style={{margin: "20px"}}>
-                    <TreeTable data={noKeyData} hashKey={true} headRow={headRow} pagination={true} options={options}/>
+                 <div style={{margin: "20px"}}>
+                    <TreeTable data={noKeyData} hashKey={true} pagination={true} options={options}>
+                        <TreeHeadCol dataField="a" >第一列</TreeHeadCol> 
+                        <TreeHeadCol dataField="b" dataFormat={dataFormat.b}>第二列</TreeHeadCol> 
+                        <TreeHeadCol dataField="c" >第三列</TreeHeadCol> 
+                        <TreeHeadCol dataField="d" >第四列</TreeHeadCol> 
+                    </TreeTable>
                 </div>
-                </div>
+            </div>
         )
     }
 }
@@ -173,5 +214,4 @@ ReactDOM.render(<Main/>, document.querySelector('.main'));
 ```
 
 ## 另外
-本表格的样式除了单元格宽度以外都是用class控制的, 所以如果你看着不顺眼, 请自由的修改css
-分别调用组件可以访问 lib/Component 里面有TableRow TableHead 还有 Paging 三个小组件可分别使用 0w0 有什么参数等我哪天心情好再说 =L=
+算宽度好累_(:з」∠)_
