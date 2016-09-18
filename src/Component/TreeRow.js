@@ -55,7 +55,8 @@ export default class TreeRow extends Component {
             let children = data.list || data.chdatalist || data.children;
             children = children && children.length > 0;
             let style = {
-                minWidth: key.width
+                minWidth: key.width,
+                width: key.width,
             };
             if (key.hidden) {
                 style.display = 'none';
@@ -68,8 +69,7 @@ export default class TreeRow extends Component {
             }
             const showArrow = key.showArrow.call(null, data[key.id], level, data, i, col);
             output.push(
-                <div className="table-cell"
-                     style={style}
+                <td  style={style}
                      key={hashKey ? data.__uid + i : data[iskey] + i}
                 >
                     <span style={{marginLeft: level * 10 + 'px'}}>
@@ -82,7 +82,7 @@ export default class TreeRow extends Component {
                             > </i>
                         }
                     </span>
-                </div>
+                </td>
             )
         });
         return output;
@@ -90,9 +90,9 @@ export default class TreeRow extends Component {
 
     render() {
         return (
-            <div className={!!this.props.level ? "table-row clearfix" : "table-row ancestor clearfix"} ref="row">
+            <tr className={!this.props.level && "ancestor"}>
                 {this.cellRender()}
-            </div>
+            </tr>
         )
     }
 }

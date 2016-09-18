@@ -31,7 +31,6 @@ export default class TreeTable extends Component {
         this.state = {
             renderedList: props.data.slice(),
             dictionary: this._initDictionary(props),
-            width: 1 / this.props.children.length * 100 + '%',
             crtPage: props.pagination && props.options.page || 1
         }
     }
@@ -54,9 +53,7 @@ export default class TreeTable extends Component {
     }
 
     _initColumnDate() {
-        let validData = [];
         let columnDate = [];
-        let defWidth = 1 / this.props.children.length * 100 + '%';
         React.Children.map(this.props.children, function(column) {
             columnDate.push({
                 id: column.props.dataField,
@@ -64,23 +61,36 @@ export default class TreeTable extends Component {
                 hidden: column.props.hidden,
                 showArrow: column.props.showArrow,
                 dataFormat: column.props.dataFormat,
-                width: column.props.width //remove default width
+                width: column.props.width
             });
-            if (!column.props.hidden) {
-                validData.push({
-                    id: column.props.dataField,
-                    width: column.props.width
-                })
-            }
         })
-        this.validData = validData;
         this.columnDate = columnDate;
     }
 
-    getChildContext() {
-        // return {
-        //     width: this.state.width
-        // }
+    _adjustWidth() {
+        const tbody = this.refs.tbody;
+        const firstRow = tbody.childNodes[0].childNodes;
+        const cells = this.refs.thead.childNodes;
+        for (let i = 0, len = cells.length; i < len; i++) {
+            const cell = cells[i];
+            const target = firstRow[i];
+            const computedStyle = getComputedStyle(cell);
+            let width = parseFloat(computedStyle.width.replace('px', ''));
+            if (!-[1, ]) {
+                const paddingLeftWidth = parseFloat(computedStyle.paddingLeft.replace('px', ''));
+                const paddingRightWidth = parseFloat(computedStyle.paddingRight.replace('px', ''));
+                const borderRightWidth = parseFloat(computedStyle.borderRightWidth.replace('px', ''));
+                const borderLeftWidth = parseFloat(computedStyle.borderLeftWidth.replace('px', ''));
+                width = width + paddingLeftWidth + paddingRightWidth + borderRightWidth + borderLeftWidth;
+            }
+            const result = width + 'px';
+            target.style.width = result;
+            target.style.minWidth = result;
+        }
+    }
+
+    _scrollHeader(e) {
+        this.refs.header.scrollLeft = e.currentTarget.scrollLeft;
     }
 
     componentWillMount() {
@@ -88,17 +98,13 @@ export default class TreeTable extends Component {
     }
 
     componentDidMount() {
-        const cells = this.refs.header.childNodes;
-        const container = this.refs.body.clientWidth;
-        for (let i = 0, len = cells.length; i < len; i++) {
-            const cell = cells[i];
-            const styles = getComputedStyle(cell);
-            let width = parseInt(styles.width.replace('px', ''));
-            const lastPadding = (len - 1 === i ? 20 : 0);
-            const result = width + lastPadding + 'px';
-            console.log(result)
-                // window.addEventListener('resize', this._adjustTable);
-        }
+        this._adjustWidth();
+        window.addEventListener('resize', this._adjustWidth.bind(this));
+        this.refs.container.addEventListener('scroll', this._scrollHeader.bind(this))
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this._adjustWidth.bind(this));
     }
 
     componentWillReceiveProps(nextProps) {
@@ -204,7 +210,7 @@ export default class TreeTable extends Component {
         } = this.props;
 
         if (renderedList.length < 1) {
-            return <div className="table-row text-center clearfix"><span>暂无数据</span></div>;
+            return <tr><td className="text-center"><span>暂无数据</span></td></tr>;
         }
         let output = [];
         if (pagination) {
@@ -241,7 +247,7 @@ export default class TreeTable extends Component {
             const start = remote ? current + 1 : Math.min(data.length, current + 1);
             const to = remote ? current + data.length : Math.min(data.length, current + len);
             return (
-                <div>
+                <div style={{marginTop: 20}}>
                     {
                         options.paginationShowsTotal === true ? 
                             <div>当前第{start}条 至 第{to}条 共{data.length}条</div> : 
@@ -288,13 +294,17 @@ export default class TreeTable extends Component {
             children
         } = this.props;
         return (
-            <div style={{padding: "10px", margin: "10px", width: width || '100%'}}>
-                <div className="table-tree table clearfix" >
-                    <div className="table-head clearfix" ref="header">{children}</div>
-                    <div className="table-body-container" style={{height: height || 'auto'}}>
-                        <div className="table-body clearfix" ref="body">
-                            {this.bodyRender()}
-                        </div>
+            <div style={{padding: "10px", margin: "10px",width: width || '100%'}}>
+                <div className="table-tree">
+                    <div className="table-container" style={{overflow: 'hidden'}} ref="header">
+                        <table className="table table-bordered">
+                            <thead><tr ref="thead">{children}</tr></thead>
+                        </table>
+                     </div>
+                    <div className="table-container" style={{height: height || 'auto'}} ref="container">
+                        <table className="table table-bordered table-striped table-hover">
+                            <tbody ref="tbody">{this.bodyRender()}</tbody>
+                        </table>
                     </div>
                 </div>
                 <div className="row">
@@ -320,8 +330,4 @@ TreeTable.defaultProps = {
     handleClick: (opened, data, callback) => {
         callback(data);
     }
-};
-
-TreeTable.childContextTypes = {
-    width: React.PropTypes.string
 };

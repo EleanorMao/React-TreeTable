@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import {
     TreeTable,
     TreeHeadCol
-} from '../../src/Index.js';
+} from '../../lib/Index.js';
 
 const Component = React.Component;
 
@@ -167,6 +167,13 @@ class Main extends Component {
         }
     }
 
+    showArrow(cell, level, row, index, col) {
+        if (row.a == 1) {
+            return false
+        }
+        return true;
+    }
+
     render() {
         let dataFormat = {
             "a": function(cell, level, row) {
@@ -209,24 +216,23 @@ class Main extends Component {
 
             }
         };
-        // <div style={{margin: "20px"}}>
-        // <TreeTable data={noKeyData} hashKey={true} headRow={headRow} pagination={true} options={options}/>
-        // </div>
+
         return (
             <div>
                 <div style={{margin: "20px"}}>
-                    <TreeTable data={data} iskey="a" pagination={true} options={options}>
-                        <TreeHeadCol dataField="a" dataFormat={dataFormat.a} 
-                                     showArrow={
-                                        (cell, level, row, index, col)=>{
-                                            if(row.a ==1){
-                                                return false
-                                            }
-                                            return true;
-                                        }}>第一列</TreeHeadCol> 
+                    <TreeTable data={data} iskey="a" pagination={false} options={options}>
+                        <TreeHeadCol dataField="a" dataFormat={dataFormat.a}>第一列</TreeHeadCol> 
                         <TreeHeadCol dataField="b" dataFormat={dataFormat.b}>第二列</TreeHeadCol> 
                         <TreeHeadCol dataField="c" width={300}>第三列</TreeHeadCol> 
                         <TreeHeadCol dataField="d" hidden={true}>第四列</TreeHeadCol> 
+                    </TreeTable>
+                </div>
+                 <div style={{margin: "20px"}}>
+                    <TreeTable data={noKeyData} hashKey={true} pagination={true} options={options}>
+                        <TreeHeadCol dataField="a" >第一列</TreeHeadCol> 
+                        <TreeHeadCol dataField="b" dataFormat={dataFormat.b}>第二列</TreeHeadCol> 
+                        <TreeHeadCol dataField="c" >第三列</TreeHeadCol> 
+                        <TreeHeadCol dataField="d" >第四列</TreeHeadCol> 
                     </TreeTable>
                 </div>
             </div>

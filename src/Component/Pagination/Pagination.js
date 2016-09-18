@@ -25,11 +25,11 @@ export default class Pagination extends Component {
 			sizePerPage
 		} = this.props;
 		const totalPages = Math.ceil(dataSize / sizePerPage);
-		if (current > (paginationSize - 1)) {
+		if (current > paginationSize - 1) {
 			this.lastPage = Math.min(totalPages, current + paginationSize - this.center - 1);
 			if (current > this.finalStartPage) {
 				this.startPage = this.finalStartPage;
-			} else if ((this.lastPage - this.startPage) !== (paginationSize - 1)) {
+			} else if (this.lastPage - this.startPage !== paginationSize - 1) {
 				this.startPage = current - this.center;
 			}
 		} else {

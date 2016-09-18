@@ -3,125 +3,57 @@
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
 }
-.clearfix:before, .clearfix:after{
-  content: '';
-  display: table;
-}
 .fr{
   float: right;
 }
-.table{
-  width: auto;
-  min-width: 100%;
-}
 .table-tree {
-  border: 1px solid #ddd;
-  border-bottom: 0;
-  border-radius: 2px;
-  display: table;
-  font-size: 14px;
-  line-height: 40px;
+  width: auto;
   color: #333;
+  width: 100%;
+  font-size: 14px;
+  border-bottom: 0;
+  line-height: 40px;
 }
-.table-tree .table-head {
-  border-bottom: 2px solid #ddd;
-  height: 40px;
-  font-weight: 800;
-}
-.table-tree .table-head .thead {
-  float: left;
-  height: 100%;
-  text-align: center;
-  display: table-cell;
+.table-tree .table-container {
+  overflow: auto;
+  border-left: 1px solid #ddd;
   border-right: 1px solid #ddd;
-  font-size: 18px;
 }
-.table-tree .table-head .thead span {
+.table-tree .table-bordered, 
+.table-bordered>thead>tr>th, 
+.table-bordered>tbody>tr>td {
+  border-left: 0;  
+}
+.table-tree .table {
+  margin-bottom: 0;
+}
+.table-tree .table th span {
   display: block;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.table-tree .table-head .thead:last-child {
-  border-right: 0;
-}
-.table-tree .table-body .table-row {
-  border-bottom: 1px solid #ddd;
-  height: 40px;
-  line-height: 40px;
-}
-.table-tree .table-body .table-row .table-cell {
-  display: table-cell;
-  border-right: 1px solid #ddd;
-  height: 100%;
-  float: left;
-  cursor: pointer;
+.table-tree .table td {
   position: relative;
 }
-.table-tree .table-body .table-row .table-cell .table-arrow {
-  position: absolute;
-  top: 16px;
-  right: 10px;
-  color: dimgray;
-  transition: transform 0.2s ease-in;
-}
-.table-tree .table-body .table-row .table-cell > span {
+.table-tree .table td > span {
   display: block;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   padding: 0 10px;
 }
-.table-tree .table-body .table-row .table-cell:last-child {
-  border-right: 0;
+.table-tree .table td .table-arrow {
+  top: 16px;
+  right: 10px;
+  color: dimgray;
+  position: absolute;
+  transition: transform 0.2s ease-in;
 }
-.table-tree .table-body .table-row:nth-of-type(odd) .table-cell {
-  background-color: #f9f9f9;
-}
-.table-tree .table-body .table-row.ancestor > .table-cell {
+.table-tree .table tr.ancestor > td {
   background-color: papayawhip !important;
 }
-.table-tree .table-body .table-row.ancestor > .table-cell span {
+.table-tree .table tr.ancestor > td span {
   text-indent: 0 !important;
   font-weight: 800;
-}
-.paging{
-  margin-top: 10px;
-}
-.paging a {
-  color: #23527c;
-  display: block;
-  text-decoration: none;
-}
-.paging a:hover{
-  background-color: #ddd;
-  text-decoration: none;
-}
-.paging .paging-group{
-  width: 40px;
-  height: 30px;
-  line-height: 30px;
-  float: right;
-  border: 1px solid #e5e5e5;
-  margin-right: 5px;
-  text-align: center;
-  cursor: pointer;
-}
-.paging .checked{
-  width: 40px;
-  height: 30px;
-  line-height: 30px;
-  float: right;
-  color: #fff;
-  border: 1px solid #e5e5e5;
-  margin-right: 5px;
-  text-align: center;
-  background-color: #337ab7;
-  cursor: pointer;
-}
-.paging .checked a{
-  color: #fff;
-}
-.paging .checked a:hover{
-  background-color: #337ab7;
 }

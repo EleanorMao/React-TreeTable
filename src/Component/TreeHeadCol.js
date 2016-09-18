@@ -15,13 +15,15 @@ class TreeHeadCol extends Component {
             children
         } = this.props;
         let style = {
-            minWidth: width || this.context.width || 100
+            minWidth: width,
+            width: width,
         };
         if (hidden) {
+            style.width = 0;
             style.display = 'none';
         }
         return (
-            <div style={style} className="thead"><span>{children}</span></div>
+            <th style={style}><span>{children}</span></th>
         );
     }
 }
@@ -31,9 +33,5 @@ TreeHeadCol.defaultProps = {
         return true
     }
 }
-
-TreeHeadCol.contextTypes = {
-    width: React.PropTypes.string
-};
 
 export default TreeHeadCol;
