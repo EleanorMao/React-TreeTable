@@ -221,7 +221,7 @@ class Main extends Component {
             <div>
                 <div style={{margin: "20px"}}>
                     <TreeTable data={data} iskey="a" pagination={false} options={options}>
-                        <TreeHeadCol dataField="a" dataFormat={dataFormat.a} showArrow={showArrow}>第一列</TreeHeadCol> 
+                        <TreeHeadCol dataField="a" dataFormat={dataFormat.a} showArrow={this.showArrow}>第一列</TreeHeadCol> 
                         <TreeHeadCol dataField="b" dataFormat={dataFormat.b}>第二列</TreeHeadCol> 
                         <TreeHeadCol dataField="c" width={300}>第三列</TreeHeadCol> 
                         <TreeHeadCol dataField="d" hidden={true}>第四列</TreeHeadCol> 
