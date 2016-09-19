@@ -9,16 +9,24 @@ import React, {
     Component,
     PropTypes
 } from 'react';
-import TreeRow from './TreeRow.js';
+import TreeRow  from './TreeRow.js';
 import TreeHead from './TreeHead.js';
-import Paging from './Pagination/Pagination.js';
+import Paging   from './Pagination/Pagination.js';
+import Dropdown from './Pagination/DropdownList';
 
 require('../style/treetable.css');
 
 let idCounter = 0;
 
+function empty() {
+}
+
 function uniqueID() {
     return idCounter++ + new Date().getTime() + Math.random();
+}
+
+function isUndefined(input) {
+    return Object.prototype.toString.call(input) === "[object Undefined]";
 }
 
 function diff(a, b) {
@@ -58,10 +66,11 @@ export default class TreeTable extends Component {
         super(props);
         let data = this._initDictionary(props);
         this.state = {
-            sortField: undefined,
             order: undefined,
+            sortField: undefined,
             renderedList: data.data,
             dictionary: data.dictionary,
+            length: props.pagination && props.options.sizePerPage || 0,
             crtPage: props.pagination && props.options.page || 1
         }
     }
@@ -73,7 +82,9 @@ export default class TreeTable extends Component {
             dictionary = [];
         if (props.isTree) {
             data.forEach(item => {
-                item.__level = 0;
+                if (isUndefined(item.__level)) {
+                    item.__level = 0;
+                }
                 if (hashKey) {
                     if (!item.__uid) {
                         item.__uid = uniqueID();
@@ -132,6 +143,9 @@ export default class TreeTable extends Component {
         return diffList[diffList.length - 1];
     }
 
+    _sliceData(data, page, length) {
+        return data.slice((page - 1) * length, page * length);
+    }
 
     _adjustWidth() {
         const tbody = this.refs.tbody;
@@ -184,13 +198,13 @@ export default class TreeTable extends Component {
 
     componentWillReceiveProps(nextProps) {
         this._initColumnDate();
-
         let data = this._initDictionary(nextProps);
-        this.state = {
+        this.setState({
             renderedList: data.data,
             dictionary: data.dictionary,
+            length: nextProps.options.sizePerPage || 0,
             crtPage: nextProps.pagination && nextProps.options.page || this.state.crtPage
-        }
+        })
     }
 
     flatten(data) { //处理子节点数据
@@ -313,8 +327,23 @@ export default class TreeTable extends Component {
         this.props.options.onPageChange(page, sizePerPage);
     }
 
+    handleFlip(length) {
+        const {remote, options} = this.props;
+        const page = remote ? options.page : this.state.crtPage;
+        if (!remote) {
+            this.setState(old=> {
+                old.length = length;
+                return old;
+            });
+        }
+
+        options.onPageChange && options.onPageChange(page, length);
+        options.onSizePageChange && options.onSizePageChange(length);
+    }
+
     bodyRender() {
         let {
+            length,
             crtPage,
             renderedList
         } = this.state;
@@ -322,7 +351,6 @@ export default class TreeTable extends Component {
             iskey,
             isTree,
             remote,
-            options,
             hashKey,
             selectRow,
             pagination
@@ -337,8 +365,7 @@ export default class TreeTable extends Component {
         }
         let output = [];
         if (pagination && !remote) {
-            let len = options.sizePerPage;
-            renderedList = renderedList.slice((crtPage - 1) * len, crtPage * len);
+            renderedList = this._sliceData(renderedList, crtPage, length);
         }
         renderedList.forEach(node => {
             const key = hashKey ? node.__uid : node[iskey];
@@ -349,14 +376,17 @@ export default class TreeTable extends Component {
                     iskey={iskey}
                     isTree={isTree}
                     hashKey={hashKey}
-                    isSelect={isSelect}
+                    isSelect={!isTree && isSelect}
                     level={node.__level}
                     open={node.__opened}
                     selectRow={selectRow}
                     parent={node.__parent}
                     cols={this.columnDate}
                     onClick={this.handleToggle.bind(this)}
-                    checked={selectRow.mode === 'checkbox' ? !!~selectRow.selected.indexOf(key) : selectRow.selected[0] === key}
+                    checked={selectRow.mode === 'checkbox' ?
+                                !!~selectRow.selected.indexOf(key) :
+                                 selectRow.selected[0] === key
+                                }
                 />
             );
         });
@@ -372,12 +402,12 @@ export default class TreeTable extends Component {
             pagination
         } = this.props;
         if (pagination && options.paginationShowsTotal) {
-            const len = options.sizePerPage;
+            const len = remote ? options.sizePerPage : this.state.length;
             const current = remote ? (options.page - 1) * len : (this.state.crtPage - 1) * len;
             const start = remote ? current + 1 : Math.min(data.length, current + 1);
             const to = remote ? current + data.length : Math.min(data.length, current + len);
             return (
-                <div style={{marginTop: 20}}>
+                <div style={{margin: '20px 0 0 20px ', display: 'inline-block'}}>
                     {
                         options.paginationShowsTotal === true ?
                             <div>显示 {start} 至 {to}条 共{data.length}条</div> :
@@ -385,6 +415,31 @@ export default class TreeTable extends Component {
                     }
                 </div>
             )
+        }
+    }
+
+    dropDownListRender() {
+        const {
+            remote,
+            options,
+            pagination
+        } = this.props;
+        const sizePageList = options.sizePageList;
+        const length = sizePageList && sizePageList.length;
+        if (pagination && (length > 1 || length === 1 && sizePageList[0] !== options.sizePerPage)) {
+            if (remote) {
+                return (
+                    <Dropdown list={sizePageList}
+                              onClick={this.handleFlip.bind(this)}>
+                        {options.sizePerPage}
+                    </Dropdown>);
+            } else {
+                return (
+                    <Dropdown list={sizePageList} onClick={this.handleFlip.bind(this)}>
+                        {this.state.length}
+                    </Dropdown>
+                );
+            }
         }
     }
 
@@ -405,12 +460,13 @@ export default class TreeTable extends Component {
                             sizePerPage={options.sizePerPage}
                             onPageChange={options.onPageChange}
                         />
-                        : <Paging
-                        current={this.state.crtPage}
-                        sizePerPage={options.sizePerPage}
-                        dataSize={this.state.dictionary.length}
-                        onPageChange={this.handleClick.bind(this)}
-                    />
+                        :
+                        <Paging
+                            current={this.state.crtPage}
+                            sizePerPage={this.state.length}
+                            dataSize={this.state.dictionary.length}
+                            onPageChange={this.handleClick.bind(this)}
+                        />
                     }
                 </div>
             )
@@ -425,7 +481,6 @@ export default class TreeTable extends Component {
             remote,
             height,
             hashKey,
-            options,
             children,
             sortName,
             selectRow,
@@ -436,6 +491,7 @@ export default class TreeTable extends Component {
 
         const {
             order,
+            length,
             crtPage,
             sortField,
             renderedList
@@ -450,7 +506,7 @@ export default class TreeTable extends Component {
         }
 
         let checked = false;
-        if (selectRow.mode !== 'node') {
+        if (selectRow.mode !== 'none') {
 
             if (selectRow.mode === 'radio' && selectRow.selected.length > 1) {
                 throw new Error(
@@ -464,8 +520,7 @@ export default class TreeTable extends Component {
             let renderList = renderedList.slice();
 
             if (pagination && !remote) {
-                let len = options.sizePerPage;
-                renderList = renderList.slice((crtPage - 1) * len, crtPage * len);
+                renderList = this._sliceData(renderList, crtPage, length);
             }
 
             checked = this._getAllValue(renderList.slice(), key).sort().toString() === selectRow.selected.slice().sort().toString();
@@ -477,7 +532,7 @@ export default class TreeTable extends Component {
                     <div className="table-container" style={{overflow: 'hidden'}} ref="header">
                         <TreeHead selectRow={selectRow} nestedHead={nestedHead} ref="thead"
                                   checked={checked} sortName={remote ? sortName : sortField}
-                                  sortOrder={remote ? sortOrder : order}
+                                  sortOrder={remote ? sortOrder : order} isTree={isTree}
                                   onSelectAll={this.handleSelectAll.bind(this)}
                                   onSort={this.handleSort.bind(this)}
                         >{children}</TreeHead>
@@ -490,6 +545,7 @@ export default class TreeTable extends Component {
                 </div>
                 <div className="row">
                     <div className="col-sm-6">
+                        {this.dropDownListRender()}
                         {this.paginationTotalRender()}
                     </div>
                     <div className="col-sm-6">
@@ -507,20 +563,20 @@ TreeTable.defaultProps = {
     remote: false,
     sortName: undefined,
     sortOrder: undefined,
-    onSortChange: ()=> {
-    },
+    onSortChange: empty,
     selectRow: {
         mode: 'none',
-        bgColor: '#dff0d8',
         selected: [],
-        onSelect: ()=> {
-        },
-        onSelectAll: ()=> {
-        },
+        onSelect: empty,
+        onSelectAll: empty,
+        bgColor: '#dff0d8'
     },
     nestedHead: [],
     options: {
-        sizePerPage: 10
+        sizePerPage: 10,
+        sizePageList: [10],
+        onPageChange: empty,
+        onSizePageChange: empty
     },
     dataSize: 0,
     pagination: false,
@@ -557,6 +613,8 @@ TreeTable.propTypes = {
         page: PropTypes.number,
         onPageChange: PropTypes.func,
         sizePerPage: PropTypes.number,
+        sizePageList: PropTypes.array,
+        onSizePageChange: PropTypes.func,
         paginationShowsTotal: PropTypes.oneOfType([PropTypes.bool, PropTypes.func])
     })
 };

@@ -2,6 +2,7 @@
  * Created by elly on 16/5/31.
  */
 const webpack = require('webpack');
+const openBrowserPlugin = require('open-browser-webpack-plugin');
 
 module.exports = {
     entry: './examples/src/index.js',
@@ -20,5 +21,8 @@ module.exports = {
             loader: 'style-loader!css-loader'
         }]
     },
-    plugins: [new webpack.HotModuleReplacementPlugin()]
+    plugins: [
+        new webpack.HotModuleReplacementPlugin(),
+        new openBrowserPlugin({url: 'http:localhost:9010'})
+    ]
 };

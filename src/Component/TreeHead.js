@@ -16,9 +16,9 @@ export default class TreeHead extends Component {
         super(props);
     }
 
-    nestedHeadRender(neseted, selectRow) {
+    nestedHeadRender(neseted, selectRow, isTree) {
         let output = [];
-        const select = selectRow.mode !== 'none';
+        const select = !isTree && selectRow.mode !== 'none';
         neseted.map((throws, index) => {
             let item =
                 <tr key={'trow' + index}>
@@ -37,7 +37,7 @@ export default class TreeHead extends Component {
         const mode = selectRow.mode;
         if (mode === 'checkbox') {
             return (
-                <th onClick={()=>onSelectAll(!checked)}>
+                <th onClick={()=>onSelectAll(!checked)} style={{textAlign: 'center', width: 30}}>
                     <input type={mode} checked={checked} readOnly={true}/>
                 </th>
             )
@@ -51,6 +51,7 @@ export default class TreeHead extends Component {
     render() {
         const {
             onSort,
+            isTree,
             checked,
             children,
             sortName,
@@ -63,9 +64,9 @@ export default class TreeHead extends Component {
         return (
             <table className="table table-bordered">
                 <thead>
-                {!!nestedHead.length && this.nestedHeadRender(nestedHead, selectRow)}
+                {!!nestedHead.length && this.nestedHeadRender(nestedHead, selectRow, isTree)}
                 <tr ref="thead">
-                    {this.selectRender(selectRow, onSelectAll, checked)}
+                    {!isTree && this.selectRender(selectRow, onSelectAll, checked)}
                     {  React.Children.map(children, (elm)=> {
                         return React.cloneElement(elm, {key: i++, onSort, sortName, sortOrder});
                     })}
@@ -84,6 +85,6 @@ TreeHead.defaultProps = {
         onSelect: ()=> {
         },
         onSelectAll: ()=> {
-        },
+        }
     }
 };

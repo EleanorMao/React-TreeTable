@@ -25,7 +25,8 @@ export default class TreeRow extends Component {
         }
     }
 
-    handleToggle() {
+    handleToggle(e) {
+        e.stopPropagation();
         let data = _extends({}, {
             opened: this.state.open
         }, {
@@ -56,7 +57,7 @@ export default class TreeRow extends Component {
         const key = hashKey ? data.__uid : data[iskey];
         if (isSelect) {
             output.push(
-                <td key={key} style={checked ? {backgroundColor: selectRow.bgColor} : {}}>
+                <td key={key} style={{backgroundColor: checked && selectRow.bgColor,textAlign: 'center'}}>
                     <input type={selectRow.mode} checked={checked} readOnly={true}/>
                 </td>
             )
@@ -73,7 +74,7 @@ export default class TreeRow extends Component {
                 minWidth: key.width,
                 textAlign: key.dataAlign,
                 display: key.hidden && 'none',
-                backgroundColor: checked && selectRow.bgColor
+                backgroundColor: isSelect && checked && selectRow.bgColor
             };
 
             if (dataFormat) {
