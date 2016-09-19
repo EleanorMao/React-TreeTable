@@ -1,59 +1,71 @@
-*{
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
+* {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
 }
-.fr{
-  float: right;
+
+.fr {
+    float: right;
 }
+
 .table-tree {
-  width: auto;
-  color: #333;
-  width: 100%;
-  font-size: 14px;
-  border-bottom: 0;
-  line-height: 40px;
+    color: #333;
+    width: 100%;
+    font-size: 14px;
+    border-bottom: 0;
+    line-height: 40px;
 }
+
 .table-tree .table-container {
-  overflow: auto;
-  border: 1px solid #ddd;
-  border-top: 0;
+    overflow: auto;
+    border: 1px solid #ddd;
+    border-top: 0;
 }
-.table-tree .table-bordered, 
-.table-bordered>thead>tr>th, 
-.table-bordered>tbody>tr>td {
-  border-left: 0;  
+
+.table-tree .table-bordered,
+.table-bordered > thead > tr > th,
+.table-bordered > tbody > tr > td {
+    border-left: 0;
+    border-width: 1px;
 }
+
 .table-tree .table {
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
-.table-tree .table th span {
-  display: block;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+
+.table-tree .table th {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
+
 .table-tree .table td {
-  position: relative;
+    position: relative;
 }
+
+.table-tree .table td {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
 .table-tree .table td > span {
-  display: block;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  padding: 0 10px;
+    padding: 0 10px;
 }
+
 .table-tree .table td .table-arrow {
-  top: 16px;
-  right: 10px;
-  color: dimgray;
-  position: absolute;
-  transition: transform 0.2s ease-in;
+    top: 16px;
+    right: 10px;
+    color: dimgray;
+    position: absolute;
+    transition: transform 0.2s ease-in;
 }
+
 .table-tree .table tr.ancestor > td {
-  background-color: papayawhip !important;
+    background-color: papayawhip;
 }
+
 .table-tree .table tr.ancestor > td span {
-  text-indent: 0 !important;
-  font-weight: 800;
+    text-indent: 0 !important;
+    font-weight: 800;
 }

@@ -3,27 +3,40 @@
 
 ## 参数提供
 ### TreeTable
-* data[Array]   数据入口, 子节点可命名为children 或者 list 或者 chdatalist
 * iskey[String]   作为key用的那个字段的名字
+* data[Array]   数据入口, 子节点可命名为children 或者 list 或者 chdatalist
+* isTree[Boolean]  是否是树形结构，开启后不能是有hashKey模式，一定程度上节省了性能
 * hashKey[Boolean]   默认是`fasle`, 如果没有唯一的id, 那就传`true`, 本表格会帮你造一个uid
-* width[number | string] 宽度
-* height[number | string] 高度
-* remote[boolean] 如果是true则将翻页的控制权交给父组件
-* dataSize 数据总条数，仅在开启remote后有用
-* pagination[boolean] 默认是`false`, 是否开启分页器
+* width[Number | String] 宽度
+* height[Number | String] 高度
+* remote[Boolean] 如果是true则将翻页`onPageChange`的控制权和排序`onSortChange`,`sortName`,`sortOrder`交给父组件
+* dataSize[Number] 数据总条数，仅在开启remote后有用
+* sortName[String] 排序的列名
+* sortOrder[String] `asc`或`desc`
+* pagination[Boolean] 默认是`false`, 是否开启分页器
+* nestedHead[Array] 套头，是[[],[]]格式， 里面的数组设置套头的格式，可以是字符串或是对象，对象的话可用参数为colspan和label
 * options[Object] 分页器配置
-    * page[int] 默认显示的当前页, 默认是第一页
-    * sizePerPage[int] 每页多长, 默认是十条
+    * page[Number] 默认显示的当前页, 默认是第一页
+    * sizePerPage[Number] 每页多长, 默认是十条
     * onPageChange(page, sizePerPage) 点击分页器时调用
-    * paginationShowsTotal[boolean | function(start, to , total)] 显示条数导航
-* handleClick[function] 点击展开按钮的时候会把数据丢给你可以处理，会返回`opened`,`data`两个参数和一个callback`callback`，务必要`callback(data)`(为了处理异步的情况暂别无他法)。`opened`为`false`的时候意味着叶子节点是关闭状态，如果是`true`说明叶子节点是展开的
+    * paginationShowsTotal[Boolean | Function(start, to , total)] 显示条数导航
+* selectRow[Object] 选择框（不建议在开启hashKey模式下使用）
+    * mode['none', 'radio', 'checkbox'] 选择框的类型
+    * bgColor[String] 选中后的背景色
+    * selected[Array] 选中的由每行key值组成的数组
+    * onSelect[Function(isSelected, row)] 选中单行时的回调函数
+    * onSelectAll[Function(isSelected, data)] 选中全部时的回调函数
+* handleClick[Function] 点击展开按钮的时候会把数据丢给你可以处理，会返回`opened`,`data`两个参数和一个callback`callback`，务必要`callback(data)`(为了处理异步的情况暂别无他法)。`opened`为`false`的时候意味着叶子节点是关闭状态，如果是`true`说明叶子节点是展开的
+* onSortChange[Function(sortName, sortOrder)] 排序时候调用, `sortOrder`是`asc`或`desc`
 
 ### TreeHeadCol
-* dataField[string] 数据的key值
-* dataFormat[function(cell, level, row, index, col)] 自定义渲染方法
-* hidden[boolean] 是否隐藏
-* width[number | string] 宽度
-* showArraw[function(cell, level, row, index, col)] 是否显示箭头
+* dataField[String] 数据的key值
+* dataAlign[String] textAlign的姿势
+* dataSort[Boolean] 是否开启排序 
+* dataFormat[Function(cell, level, row, index, col)] 自定义渲染方法
+* hidden[Boolean] 是否隐藏
+* width[Number | String] 宽度
+* showArraw[Function(cell, level, row, index, col)] 是否显示箭头
 
 ## 让我们用代码说话⬇
 ```javascript
@@ -205,7 +218,7 @@ ReactDOM.render(<Main/>, document.querySelector('.main'));
 
 ```
     npm install
-    npm run example
+    npm run dev
 ```
 
 最后访问

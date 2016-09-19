@@ -5,7 +5,7 @@ import React from 'react';
 
 const Component = React.Component;
 
-let _extends = function(target) {
+let _extends = function (target) {
     for (let i = 1; i < arguments.length; i++) {
         let source = arguments[i];
         for (let key in source) {
@@ -25,7 +25,7 @@ export default class TreeRow extends Component {
         }
     }
 
-    handleToggle(event) {
+    handleToggle() {
         let data = _extends({}, {
             opened: this.state.open
         }, {
@@ -47,39 +47,56 @@ export default class TreeRow extends Component {
             cols,
             iskey,
             level,
-            hashKey
+            isTree,
+            hashKey,
+            checked,
+            isSelect,
+            selectRow
         } = this.props;
+        const key = hashKey ? data.__uid : data[iskey];
+        if (isSelect) {
+            output.push(
+                <td key={key} style={checked ? {backgroundColor: selectRow.bgColor} : {}}>
+                    <input type={selectRow.mode} checked={checked} readOnly={true}/>
+                </td>
+            )
+        }
         cols.map((key, i, col) => {
+
             let cell = data[key.id];
             let dataFormat = key.dataFormat;
             let children = data.list || data.chdatalist || data.children;
             children = children && children.length > 0;
-            let style = {
-                minWidth: key.width,
+
+            const style = {
                 width: key.width,
+                minWidth: key.width,
+                textAlign: key.dataAlign,
+                display: key.hidden && 'none',
+                backgroundColor: checked && selectRow.bgColor
             };
-            if (key.hidden) {
-                style.display = 'none';
-            }
+
             if (dataFormat) {
                 cell = dataFormat.call(null, data[key.id], level, data, i, col)
             }
+
             if (cell !== "") {
                 arrow++;
             }
-            const showArrow = key.showArrow.call(null, data[key.id], level, data, i, col);
+
+            const showArrow = isTree && key.showArrow.call(null, data[key.id], level, data, i, col);
             output.push(
-                <td  style={style}
-                     key={hashKey ? data.__uid + i : data[iskey] + i}
+                <td style={style}
+                    key={'' + key + i}
                 >
                     <span style={{marginLeft: level * 10 + 'px'}}>
                         {cell}
                         {showArrow && !!children && !arrow &&
-                            <i
-                                className="table-arrow fa fa-chevron-down"
-                                style={open ? {transform: 'rotate(-90deg)'} : {}}
-                                onClick={this.handleToggle.bind(this)}
-                            > </i>
+                        <i
+                            className="table-arrow fa fa-chevron-down"
+                            style={open ? {transform: 'rotate(-90deg)'} : {}}
+                            onClick={this.handleToggle.bind(this)}
+                        > </i>
                         }
                     </span>
                 </td>
@@ -89,8 +106,20 @@ export default class TreeRow extends Component {
     }
 
     render() {
+        let {
+            data,
+            level,
+            isTree,
+            checked,
+            isSelect,
+            selectRow
+        } = this.props;
         return (
-            <tr className={!this.props.level && "ancestor"}>
+            <tr className={isTree && !level && "ancestor"}
+                onClick={isSelect ? ()=>selectRow.onSelect(!checked, data) : ()=> {
+                    return false;
+                }}
+            >
                 {this.cellRender()}
             </tr>
         )
@@ -98,5 +127,6 @@ export default class TreeRow extends Component {
 }
 
 TreeRow.defaultProps = {
-    level: 0
+    level: 0,
+    hashKey: false
 };

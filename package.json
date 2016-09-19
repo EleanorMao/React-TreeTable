@@ -5,7 +5,7 @@
   "main": "lib/Index.js",
   "scripts": {
     "build": "babel src --out-dir lib & cp -r src/style lib",
-    "example": "webpack-dev-server --inline --hot --progress --colors --content-base ./examples --config webpack.config.example.js --port 9010",
+    "dev": "webpack-dev-server --inline --hot --progress --colors --content-base ./examples --config webpack.config.example.js --port 9010",
     "test": "mocha --compilers js:babel-register --require ./test/setup.js",
     "eslint": "eslint src"
   },
@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/EleanorMao/React-TreeTable#readme",
   "dependencies": {
+    "classnames": "^2.2.5",
     "react": ">=0.14.3"
   },
   "devDependencies": {
@@ -40,6 +41,7 @@
     "jsdom": "^9.2.1",
     "json-server": "^0.8.20",
     "mocha": "^2.5.3",
+    "open-browser-webpack-plugin": "0.0.2",
     "react-addons-test-utils": "^15.1.0",
     "react-dom": "^15.1.0",
     "style-loader": "^0.13.1",
