@@ -275,7 +275,7 @@ export default class TreeTable extends Component {
                 })
             }
         };
-        this.props.handleClick(opened, data, callback);
+        this.props.onArrowClick(opened, data, callback);
     }
 
     handleSelectAll(checked) {
@@ -583,7 +583,7 @@ TreeTable.defaultProps = {
     },
     dataSize: 0,
     pagination: false,
-    handleClick: (opened, data, callback) => {
+    onArrowClick: (opened, data, callback) => {
         callback(data);
     }
 };
@@ -596,7 +596,7 @@ TreeTable.propTypes = {
     iskey: PropTypes.string,
     dataSize: PropTypes.number,
     pagination: PropTypes.bool,
-    handleClick: PropTypes.func,
+    onArrowClick: PropTypes.func,
     onSortChange: PropTypes.func,
     nestedHead: PropTypes.arrayOf(PropTypes.array),
     width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
