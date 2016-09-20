@@ -4,9 +4,9 @@
 ## 参数提供
 ### TreeTable
 * iskey[String]   作为key用的那个字段的名字
-* data[Array]   数据入口, 子节点可命名为children 或者 list 或者 chdatalist
+* data[Array]   数据入口, 子节点可命名为`children` 或者 `list` 或者 `chdatalist`
 * isTree[Boolean]  是否是树形结构，开启后不能是有hashKey模式，一定程度上节省了性能
-* hashKey[Boolean]   默认是`fasle`, 如果没有唯一的id, 那就传`true`, 本表格会帮你造一个uid
+* hashKey[Boolean]   默认是`fasle`, 如果没有唯一的id, 那就传`true`, 本表格会帮你造一个`uid`
 * width[Number | String] 宽度
 * height[Number | String] 高度
 * remote[Boolean] 如果是true则将翻页`onPageChange`的控制权和排序`onSortChange`,`sortName`,`sortOrder`交给父组件
@@ -20,13 +20,13 @@
     * sizePerPage[Number] 每页多长, 默认是十条
     * onPageChange(page, sizePerPage) 点击分页器时调用
     * paginationShowsTotal[Boolean | Function(start, to , total)] 显示条数导航
-* selectRow[Object] 选择框（不建议在开启hashKey模式下使用）
+* selectRow[Object] 选择框（仅能在`isTree`是`false`的情况下使用）
     * mode['none', 'radio', 'checkbox'] 选择框的类型
     * bgColor[String] 选中后的背景色
     * selected[Array] 选中的由每行key值组成的数组
     * onSelect[Function(isSelected, row)] 选中单行时的回调函数
     * onSelectAll[Function(isSelected, data)] 选中全部时的回调函数
-* handleClick[Function] 点击展开按钮的时候会把数据丢给你可以处理，会返回`opened`,`data`两个参数和一个callback`callback`，务必要`callback(data)`(为了处理异步的情况暂别无他法)。`opened`为`false`的时候意味着叶子节点是关闭状态，如果是`true`说明叶子节点是展开的
+* onArrowClick[Function] 点击展开按钮的时候会把数据丢给你可以处理，会返回`opened`,`data`两个参数和一个callback`callback`，务必要`callback(data)`(为了处理异步的情况暂别无他法)。`opened`为`false`的时候意味着叶子节点是关闭状态，如果是`true`说明叶子节点是展开的
 * onSortChange[Function(sortName, sortOrder)] 排序时候调用, `sortOrder`是`asc`或`desc`
 
 ### TreeHeadCol
@@ -36,7 +36,7 @@
 * dataFormat[Function(cell, level, row, index, col)] 自定义渲染方法
 * hidden[Boolean] 是否隐藏
 * width[Number | String] 宽度
-* showArraw[Function(cell, level, row, index, col)] 是否显示箭头
+* showArrow[Function(cell, level, row, index, col)] 是否显示箭头
 
 ## 让我们用代码说话⬇
 ```javascript

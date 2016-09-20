@@ -505,9 +505,12 @@ export default class TreeTable extends Component {
             throw new Error('If you set props `isTree` to `false`, `hashKey` need to be false and set props `iskey` instead!!');
         }
 
+
         let checked = false;
         if (selectRow.mode !== 'none') {
-
+            if (isTree) {
+                throw new Error('!Warning: You need set prop `isTree` to `false`, if not `TreeTable` will not render select rows');
+            }
             if (selectRow.mode === 'radio' && selectRow.selected.length > 1) {
                 throw new Error(
                     '!Warning: Since you set `selectRow.mode` to `radio`,' +

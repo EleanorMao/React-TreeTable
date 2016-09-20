@@ -116,7 +116,7 @@ class Main extends Component {
                         remote={true}
                         pagination={false}
                         dataSize={20}
-                        isTree={true}
+                        isTree={false}
                         nestedHead={nestedHead}
                         selectRow={{
                             mode: "checkbox",
