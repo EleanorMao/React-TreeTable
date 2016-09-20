@@ -54,10 +54,10 @@ export default class TreeRow extends Component {
             isSelect,
             selectRow
         } = this.props;
-        const key = hashKey ? data.__uid : data[iskey];
+        const _key = hashKey ? data.__uid : data[iskey];
         if (isSelect) {
             output.push(
-                <td key={key} style={{backgroundColor: checked && selectRow.bgColor,textAlign: 'center'}}>
+                <td key={_key} style={{backgroundColor: checked && selectRow.bgColor,textAlign: 'center'}}>
                     <input type={selectRow.mode} checked={checked} readOnly={true}/>
                 </td>
             )
@@ -88,7 +88,7 @@ export default class TreeRow extends Component {
             const showArrow = isTree && key.showArrow.call(null, data[key.id], level, data, i, col);
             output.push(
                 <td style={style}
-                    key={'' + key + i}
+                    key={'' + _key + i}
                 >
                     <span style={{marginLeft: level * 10 + 'px'}}>
                         {cell}

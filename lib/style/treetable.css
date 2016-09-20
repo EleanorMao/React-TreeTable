@@ -31,6 +31,7 @@
 
 .table-tree .table {
     margin-bottom: 0;
+    table-layout: fixed;
 }
 
 .table-tree .table th {

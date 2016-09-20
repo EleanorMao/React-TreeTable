@@ -171,7 +171,9 @@ export default class TreeTable extends Component {
             }
             const lastPaddingWidth = -(lastChild === i ? scrollBarWidth : 0);
             const result = width + lastPaddingWidth + 'px';
+            cell.style.width = result;
             target.style.width = result;
+            cell.style.minWidth = result;
             target.style.minWidth = result;
         }
     }
