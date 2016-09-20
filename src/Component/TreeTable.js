@@ -149,12 +149,15 @@ export default class TreeTable extends Component {
 
     _adjustWidth() {
         const tbody = this.refs.tbody;
-        const scrollBarWidth = getScrollBarWidth();
         const firstRow = tbody.childNodes[0].childNodes;
         const cells = this.refs.thead.refs.thead.childNodes;
+        const length = cells.length;
+        if (firstRow.length !== length) return;
+
+        const scrollBarWidth = getScrollBarWidth();
         let lastChild = this._getLastChild(this.columnDate);
         lastChild = this.props.selectRow.mode !== 'none' ? lastChild + 1 : lastChild;
-        for (let i = 0, len = cells.length; i < len; i++) {
+        for (let i = 0; i < length; i++) {
             const cell = cells[i];
             const target = firstRow[i];
             const computedStyle = getComputedStyle(cell);
