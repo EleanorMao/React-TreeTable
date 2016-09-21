@@ -248,7 +248,7 @@ export default class TreeTable extends Component {
                 let target = hashKey ? data.__uid : data[iskey];
                 let index = that.state.dictionary.indexOf(target) + 1;
                 that.setState(old => {
-                    childList.forEach(item => {
+                    childList && childList.forEach(item => {
                         item.__parent = data;
                         item.__opened = false;
                         item.__level = data.__level + 1;
@@ -267,7 +267,7 @@ export default class TreeTable extends Component {
             } else { //close
                 childList = that.flatten(childList);
                 that.setState(old => {
-                    childList.forEach(item => {
+                    childList && childList.forEach(item => {
                         item.__opened = true;
                         let id = that.props.hashKey ? item.__uid : item[iskey];
                         let i = old.dictionary.indexOf(id);
@@ -358,7 +358,8 @@ export default class TreeTable extends Component {
             remote,
             hashKey,
             selectRow,
-            pagination
+            pagination,
+            startArrowCol
         } = this.props;
         const isSelect = selectRow.mode !== 'none';
         if (renderedList.length < 1) {
@@ -381,6 +382,7 @@ export default class TreeTable extends Component {
                     iskey={iskey}
                     isTree={isTree}
                     hashKey={hashKey}
+                    arrowCol={startArrowCol}
                     isSelect={!isTree && isSelect}
                     level={node.__level}
                     open={node.__opened}
@@ -488,6 +490,7 @@ export default class TreeTable extends Component {
             hashKey,
             children,
             sortName,
+            lineWrap,
             selectRow,
             sortOrder,
             nestedHead,
@@ -536,7 +539,7 @@ export default class TreeTable extends Component {
 
         return (
             <div style={{padding: "10px", margin: "10px", width: width || '100%'}}>
-                <div className="table-tree">
+                <div className={"table-tree " + lineWrap}>
                     <div className="table-container" style={{overflow: 'hidden'}} ref="header">
                         <TreeHead selectRow={selectRow} nestedHead={nestedHead} ref="thead"
                                   checked={checked} sortName={remote ? sortName : sortField}
@@ -570,8 +573,10 @@ TreeTable.defaultProps = {
     isTree: true,
     remote: false,
     sortName: undefined,
+    startArrowCol: 0,
     sortOrder: undefined,
     onSortChange: empty,
+    lineWrap: 'break',
     selectRow: {
         mode: 'none',
         selected: [],
@@ -603,6 +608,8 @@ TreeTable.propTypes = {
     pagination: PropTypes.bool,
     onArrowClick: PropTypes.func,
     onSortChange: PropTypes.func,
+    startArrowCol: PropTypes.number,
+    lineWrap: PropTypes.oneOf(['ellipsis', 'break']),
     nestedHead: PropTypes.arrayOf(PropTypes.array),
     width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),

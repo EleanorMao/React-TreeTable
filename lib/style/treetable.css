@@ -34,20 +34,20 @@
     table-layout: fixed;
 }
 
-.table-tree .table th {
+.table-tree.ellipsis .table th, .table-tree.ellipsis .table td {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+
+.table-tree.break .table th, .table-tree.break .table td {
+    white-space: normal;
+    word-break: break-all;
+    vertical-align: top;
 }
 
 .table-tree .table td {
     position: relative;
-}
-
-.table-tree .table td {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
 }
 
 .table-tree .table td > span {

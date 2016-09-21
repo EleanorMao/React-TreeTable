@@ -14,6 +14,7 @@
 * sortName[String] 排序的列名
 * sortOrder[String] `asc`或`desc`
 * pagination[Boolean] 默认是`false`, 是否开启分页器
+* startArrowCol[Number] 设置后展开箭头将从第`startArrowCol`开始出现(从0开始), 默认是`0`
 * nestedHead[Array] 套头，是[[],[]]格式， 里面的数组设置套头的格式，可以是字符串或是对象，对象的话可用参数为colspan和label
 * options[Object] 分页器配置
     * page[Number] 默认显示的当前页, 默认是第一页
@@ -36,7 +37,7 @@
 * dataFormat[Function(cell, level, row, index, col)] 自定义渲染方法
 * hidden[Boolean] 是否隐藏
 * width[Number | String] 宽度
-* showArrow[Function(cell, level, row, index, col)] 是否显示箭头
+* showArrow[Function(cell, level, row, index, col) | Boolean] 强制该列是否显示展开箭头
 
 ## 让我们用代码说话⬇
 ```javascript

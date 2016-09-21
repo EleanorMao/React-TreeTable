@@ -42,12 +42,14 @@ class TreeHeadCol extends Component {
             dataField,
             dataAlign
         } = this.props;
+
         const style = {
             width: width,
             minWidth: width,
             textAlign: dataAlign,
             display: hidden && 'none'
         };
+
         return (
             <th style={style}>
                 <span>{children}</span>{dataSort && this.caretRender(dataField, sortName, sortOrder)}
@@ -58,9 +60,7 @@ class TreeHeadCol extends Component {
 
 TreeHeadCol.defaultProps = {
     dataSort: false,
-    showArrow: () => {
-        return true
-    }
+    showArrow: undefined
 };
 
 TreeHeadCol.propTypes = {
@@ -68,7 +68,8 @@ TreeHeadCol.propTypes = {
     dataSort: PropTypes.bool,
     dataFormat: PropTypes.func,
     dataAlign: PropTypes.oneOf(['left', 'right', 'center']),
-    width: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    showArrow: PropTypes.oneOfType([PropTypes.func, PropTypes.bool])
 };
 
 export default TreeHeadCol;

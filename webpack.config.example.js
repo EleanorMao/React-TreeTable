@@ -23,6 +23,6 @@ module.exports = {
     },
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
-        new openBrowserPlugin({url: 'http:localhost:9010'})
+        new openBrowserPlugin({url: 'http://localhost:9010'})
     ]
 };
