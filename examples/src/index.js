@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import {
     TreeTable,
     TreeHeadCol
-} from '../../src/Index.js';
+} from '../../lib/Index.js';
 import {noKeyData, data} from './fackData';
 
 const Component = React.Component;
@@ -152,7 +152,6 @@ class Main extends Component {
                         dataSize={20}
                         remote={true}
                         pagination={false}
-                        height="60px"
                         startArrowCol={1}
                         nestedHead={[]}
                     >
@@ -163,18 +162,20 @@ class Main extends Component {
                         >第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列</TreeHeadCol>
                         <TreeHeadCol width={200} dataField="d" hidden={false}>第四列</TreeHeadCol>
                         <TreeHeadCol width={200} dataField="d" hidden={false}>第四列</TreeHeadCol>
-                        <TreeHeadCol width={200} dataField="d" hidden={false}>第四列</TreeHeadCol>
-                        <TreeHeadCol width={200} dataField="d" hidden={false}>第四列</TreeHeadCol>
-                        <TreeHeadCol width={200} dataField="d" hidden={false}>第四列</TreeHeadCol>
-                        <TreeHeadCol width={200} dataField="d" hidden={false}>第四列</TreeHeadCol>
-                        <TreeHeadCol width={200} dataField="d" hidden={false}>第四列</TreeHeadCol>
-                        <TreeHeadCol width={200} dataField="d" hidden={false}>第四列</TreeHeadCol>
-                        <TreeHeadCol width={150} dataFormat={()=>{return <a href="#">test</a>}}>操作</TreeHeadCol>
+                        <TreeHeadCol dataField="d" hidden={false}>第四列</TreeHeadCol>
+                        <TreeHeadCol dataField="d" hidden={false}>第四列</TreeHeadCol>
+                        <TreeHeadCol dataField="d" hidden={false}>第四列</TreeHeadCol>
+                        <TreeHeadCol dataField="d" hidden={false}>第四列</TreeHeadCol>
+                        <TreeHeadCol dataField="d" hidden={false}>第四列</TreeHeadCol>
+                        <TreeHeadCol dataField="d" hidden={true}>第四列</TreeHeadCol>
+                        <TreeHeadCol width={150} dataFormat={()=> {
+                            return <a href="#">freedom!</a>
+                        }}>操作</TreeHeadCol>
                     </TreeTable>
                 </div>
                 <div style={{margin: "20px"}}>
                     <TreeTable
-                        height="auto"
+                        height="50px"
                         hashKey={true}
                         data={noKeyData}
                         pagination={true}

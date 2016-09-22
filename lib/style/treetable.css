@@ -12,14 +12,12 @@
     color: #333;
     width: 100%;
     font-size: 14px;
-    border-bottom: 0;
     line-height: 40px;
+    border: 1px solid #ddd;
 }
 
 .table-tree .table-container {
     overflow: auto;
-    border: 1px solid #ddd;
-    border-top: 0;
 }
 
 .table-tree .table-bordered,
@@ -27,6 +25,11 @@
 .table-bordered > tbody > tr > td {
     border-left: 0;
     border-width: 1px;
+}
+
+.table-tree .table-bordered > tbody > tr > td:last-child,
+.table-tree .table-bordered > thead > tr > th:last-child {
+    border-right-width: 0;
 }
 
 .table-tree .table {

@@ -64,6 +64,7 @@ function getScrollBarWidth() {
 export default class TreeTable extends Component {
     constructor(props) {
         super(props);
+        this.isIE = document.documentMode;
         let data = this._initDictionary(props);
         this.state = {
             order: undefined,
@@ -148,32 +149,33 @@ export default class TreeTable extends Component {
     }
 
     _adjustWidth() {
-        const tbody = this.refs.tbody;
-        const firstRow = tbody.childNodes[0].childNodes;
         const cells = this.refs.thead.refs.thead.childNodes;
+        const firstRow = this.refs.colgroup.childNodes;
         const length = cells.length;
+
         if (firstRow.length !== length) return;
 
         const scrollBarWidth = getScrollBarWidth();
+        const haveScrollBar = this.refs.tbody.parentNode.offsetWidth !== this.refs.header.offsetWidth;
+
         let lastChild = this._getLastChild(this.columnDate);
         lastChild = this.props.selectRow.mode !== 'none' ? lastChild + 1 : lastChild;
+
         for (let i = 0; i < length; i++) {
             const cell = cells[i];
             const target = firstRow[i];
             const computedStyle = getComputedStyle(cell);
             let width = parseFloat(computedStyle.width.replace('px', ''));
-            if (!-[1,]) {
+            if (this.isIE) {
                 const paddingLeftWidth = parseFloat(computedStyle.paddingLeft.replace('px', ''));
                 const paddingRightWidth = parseFloat(computedStyle.paddingRight.replace('px', ''));
                 const borderRightWidth = parseFloat(computedStyle.borderRightWidth.replace('px', ''));
                 const borderLeftWidth = parseFloat(computedStyle.borderLeftWidth.replace('px', ''));
                 width = width + paddingLeftWidth + paddingRightWidth + borderRightWidth + borderLeftWidth;
             }
-            const lastPaddingWidth = -(lastChild === i ? scrollBarWidth : 0);
+            const lastPaddingWidth = -(lastChild === i && haveScrollBar ? scrollBarWidth : 0);
             const result = width + lastPaddingWidth + 'px';
-            cell.style.width = result;
             target.style.width = result;
-            cell.style.minWidth = result;
             target.style.minWidth = result;
         }
     }
@@ -346,6 +348,22 @@ export default class TreeTable extends Component {
         options.onSizePageChange && options.onSizePageChange(length);
     }
 
+    colgroupRender() {
+        let output = [];
+        this.columnDate.map((item, index) => {
+            let style = {
+                width: item.width,
+                minWidth: item.width,
+                textAlign: item.dataAlign,
+                display: item.hidden && 'none'
+            };
+            output.push(
+                <col style={style} key={index}/>
+            )
+        });
+        return output;
+    }
+
     bodyRender() {
         let {
             length,
@@ -391,9 +409,9 @@ export default class TreeTable extends Component {
                     cols={this.columnDate}
                     onClick={this.handleToggle.bind(this)}
                     checked={selectRow.mode === 'checkbox' ?
-                                !!~selectRow.selected.indexOf(key) :
-                                 selectRow.selected[0] === key
-                                }
+                        !!~selectRow.selected.indexOf(key) :
+                    selectRow.selected[0] === key
+                    }
                 />
             );
         });
@@ -536,7 +554,6 @@ export default class TreeTable extends Component {
 
             checked = this._getAllValue(renderList.slice(), key).sort().toString() === selectRow.selected.slice().sort().toString();
         }
-
         return (
             <div style={{padding: "10px", margin: "10px", width: width || '100%'}}>
                 <div className={"table-tree " + lineWrap}>
@@ -550,6 +567,7 @@ export default class TreeTable extends Component {
                     </div>
                     <div className="table-container" style={{height: height || 'auto'}} ref="container">
                         <table className="table table-bordered table-striped table-hover">
+                            <colgroup ref="colgroup">{this.colgroupRender()}</colgroup>
                             <tbody ref="tbody">{this.bodyRender()}</tbody>
                         </table>
                     </div>
