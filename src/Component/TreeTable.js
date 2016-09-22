@@ -64,7 +64,6 @@ function getScrollBarWidth() {
 export default class TreeTable extends Component {
     constructor(props) {
         super(props);
-        this.isIE = document.documentMode;
         let data = this._initDictionary(props);
         this.state = {
             order: undefined,
@@ -166,7 +165,7 @@ export default class TreeTable extends Component {
             const target = firstRow[i];
             const computedStyle = getComputedStyle(cell);
             let width = parseFloat(computedStyle.width.replace('px', ''));
-            if (this.isIE) {
+            if (!-[1,]) {
                 const paddingLeftWidth = parseFloat(computedStyle.paddingLeft.replace('px', ''));
                 const paddingRightWidth = parseFloat(computedStyle.paddingRight.replace('px', ''));
                 const borderRightWidth = parseFloat(computedStyle.borderRightWidth.replace('px', ''));
@@ -174,6 +173,10 @@ export default class TreeTable extends Component {
                 width = width + paddingLeftWidth + paddingRightWidth + borderRightWidth + borderLeftWidth;
             }
             const lastPaddingWidth = -(lastChild === i && haveScrollBar ? scrollBarWidth : 0);
+            if (!width) {
+                width = 120;
+                cell.width = width + lastPaddingWidth + 'px';
+            }
             const result = width + lastPaddingWidth + 'px';
             target.style.width = result;
             target.style.minWidth = result;
