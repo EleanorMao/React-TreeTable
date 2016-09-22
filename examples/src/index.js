@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import {
     TreeTable,
     TreeHeadCol
-} from '../../lib/Index.js';
+} from '../../src/Index.js';
 import {noKeyData, data} from './fackData';
 
 const Component = React.Component;
@@ -49,23 +49,24 @@ class Main extends Component {
                 }
             },
             "b": function (cell, level, row, index, col) {
-                if (row.level != 0) {
-                    let key = col[index - 1];
-                    return row[key.id || key];
+                if (level != 0) {
+                    // let key = col[index - 1];
+                    // return row[key.id || key];
+                    return '';
                 } else {
                     return cell + ' I am row b'
                 }
             },
             "c": function (cell, level, row, index, col) {
-                if (row.level != 0) {
-                    let key = col[index - 1];
+                if (level != 0) {
+                    let key = col[index - 2];
                     return row[key.id || key];
                 } else {
                     return cell
                 }
             },
             "d": function (cell, level, row, index, col) {
-                if (row.level != 0) {
+                if (level != 0) {
                     let key = col[index - 1];
                     return row[key.id || key];
                 } else {
@@ -107,62 +108,73 @@ class Main extends Component {
             }
         };
 
+        const selectRow = {
+            mode: "checkbox",
+            bgColor: "rgb(238, 193, 213)",
+            selected: this.state.selected,
+            onSelectAll: (checked, currentSelected)=> {
+                if (checked) {
+                    let checkedList = currentSelected.map(item => {
+                        return item.a;
+                    });
+                    this.setState(old => {
+                        old.selected = checkedList;
+                        return old;
+                    })
+                } else {
+                    this.setState(old => {
+                        old.selected = [];
+                        return old;
+                    })
+                }
+            },
+            onSelect: (checked, row) => {
+                if (checked) {
+                    this.setState(old => {
+                        old.selected.push(row.a);
+                        return old
+                    })
+                } else {
+                    this.setState(old => {
+                        old.selected.splice(old.selected.indexOf(row.a), 1);
+                        return old;
+                    })
+                }
+            }
+        };
+
         return (
             <div>
                 <div style={{margin: "20px"}}>
                     <TreeTable
                         iskey="a"
-                        data={this.state.data}
+                        data={data}
+                        dataSize={20}
                         remote={true}
                         pagination={false}
-                        dataSize={20}
-                        isTree={false}
-                        nestedHead={nestedHead}
-                        selectRow={{
-                            mode: "checkbox",
-                            bgColor: "rgb(238, 193, 213)",
-                            selected: this.state.selected,
-                            onSelectAll: (checked, currentSelected)=> {
-                                if (checked) {
-                                    let checkedList = currentSelected.map(item => {
-                                        return item.a;
-                                    });
-                                    this.setState(old => {
-                                        old.selected = checkedList;
-                                        return old;
-                                    })
-                                } else {
-                                    this.setState(old => {
-                                        old.selected = [];
-                                        return old;
-                                    })
-                                }
-                            },
-                            onSelect: (checked, row) => {
-                                if (checked) {
-                                    this.setState(old => {
-                                        old.selected.push(row.a);
-                                        return old
-                                    })
-                                } else {
-                                    this.setState(old => {
-                                        old.selected.splice(old.selected.indexOf(row.a), 1);
-                                        return old;
-                                    })
-                                }
-                            }
-                        }}
+                        height="60px"
+                        startArrowCol={1}
+                        nestedHead={[]}
                     >
-                        <TreeHeadCol dataField="a" width={700} dataFormat={dataFormat.a}
-                                     showArrow={this.showArrow}>第一列</TreeHeadCol>
-                        <TreeHeadCol dataField="b" dataSort={true} dataFormat={dataFormat.b}>第二列</TreeHeadCol>
-                        <TreeHeadCol dataField="c" dataSort={true} width={300}>第三列</TreeHeadCol>
-                        <TreeHeadCol dataField="d" hidden={true}>第四列</TreeHeadCol>
+                        <TreeHeadCol width={200} dataField="a" dataFormat={dataFormat.a}>第一列</TreeHeadCol>
+                        <TreeHeadCol dataField="b" dataSort={true}
+                                     width={200} dataFormat={dataFormat.b}>第二列</TreeHeadCol>
+                        <TreeHeadCol width={200} dataField="c" dataSort={true} dataFormat={dataFormat.c}
+                        >第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列</TreeHeadCol>
+                        <TreeHeadCol width={200} dataField="d" hidden={false}>第四列</TreeHeadCol>
+                        <TreeHeadCol width={200} dataField="d" hidden={false}>第四列</TreeHeadCol>
+                        <TreeHeadCol width={200} dataField="d" hidden={false}>第四列</TreeHeadCol>
+                        <TreeHeadCol width={200} dataField="d" hidden={false}>第四列</TreeHeadCol>
+                        <TreeHeadCol width={200} dataField="d" hidden={false}>第四列</TreeHeadCol>
+                        <TreeHeadCol width={200} dataField="d" hidden={false}>第四列</TreeHeadCol>
+                        <TreeHeadCol width={200} dataField="d" hidden={false}>第四列</TreeHeadCol>
+                        <TreeHeadCol width={200} dataField="d" hidden={false}>第四列</TreeHeadCol>
+                        <TreeHeadCol width={150} dataFormat={()=>{return <a href="#">test</a>}}>操作</TreeHeadCol>
                     </TreeTable>
                 </div>
                 <div style={{margin: "20px"}}>
                     <TreeTable
-                        height="40px"
+                        height="auto"
                         hashKey={true}
                         data={noKeyData}
                         pagination={true}
