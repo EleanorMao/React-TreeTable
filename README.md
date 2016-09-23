@@ -15,9 +15,13 @@
 * sortOrder[String] `asc`或`desc`
 * pagination[Boolean] 默认是`false`, 是否开启分页器
 * startArrowCol[Number] 设置后展开箭头将从第`startArrowCol`开始出现(从0开始), 默认是`0`
-* nestedHead[Array] 套头，是[[],[]]格式， 里面的数组设置套头的格式，可以是字符串或是对象，对象的话可用参数为colspan和label
+* nestedHead[Array] 套头，是[[],[]]格式， 里面的数组设置套头的格式，可以是字符串或是对象，对象的话可用参数为colspan和label还有rowspan
 * options[Object] 分页器配置
     * page[Number] 默认显示的当前页, 默认是第一页
+    * prevLabel 分页器的上一页
+    * startLabel 分页器的下一页
+    * startLabel 分页器的回到第一页
+    * endLabel 分页器的回到最后一页
     * sizePerPage[Number] 每页多长, 默认是十条
     * onPageChange(page, sizePerPage) 点击分页器时调用
     * paginationShowsTotal[Boolean | Function(start, to , total)] 显示条数导航

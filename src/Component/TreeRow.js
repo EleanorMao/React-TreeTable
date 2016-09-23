@@ -2,20 +2,9 @@
  * Created by BG236557 on 2016/5/27.
  */
 import React from 'react';
+import {extend} from './Util'
 
 const Component = React.Component;
-
-let _extends = function (target) {
-    for (let i = 1; i < arguments.length; i++) {
-        let source = arguments[i];
-        for (let key in source) {
-            if (Object.prototype.hasOwnProperty.call(source, key)) {
-                target[key] = source[key];
-            }
-        }
-    }
-    return target;
-};
 
 export default class TreeRow extends Component {
     constructor(props) {
@@ -27,7 +16,7 @@ export default class TreeRow extends Component {
 
     handleToggle(e) {
         e.stopPropagation();
-        let data = _extends({}, {
+        let data = extend({}, {
             opened: this.state.open
         }, {
             data: this.props.data
@@ -60,7 +49,7 @@ export default class TreeRow extends Component {
 
         if (isSelect) {
             output.push(
-                <td key={_key} style={{backgroundColor: checked && selectRow.bgColor,textAlign: 'center'}}>
+                <td key={_key} style={{backgroundColor: checked && selectRow.bgColor, textAlign: 'center'}}>
                     <input type={selectRow.mode} checked={checked} readOnly={true}/>
                 </td>
             )

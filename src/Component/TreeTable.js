@@ -9,57 +9,13 @@ import React, {
     Component,
     PropTypes
 } from 'react';
-import TreeRow  from './TreeRow.js';
-import TreeHead from './TreeHead.js';
-import Paging   from './Pagination/Pagination.js';
+import TreeRow  from './TreeRow';
+import TreeHead from './TreeHead';
+import Paging   from './Pagination/Pagination';
 import Dropdown from './Pagination/DropdownList';
+import {empty, sort, uniqueID, isUndefined, diff, getScrollBarWidth} from './Util'
 
 require('../style/treetable.css');
-
-let idCounter = 0;
-
-function empty() {
-}
-
-function uniqueID() {
-    return idCounter++ + new Date().getTime() + Math.random();
-}
-
-function isUndefined(input) {
-    return Object.prototype.toString.call(input) === "[object Undefined]";
-}
-
-function diff(a, b) {
-    return a.filter(x => {
-        return b.indexOf(x) === -1
-    });
-}
-
-function getScrollBarWidth() {
-    const inner = document.createElement('p');
-    inner.style.width = '100%';
-    inner.style.height = '200px';
-
-    const outer = document.createElement('div');
-    outer.style.position = 'absolute';
-    outer.style.top = '0px';
-    outer.style.left = '0px';
-    outer.style.visibility = 'hidden';
-    outer.style.width = '200px';
-    outer.style.height = '150px';
-    outer.style.overflow = 'hidden';
-    outer.appendChild(inner);
-
-    document.body.appendChild(outer);
-    const w1 = inner.offsetWidth;
-    outer.style.overflow = 'scroll';
-    let w2 = inner.offsetWidth;
-    if (w1 === w2) w2 = outer.clientWidth;
-
-    document.body.removeChild(outer);
-
-    return w1 - w2;
-}
 
 export default class TreeTable extends Component {
     constructor(props) {
@@ -106,20 +62,24 @@ export default class TreeTable extends Component {
         return dictionary;
     }
 
-    _initColumnDate() {
-        let columnDate = [];
+    _initColumnData() {
+        let columnData = [];
         React.Children.map(this.props.children, function (column) {
-            columnDate.push({
+            columnData.push({
                 width: column.props.width,
                 id: column.props.dataField,
                 name: column.props.children,
                 hidden: column.props.hidden,
                 showArrow: column.props.showArrow,
                 dataAlign: column.props.dataAlign,
+                dataFixed: column.props.dataFixed,
                 dataFormat: column.props.dataFormat
             });
         });
-        this.columnDate = columnDate;
+        let sortedData = sort(columnData);
+        this.columnData = sortedData.sorted;
+        this.leftColumnData = sortedData.left;
+        this.rightColumnData = sortedData.right;
     }
 
     _getAllValue(data, iskey) {
@@ -150,6 +110,7 @@ export default class TreeTable extends Component {
     _adjustWidth() {
         const cells = this.refs.thead.refs.thead.childNodes;
         const firstRow = this.refs.colgroup.childNodes;
+        const fixedRow = this.refs.leftColgroup && this.refs.leftColgroup.childNodes;
         const length = cells.length;
 
         if (firstRow.length !== length) return;
@@ -157,12 +118,11 @@ export default class TreeTable extends Component {
         const scrollBarWidth = getScrollBarWidth();
         const haveScrollBar = this.refs.tbody.parentNode.offsetWidth !== this.refs.header.offsetWidth;
 
-        let lastChild = this._getLastChild(this.columnDate);
+        let lastChild = this._getLastChild(this.columnData);
         lastChild = this.props.selectRow.mode !== 'none' ? lastChild + 1 : lastChild;
 
         for (let i = 0; i < length; i++) {
             const cell = cells[i];
-            const target = firstRow[i];
             const computedStyle = getComputedStyle(cell);
             let width = parseFloat(computedStyle.width.replace('px', ''));
             if (!-[1,]) {
@@ -178,8 +138,12 @@ export default class TreeTable extends Component {
                 cell.width = width + lastPaddingWidth + 'px';
             }
             const result = width + lastPaddingWidth + 'px';
-            target.style.width = result;
-            target.style.minWidth = result;
+            firstRow[i].style.width = result;
+            firstRow[i].style.minWidth = result;
+            if (fixedRow && fixedRow[i]) {
+                fixedRow[i].style.width = result;
+                fixedRow[i].style.minWidth = result;
+            }
         }
     }
 
@@ -188,7 +152,7 @@ export default class TreeTable extends Component {
     }
 
     componentWillMount() {
-        this._initColumnDate();
+        this._initColumnData();
     }
 
     componentDidMount() {
@@ -207,7 +171,7 @@ export default class TreeTable extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        this._initColumnDate();
+        this._initColumnData();
         let data = this._initDictionary(nextProps);
         this.setState({
             renderedList: data.data,
@@ -351,9 +315,9 @@ export default class TreeTable extends Component {
         options.onSizePageChange && options.onSizePageChange(length);
     }
 
-    colgroupRender() {
+    colgroupRender(data) {
         let output = [];
-        this.columnDate.map((item, index) => {
+        data.map((item, index) => {
             let style = {
                 width: item.width,
                 minWidth: item.width,
@@ -386,7 +350,7 @@ export default class TreeTable extends Component {
         if (renderedList.length < 1) {
             return (
                 <tr>
-                    <td className="text-center"><span>暂无数据</span></td>
+                    <td className="text-center" colSpan={this.columnData.length}><span>暂无数据</span></td>
                 </tr>
             );
         }
@@ -403,13 +367,13 @@ export default class TreeTable extends Component {
                     iskey={iskey}
                     isTree={isTree}
                     hashKey={hashKey}
-                    arrowCol={startArrowCol}
-                    isSelect={!isTree && isSelect}
                     level={node.__level}
                     open={node.__opened}
                     selectRow={selectRow}
                     parent={node.__parent}
-                    cols={this.columnDate}
+                    cols={this.columnData}
+                    arrowCol={startArrowCol}
+                    isSelect={!isTree && isSelect}
                     onClick={this.handleToggle.bind(this)}
                     checked={selectRow.mode === 'checkbox' ?
                         !!~selectRow.selected.indexOf(key) :
@@ -485,13 +449,21 @@ export default class TreeTable extends Component {
                         <Paging
                             dataSize={dataSize}
                             current={options.page}
+                            endLabel={options.endLabel}
+                            prevLabel={options.prevLabel}
+                            nextLabel={options.nextLabel}
+                            startLabel={options.startLabel}
                             sizePerPage={options.sizePerPage}
                             onPageChange={options.onPageChange}
                         />
                         :
                         <Paging
+                            endLabel={options.endLabel}
                             current={this.state.crtPage}
+                            prevLabel={options.prevLabel}
+                            nextLabel={options.nextLabel}
                             sizePerPage={this.state.length}
+                            startLabel={options.startLabel}
                             dataSize={this.state.dictionary.length}
                             onPageChange={this.handleClick.bind(this)}
                         />
@@ -517,7 +489,6 @@ export default class TreeTable extends Component {
             nestedHead,
             pagination
         } = this.props;
-
         const {
             order,
             length,
@@ -570,9 +541,18 @@ export default class TreeTable extends Component {
                     </div>
                     <div className="table-container" style={{height: height || 'auto'}} ref="container">
                         <table className="table table-bordered table-striped table-hover">
-                            <colgroup ref="colgroup">{this.colgroupRender()}</colgroup>
+                            <colgroup ref="colgroup">{this.colgroupRender(this.columnData)}</colgroup>
                             <tbody ref="tbody">{this.bodyRender()}</tbody>
                         </table>
+                        {/*{!!this.leftColumnData.length &&*/}
+                        {/*<div className="table-fixed table-left-fixed" style={{height: height || 'auto'}}>*/}
+                        {/*<table className="table table-bordered table-striped table-hover">*/}
+                        {/*<colgroup ref="leftColgroup">{this.colgroupRender(this.leftColumnData)}</colgroup>*/}
+                        {/*<tbody>*/}
+                        {/*{this.fixBodyRender()}*/}
+                        {/*</tbody>*/}
+                        {/*</table>*/}
+                        {/*</div>}*/}
                     </div>
                 </div>
                 <div className="row">

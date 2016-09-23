@@ -60,6 +60,7 @@ class TreeHeadCol extends Component {
 
 TreeHeadCol.defaultProps = {
     dataSort: false,
+    dataFixed: 'auto',
     showArrow: undefined
 };
 
@@ -67,6 +68,7 @@ TreeHeadCol.propTypes = {
     hidden: PropTypes.bool,
     dataSort: PropTypes.bool,
     dataFormat: PropTypes.func,
+    dataFixed: PropTypes.oneOf(['left', 'right', 'auto']),
     dataAlign: PropTypes.oneOf(['left', 'right', 'center']),
     width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     showArrow: PropTypes.oneOfType([PropTypes.func, PropTypes.bool])

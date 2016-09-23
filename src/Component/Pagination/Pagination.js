@@ -13,12 +13,20 @@ export default class Pagination extends Component {
         this.center = Math.ceil(props.paginationSize / 2);
     }
 
+    componentWillReceiveProps(props) {
+        this.finalStartPage = props.dataSize - props.paginationSize + 1;
+        this.lastPage = props.paginationSize;
+        this.center = Math.ceil(props.paginationSize / 2);
+    }
+
     render() {
         const {
             current,
             dataSize,
+            endLabel,
             nextLabel,
             prevLabel,
+            startLabel,
             sizePerPage,
             onPageChange,
             paginationSize
@@ -35,8 +43,10 @@ export default class Pagination extends Component {
             this.startPage = 1;
             this.lastPage = Math.min(totalPages, paginationSize);
         }
-
         let PageButtons = [
+            <PageButton
+                label={startLabel} hidden={this.startPage === 1}
+                key='start' onClick={() =>onPageChange(1, sizePerPage)}/>,
             <PageButton
                 label={prevLabel} hidden={current === 1}
                 key='prev' onClick={() =>onPageChange(current - 1, sizePerPage)}/>
@@ -47,9 +57,15 @@ export default class Pagination extends Component {
         }
         PageButtons.push(
             <PageButton
-                label={nextLabel} hidden={current === totalPages}
+                label={nextLabel} hidden={current === totalPages || totalPages < 1}
                 key='next' onClick={() =>onPageChange(current + 1, sizePerPage)}/>
         );
+        PageButtons.push(
+            <PageButton
+                label={endLabel} hidden={this.lastPage === totalPages}
+                key='end' onClick={() =>onPageChange(totalPages, sizePerPage)}/>
+        );
+
         return (
             <ul className="pagination">
                 {PageButtons}
@@ -69,6 +85,8 @@ Pagination.defaultProps = {
     current: 10,
     sizePerPage: 10,
     paginationSize: 6,
-    prevLabel: <span>&laquo;</span>,
-    nextLabel: <span>&raquo;</span>
+    prevLabel: <span>&lt;</span>,
+    nextLabel: <span>&gt;</span>,
+    startLabel: <span>&lt;&lt;</span>,
+    endLabel: <span>&gt;&gt;</span>
 }

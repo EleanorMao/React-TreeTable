@@ -6,10 +6,8 @@ import React, {
     PropTypes
 } from 'react';
 
+import {isObj, empty, sort} from './Util'
 
-function isObj(input) {
-    return Object.prototype.toString.call(input) === '[object Object]';
-}
 
 export default class TreeHead extends Component {
     constructor(props) {
@@ -25,7 +23,8 @@ export default class TreeHead extends Component {
                     {select && <th key='trow-1'/>}
                     {throws.map((cell, i) => {
                         let obj = isObj(cell);
-                        return <th colSpan={obj && cell.colspan} key={i}>{obj ? cell.label : cell}</th>
+                        return <th colSpan={obj && cell.colspan || 1} rowSpan={obj && cell.rowspan || 1}
+                                   key={i}>{obj ? cell.label : cell}</th>
                     })}
                 </tr>;
             output.push(item);
@@ -61,13 +60,14 @@ export default class TreeHead extends Component {
             onSelectAll
         } = this.props;
         let i = 0;
+        let renderChildren = sort(children).sorted;
         return (
             <table className="table table-bordered">
                 <thead>
                 {!!nestedHead.length && this.nestedHeadRender(nestedHead, selectRow, isTree)}
                 <tr ref="thead">
                     {!isTree && this.selectRender(selectRow, onSelectAll, checked)}
-                    {  React.Children.map(children, (elm)=> {
+                    {  React.Children.map(renderChildren, (elm)=> {
                         return React.cloneElement(elm, {key: i++, onSort, sortName, sortOrder});
                     })}
                 </tr>
@@ -82,9 +82,7 @@ TreeHead.defaultProps = {
         mode: 'none',
         bgColor: '#dff0d8',
         selected: [],
-        onSelect: ()=> {
-        },
-        onSelectAll: ()=> {
-        }
+        onSelect: empty,
+        onSelectAll: empty
     }
 };
