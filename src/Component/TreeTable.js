@@ -110,7 +110,6 @@ export default class TreeTable extends Component {
     _adjustWidth() {
         const cells = this.refs.thead.refs.thead.childNodes;
         const firstRow = this.refs.colgroup.childNodes;
-        const fixedRow = this.refs.leftColgroup && this.refs.leftColgroup.childNodes;
         const length = cells.length;
 
         if (firstRow.length !== length) return;
@@ -544,15 +543,6 @@ export default class TreeTable extends Component {
                             <colgroup ref="colgroup">{this.colgroupRender(this.columnData)}</colgroup>
                             <tbody ref="tbody">{this.bodyRender()}</tbody>
                         </table>
-                        {/*{!!this.leftColumnData.length &&*/}
-                        {/*<div className="table-fixed table-left-fixed" style={{height: height || 'auto'}}>*/}
-                        {/*<table className="table table-bordered table-striped table-hover">*/}
-                        {/*<colgroup ref="leftColgroup">{this.colgroupRender(this.leftColumnData)}</colgroup>*/}
-                        {/*<tbody>*/}
-                        {/*{this.fixBodyRender()}*/}
-                        {/*</tbody>*/}
-                        {/*</table>*/}
-                        {/*</div>}*/}
                     </div>
                 </div>
                 <div className="row">
