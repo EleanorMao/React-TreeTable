@@ -96,13 +96,13 @@
     box-shadow: -4px 0 4px rgba(0, 0, 0, 0.2);
 }
 
-.table-tree.ellipsis .table th, .table-tree.ellipsis .table td {
+.react-tree.ellipsis .table th, .react-tree.ellipsis .table td {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
-.table-tree.break .table th, .table-tree.break .table td {
+.react-tree.break .table th, .react-tree.break .table td {
     white-space: normal;
     word-break: break-all;
     vertical-align: top;
@@ -113,11 +113,13 @@
 }
 
 .table-tree .table td .table-arrow {
-    top: 16px;
     right: 10px;
     color: dimgray;
     position: absolute;
-    transition: transform 0.2s ease-in;
+}
+
+.table-tree .table td .table-arrow > * {
+    transition: all 0.2s ease-in;
 }
 
 .table-tree .table tr.ancestor {
@@ -145,4 +147,8 @@
 
 .table-nestedHead .table-bordered > thead > tr:last-child > th {
     border-top: 0;
+}
+
+.table-tree .table-striped > tbody > tr:nth-of-type(even) {
+    background: #fff;
 }

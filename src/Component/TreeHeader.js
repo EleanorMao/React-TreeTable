@@ -13,8 +13,7 @@ export default class TreeHeader extends Component {
         super(props);
     }
 
-    selectRender(selectRow, onSelectAll, checked) {
-        const mode = selectRow.mode;
+    selectRender(mode, onSelectAll, checked) {
         if (mode === 'checkbox') {
             return (
                 <th onClick={()=>onSelectAll(!checked)} style={{textAlign: 'center', width: 30}}>
@@ -28,10 +27,12 @@ export default class TreeHeader extends Component {
         }
     }
 
-    colgroupRender(renderChildren, left, right) {
+    colgroupRender(renderChildren, selectRow, isTree, left, right) {
         let i = 0;
         return (
             <colgroup ref="colgroup">
+                {selectRow.mode !== 'none' && !selectRow.hideSelectRow && !isTree &&
+                <col key="select" style={{textAlign: 'center', width: 30}}/>}
                 {  React.Children.map(renderChildren, (elm)=> {
                     if (left && elm.props.dataFixed !== 'left') return;
                     if (right && elm.props.dataFixed !== 'right') return;
@@ -65,10 +66,10 @@ export default class TreeHeader extends Component {
         return (
             <div className="table-container table-header-container" ref="header">
                 <table className="table table-bordered">
-                    {this.colgroupRender(renderChildren, left, right)}
+                    {this.colgroupRender(renderChildren, selectRow, isTree, left, right)}
                     <thead>
                     <tr ref="thead">
-                        {!isTree && this.selectRender(selectRow, onSelectAll, checked)}
+                        {!isTree && !selectRow.hideSelectRow && this.selectRender(selectRow.mode, onSelectAll, checked)}
                         {  React.Children.map(renderChildren, (elm)=> {
                             if (left && elm.props.dataFixed !== 'left') return;
                             if (right && elm.props.dataFixed !== 'right') return;

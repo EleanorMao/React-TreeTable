@@ -11,6 +11,8 @@
 * hashKey[Boolean]   默认是`fasle`, 如果没有唯一的id, 那就传`true`, 本表格会帮你造一个`uid`
 * width[Number | String] 宽度
 * height[Number | String] 高度
+* title[Function(data) | String | Number | Node] 头部
+* footer[Function(data) | String | Number | Node] 脚部
 * remote[Boolean] 如果是true则将翻页`onPageChange`的控制权和排序`onSortChange`,`sortName`,`sortOrder`交给父组件
 * dataSize[Number] 数据总条数，仅在开启remote后有用
 * sortName[String] 排序的列名
@@ -31,14 +33,17 @@
     * mode['none', 'radio', 'checkbox'] 选择框的类型
     * bgColor[String] 选中后的背景色
     * selected[Array] 选中的由每行key值组成的数组
+    * hideSelectRow[Boolean] 是否隐藏选中框
     * onSelect[Function(isSelected, row)] 选中单行时的回调函数
     * onSelectAll[Function(isSelected, data)] 选中全部时的回调函数
-* onArrowClick[Function] 点击展开按钮的时候会把数据丢给你可以处理，会返回`opened`,`data`两个参数和一个callback`callback`，务必要`callback(data)`(为了处理异步的情况暂别无他法)。`opened`为`false`的时候意味着叶子节点是关闭状态，如果是`true`说明叶子节点是展开的
+* arrowRender[Function(opened)] 自定义展开按钮样式
+* onArrowClick[Function(opened, data)] 点击展开按钮的时候会把数据丢给你可以处理，会返回`opened`,`data`两个参数和一个callback`callback`，务必要`callback(data)`(为了处理异步的情况暂别无他法)。`opened`为`false`的时候意味着叶子节点是关闭状态，如果是`true`说明叶子节点是展开的
 * onSortChange[Function(sortName, sortOrder)] 排序时候调用, `sortOrder`是`asc`或`desc`
 
 ### TreeHeadCol
 * dataField[String] 数据的key值
 * dataAlign[String] textAlign的姿势
+* dataFixed[String] 固定的位置, `left` 或者 `right` 或者 `auto`
 * dataSort[Boolean] 是否开启排序 
 * dataFormat[Function(cell, level, row, index, col)] 自定义渲染方法
 * hidden[Boolean] 是否隐藏

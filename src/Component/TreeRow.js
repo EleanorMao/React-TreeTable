@@ -42,12 +42,14 @@ export default class TreeRow extends Component {
             checked,
             isSelect,
             arrowCol,
-            selectRow
+            selectRow,
+            arrowRender,
+            hideSelectRow
         } = this.props;
 
         const _key = hashKey ? data.__uid : data[iskey];
 
-        if (isSelect) {
+        if (isSelect && !hideSelectRow) {
             output.push(
                 <td key={_key} style={{backgroundColor: checked && selectRow.bgColor, textAlign: 'center'}}>
                     <input type={selectRow.mode} checked={checked} readOnly={true}/>
@@ -96,11 +98,9 @@ export default class TreeRow extends Component {
                     <span style={{marginLeft: level * 10 + 'px'}}>
                         {cell}
                         {isTree && showArrow && !arrow &&
-                        <i
-                            className="table-arrow fa fa-chevron-down"
-                            style={open ? {transform: 'rotate(-90deg)'} : {}}
-                            onClick={this.handleToggle.bind(this)}
-                        > </i>
+                        <span className="table-arrow" onClick={this.handleToggle.bind(this)}>
+                            {arrowRender(open)}
+                        </span>
                         }
                     </span>
                 </td>
@@ -124,7 +124,7 @@ export default class TreeRow extends Component {
         } = this.props;
         return (
             <tr style={hover ? hoverStyle : {}}
-                className={isTree && !level && "ancestor"}
+                className={isTree && !level && "ancestor" || null}
                 onMouseOut={onMouseOut} onMouseOver={onMouseOver}
                 onClick={isSelect ? ()=>selectRow.onSelect(!checked, data) : ()=> {
                     return false;
@@ -138,5 +138,14 @@ export default class TreeRow extends Component {
 
 TreeRow.defaultProps = {
     level: 0,
-    hashKey: false
+    hashKey: false,
+    hideSelectRow: false,
+    arrowRender: (open)=> {
+        return (
+            <i
+                className="fa fa-chevron-down"
+                style={open ? {transform: 'rotate(-90deg)'} : {}}
+            > </i>
+        )
+    }
 };

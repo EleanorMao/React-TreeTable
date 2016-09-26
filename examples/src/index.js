@@ -112,10 +112,11 @@ class Main extends Component {
             mode: "checkbox",
             bgColor: "rgb(238, 193, 213)",
             selected: this.state.selected,
+            hideSelectRow: false,
             onSelectAll: (checked, currentSelected)=> {
                 if (checked) {
                     let checkedList = currentSelected.map(item => {
-                        return item.a;
+                        return item.id;
                     });
                     this.setState(old => {
                         old.selected = checkedList;
@@ -131,12 +132,12 @@ class Main extends Component {
             onSelect: (checked, row) => {
                 if (checked) {
                     this.setState(old => {
-                        old.selected.push(row.a);
+                        old.selected.push(row.id);
                         return old
                     })
                 } else {
                     this.setState(old => {
-                        old.selected.splice(old.selected.indexOf(row.a), 1);
+                        old.selected.splice(old.selected.indexOf(row.id), 1);
                         return old;
                     })
                 }
@@ -161,11 +162,11 @@ class Main extends Component {
                         }, 'a', 'a', 'a', 'a'], ['b', 'b', 'b', 'b']]}
                         startArrowCol={1}
                         pagination={false}
+                        arrowRender={(open)=>{return <a>{open ? '关闭' : '打开'}</a>}}
                     >
-                        <TreeHeadCol width={200} dataField="a" dataFixed="left"
-                                     dataFormat={dataFormat.a}>第一列</TreeHeadCol>
-                        <TreeHeadCol dataField="b" dataSort={true} dataFixed="left"
-                                     width={200} dataFormat={dataFormat.b}>第二列</TreeHeadCol>
+                        <TreeHeadCol width={200} dataField="a" dataFormat={dataFormat.a}>第一列</TreeHeadCol>
+                        <TreeHeadCol dataField="b" dataSort={true} width={200}
+                                     dataFormat={dataFormat.b}>第二列</TreeHeadCol>
                         <TreeHeadCol width={200} dataField="c" dataSort={true} dataFormat={dataFormat.c}
                         >第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列</TreeHeadCol>
                         <TreeHeadCol width={200} dataField="d" hidden={false}>第四列</TreeHeadCol>
@@ -193,18 +194,11 @@ class Main extends Component {
                 </div>
                 <div style={style}>
                     <TreeTable
+                        iskey="id"
                         data={list}
-                        hashKey={true}
+                        isTree={false}
                         pagination={false}
-                        options={{
-                            page: 1,
-                            sizePerPage: 1,
-                            sizePageList: [10, 20, 30],
-                            paginationShowsTotal: true,
-                            onPageChange: function (page, sizePerPage) {
-
-                            }
-                        }}
+                        selectRow={selectRow}
                     >
                         <TreeHeadCol dataField="id" dataAlign="center" dataFixed="left">id</TreeHeadCol>
                         <TreeHeadCol dataAlign='center' width="150px" dataField='regionRoleName'
