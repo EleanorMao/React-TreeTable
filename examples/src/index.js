@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom';
 import {
     TreeTable,
     TreeHeadCol
-} from '../../lib/Index.js';
-import {noKeyData, data} from './fackData';
+} from '../../src/Index.js';
+import {noKeyData, data, list} from './fackData';
 
 const Component = React.Component;
 
@@ -82,7 +82,7 @@ class Main extends Component {
         ];
         const options = {
             page: 1,
-            sizePerPage: 2,
+            sizePerPage: 1,
             sizePageList: [10, 20, 30],
             paginationShowsTotal: true,
             onPageChange: function (page, sizePerPage) {
@@ -142,49 +142,99 @@ class Main extends Component {
                 }
             }
         };
-
+        const style = {
+            margin: "20px",
+            background: "#fff"
+        };
         return (
             <div>
-                <div style={{margin: "20px"}}>
+                <div style={style}>
+                    {/*<TreeTable*/}
+                        {/*iskey="a"*/}
+                        {/*data={data}*/}
+                        {/*dataSize={20}*/}
+                        {/*remote={true}*/}
+                        {/*nestedHead={[[{*/}
+                            {/*label: '全国',*/}
+                            {/*colspan: 4,*/}
+                            {/*rowspan: 2*/}
+                        {/*}, 'a', 'a', 'a', 'a', 'a', 'a', 'a'], ['b', 'b', 'b', 'b', 'b', 'b', 'b']]}*/}
+                        {/*startArrowCol={1}*/}
+                        {/*pagination={false}*/}
+                    {/*>*/}
+                        {/*<TreeHeadCol width={200} dataField="a" dataFormat={dataFormat.a}>第一列</TreeHeadCol>*/}
+                        {/*<TreeHeadCol dataField="b" dataSort={true}*/}
+                                     {/*width={200} dataFormat={dataFormat.b}>第二列</TreeHeadCol>*/}
+                        {/*<TreeHeadCol width={200} dataField="c" dataSort={true} dataFormat={dataFormat.c}*/}
+                        {/*>第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列</TreeHeadCol>*/}
+                        {/*<TreeHeadCol width={200} dataField="d" hidden={false}>第四列</TreeHeadCol>*/}
+                        {/*<TreeHeadCol width={200} dataField="d" hidden={false}>第四列</TreeHeadCol>*/}
+                        {/*<TreeHeadCol dataField="d" hidden={false}>第四列</TreeHeadCol>*/}
+                        {/*<TreeHeadCol dataField="d" hidden={false}>第四列</TreeHeadCol>*/}
+                        {/*<TreeHeadCol dataField="d" hidden={false}>第四列</TreeHeadCol>*/}
+                        {/*<TreeHeadCol dataField="d" hidden={false}>第四列</TreeHeadCol>*/}
+                        {/*<TreeHeadCol dataField="d" hidden={false}>第四列</TreeHeadCol>*/}
+                        {/*<TreeHeadCol dataField="d" hidden={true}>第四列</TreeHeadCol>*/}
+                        {/*<TreeHeadCol width={150} dataFormat={()=> {*/}
+                            {/*return <a href="#">freedom!</a>*/}
+                        {/*}}>操作</TreeHeadCol>*/}
+                    {/*</TreeTable>*/}
+                </div>
+                <div style={style}>
+                    {/*<TreeTable*/}
+                        {/*height="auto"*/}
+                        {/*hashKey={true}*/}
+                        {/*data={noKeyData}*/}
+                        {/*pagination={true}*/}
+                        {/*options={options}*/}
+                    {/*>*/}
+                        {/*<TreeHeadCol dataField="a" dataAlign="center">第一列</TreeHeadCol>*/}
+                        {/*<TreeHeadCol dataField="b">第二列</TreeHeadCol>*/}
+                        {/*<TreeHeadCol dataField="c">第三列</TreeHeadCol>*/}
+                        {/*<TreeHeadCol dataField="d">第四列</TreeHeadCol>*/}
+                    {/*</TreeTable>*/}
+                </div>
+                <div style={style}>
                     <TreeTable
-                        iskey="a"
-                        data={data}
-                        dataSize={20}
-                        remote={true}
+                        data={list}
+                        hashKey={true}
                         pagination={false}
-                        startArrowCol={1}
-                        nestedHead={[]}
+                        options={{
+                            page: 1,
+                            sizePerPage: 1,
+                            sizePageList: [10, 20, 30],
+                            paginationShowsTotal: true,
+                            onPageChange: function (page, sizePerPage) {
+
+                            }
+                        }}
+                        lineWrap="break"
                     >
-                        <TreeHeadCol width={200} dataField="a" dataFormat={dataFormat.a}>第一列</TreeHeadCol>
-                        <TreeHeadCol dataField="b" dataSort={true}
-                                     width={200} dataFormat={dataFormat.b}>第二列</TreeHeadCol>
-                        <TreeHeadCol width={200} dataField="c" dataSort={true} dataFormat={dataFormat.c}
-                        >第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列</TreeHeadCol>
-                        <TreeHeadCol width={200} dataField="d" hidden={false}>第四列</TreeHeadCol>
-                        <TreeHeadCol width={200} dataField="d" hidden={false}>第四列</TreeHeadCol>
-                        <TreeHeadCol dataField="d" hidden={false}>第四列</TreeHeadCol>
-                        <TreeHeadCol dataField="d" hidden={false}>第四列</TreeHeadCol>
-                        <TreeHeadCol dataField="d" hidden={false}>第四列</TreeHeadCol>
-                        <TreeHeadCol dataField="d" hidden={false}>第四列</TreeHeadCol>
-                        <TreeHeadCol dataField="d" hidden={false}>第四列</TreeHeadCol>
-                        <TreeHeadCol dataField="d" hidden={true}>第四列</TreeHeadCol>
-                        <TreeHeadCol width={150} dataFormat={()=> {
+                        <TreeHeadCol dataField="id" dataAlign="center" dataFixed="left">id</TreeHeadCol>
+                        <TreeHeadCol dataAlign='center' dataField='regionRoleName' dataFixed="left">区域角色</TreeHeadCol>
+                        <TreeHeadCol dataAlign='center' dataField='systemRoleName'>系统角色</TreeHeadCol>
+                        <TreeHeadCol dataAlign='center' dataField='systemRoleName'>系统角色</TreeHeadCol>
+                        <TreeHeadCol dataAlign='center' dataField='systemRoleName'>系统角色</TreeHeadCol>
+                        <TreeHeadCol dataAlign='center' dataField='systemRoleName'>系统角色</TreeHeadCol>
+                        <TreeHeadCol dataAlign='center' dataField='systemRoleName'>系统角色</TreeHeadCol>
+                        <TreeHeadCol dataAlign='center' dataField='systemRoleName'>系统角色</TreeHeadCol>
+                        <TreeHeadCol dataAlign='center' dataField='systemRoleName'>系统角色</TreeHeadCol>
+                        <TreeHeadCol dataAlign='center' dataField='systemRoleName'>系统角色</TreeHeadCol>
+                        <TreeHeadCol dataAlign='center' dataField='region' dataFixed="left">区域</TreeHeadCol>
+                        <TreeHeadCol dataAlign='center' dataField='createTime'>创建时间</TreeHeadCol>
+                        <TreeHeadCol dataAlign='center' dataField='createTime'>创建时间</TreeHeadCol>
+                        <TreeHeadCol dataAlign='center' dataField='createTime'>创建时间</TreeHeadCol>
+                        <TreeHeadCol dataAlign='center' dataField='createTime'>创建时间</TreeHeadCol>
+                        <TreeHeadCol dataAlign='center' dataField='createTime'>创建时间</TreeHeadCol>
+                        <TreeHeadCol dataAlign='center' dataField='createTime'>创建时间</TreeHeadCol>
+                        <TreeHeadCol dataAlign='center' dataField='createTime'>创建时间</TreeHeadCol>
+                        <TreeHeadCol dataAlign='center' dataField='createTime'>创建时间</TreeHeadCol>
+                        <TreeHeadCol dataAlign='center' dataField='createTime'>创建时间</TreeHeadCol>
+                        <TreeHeadCol dataAlign='center' dataField='createTime'>创建时间</TreeHeadCol>
+                        <TreeHeadCol dataAlign='center' dataField='description' dataFixed="right">描述</TreeHeadCol>
+                        <TreeHeadCol dataAlign='center' dataFormat={()=> {
                             return <a href="#">freedom!</a>
                         }}>操作</TreeHeadCol>
-                    </TreeTable>
-                </div>
-                <div style={{margin: "20px"}}>
-                    <TreeTable
-                        height="50px"
-                        hashKey={true}
-                        data={noKeyData}
-                        pagination={true}
-                        options={options}
-                    >
-                        <TreeHeadCol dataField="a" dataAlign="center">第一列</TreeHeadCol>
-                        <TreeHeadCol dataField="b">第二列</TreeHeadCol>
-                        <TreeHeadCol dataField="c">第三列</TreeHeadCol>
-                        <TreeHeadCol dataField="d">第四列</TreeHeadCol>
                     </TreeTable>
                 </div>
             </div>

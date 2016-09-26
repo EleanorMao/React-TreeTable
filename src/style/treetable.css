@@ -8,6 +8,11 @@
     float: right;
 }
 
+.table-tree-wrapper {
+    margin: 10px;
+    position: relative;
+}
+
 .table-tree {
     color: #333;
     width: 100%;
@@ -16,8 +21,17 @@
     border: 1px solid #ddd;
 }
 
+.table-tree.table-fixed, .table-tree.table-fixed .table {
+    width: auto;
+}
+
 .table-tree .table-container {
     overflow: auto;
+    position: relative;
+}
+
+.table .table-header-container {
+    overflow: hidden;
 }
 
 .table-tree .table-bordered,
@@ -35,6 +49,25 @@
 .table-tree .table {
     margin-bottom: 0;
     table-layout: fixed;
+}
+
+.table-fixed {
+    top: 0;
+    position: absolute;
+}
+
+.table-fixed .table tr td {
+    background: pink !important;
+}
+
+.table-left-fixed {
+    left: 0;
+    border-right: 0;
+}
+
+.table-right-fixed {
+    right: 0;
+    border-left: 0;
 }
 
 .table-tree.ellipsis .table th, .table-tree.ellipsis .table td {
