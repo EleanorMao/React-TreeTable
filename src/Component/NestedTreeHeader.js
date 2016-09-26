@@ -8,7 +8,7 @@ import React, {
 
 import {isObj} from './Util';
 
-export default class NestedTreeHead extends Component {
+export default class NestedTreeHeader extends Component {
     constructor(props) {
         super(props);
     }
@@ -36,22 +36,24 @@ export default class NestedTreeHead extends Component {
     colgroupRender() {
         const cols = this.props.cols;
         let output = [];
-        for (let i = 0; i < cols; i++) {
-            output.push(<col key={i}/>)
-        }
+        cols.map((item, i)=> {
+            output.push(<col key={i} style={{display: item.hidden && 'none'}}/>)
+        });
         return output;
     }
 
     render() {
         return (
-            <table className="table table-bordered table-striped table-hover">
-                <colgroup ref="colgroup">{this.colgroupRender()}</colgroup>
-                <thead>{this.nestedHeadRender()}</thead>
-            </table>
+            <div className={"table-tree table-nestedHead " + this.props.lineWrap} ref="header">
+                <table className="table table-bordered table-striped table-hover">
+                    <colgroup ref="colgroup">{this.colgroupRender()}</colgroup>
+                    <thead>{this.nestedHeadRender()}</thead>
+                </table>
+            </div>
         )
     }
 }
 
-NestedTreeHead.defaultProps = {
+NestedTreeHeader.defaultProps = {
     nestedHead: PropTypes.arrayOf(PropTypes.array)
 };

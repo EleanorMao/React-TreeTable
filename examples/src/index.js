@@ -155,10 +155,10 @@ class Main extends Component {
                         dataSize={20}
                         remote={true}
                         nestedHead={[[{
-                    label: '全国',
-                    colspan: 4,
-                    rowspan: 2
-                    }, 'a', 'a', 'a'], ['b', 'b', 'b']]}
+                            label: '全国',
+                            colspan: 4,
+                            rowspan: 2
+                        }, 'a', 'a', 'a', 'a'], ['b', 'b', 'b', 'b']]}
                         startArrowCol={1}
                         pagination={false}
                     >
@@ -171,10 +171,10 @@ class Main extends Component {
                         <TreeHeadCol width={200} dataField="d" hidden={false}>第四列</TreeHeadCol>
                         <TreeHeadCol width={200} dataField="d" hidden={false}>第五列</TreeHeadCol>
                         <TreeHeadCol dataField="d" hidden={false}>第六列</TreeHeadCol>
-                        <TreeHeadCol dataField="d" hidden={true}>第四列</TreeHeadCol>
+                        <TreeHeadCol dataField="d" hidden={true}>第七列</TreeHeadCol>
                         <TreeHeadCol width={150} dataFormat={()=> {
-                    return <a href="#">freedom!</a>
-                    }}>操作</TreeHeadCol>
+                            return <a href="#">freedom!</a>
+                        }}>操作</TreeHeadCol>
                     </TreeTable>
                 </div>
                 <div style={style}>
@@ -205,7 +205,6 @@ class Main extends Component {
 
                             }
                         }}
-                        lineWrap="break"
                     >
                         <TreeHeadCol dataField="id" dataAlign="center" dataFixed="left">id</TreeHeadCol>
                         <TreeHeadCol dataAlign='center' width="150px" dataField='regionRoleName'

@@ -5,6 +5,8 @@
 ### TreeTable
 * iskey[String]   作为key用的那个字段的名字
 * data[Array]   数据入口, 子节点可命名为`children` 或者 `list` 或者 `chdatalist`
+* hover[Boolean] 默认是`true`， 开启就有hover效果
+* hoverStyle[Object] 默认是`{backgroundColor: '#f5f5f5'}`
 * isTree[Boolean]  是否是树形结构，开启后不能是有hashKey模式，一定程度上节省了性能
 * hashKey[Boolean]   默认是`fasle`, 如果没有唯一的id, 那就传`true`, 本表格会帮你造一个`uid`
 * width[Number | String] 宽度

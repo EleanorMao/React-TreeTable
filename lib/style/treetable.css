@@ -8,16 +8,46 @@
     float: right;
 }
 
+.react-tree {
+    margin: 10px;
+}
+
+.table-tree-wrapper {
+    position: relative;
+    border: 1px solid #ddd;
+}
+
 .table-tree {
     color: #333;
     width: 100%;
     font-size: 14px;
     line-height: 40px;
-    border: 1px solid #ddd;
+}
+
+.table-tree.table-fixed,
+.table-tree.table-fixed .table {
+    width: auto;
+}
+
+.table-tree .table-bordered {
+    border-top: 0;
 }
 
 .table-tree .table-container {
     overflow: auto;
+    position: relative;
+}
+
+.table-tree-wrapper .table-tree-footer {
+    padding: 10px;
+}
+
+.react-tree .table-tree-title {
+    padding: 10px 0;
+}
+
+.table-fixed .table-container, .table-container.table-header-container {
+    overflow: hidden;
 }
 
 .table-tree .table-bordered,
@@ -25,6 +55,10 @@
 .table-bordered > tbody > tr > td {
     border-left: 0;
     border-width: 1px;
+}
+
+.table-tree .table > thead > tr > th {
+    background: #fff;
 }
 
 .table-tree .table-bordered > tbody > tr > td:last-child,
@@ -35,6 +69,31 @@
 .table-tree .table {
     margin-bottom: 0;
     table-layout: fixed;
+}
+
+.table-fixed {
+    top: 0;
+    position: absolute;
+}
+
+.table-left-fixed {
+    left: 0;
+    border-right: 0;
+    box-shadow: 4px 0 4px rgba(0, 0, 0, 0.2);
+}
+
+.table-left-fixed .table {
+    border-right: 0
+}
+
+.table-right-fixed {
+    right: 0;
+    border-left: 0;
+}
+
+.table-right-fixed {
+    border-left: 0;
+    box-shadow: -4px 0 4px rgba(0, 0, 0, 0.2);
 }
 
 .table-tree.ellipsis .table th, .table-tree.ellipsis .table td {
@@ -53,10 +112,6 @@
     position: relative;
 }
 
-.table-tree .table td > span {
-    padding: 0 10px;
-}
-
 .table-tree .table td .table-arrow {
     top: 16px;
     right: 10px;
@@ -65,11 +120,29 @@
     transition: transform 0.2s ease-in;
 }
 
-.table-tree .table tr.ancestor > td {
-    background-color: papayawhip;
+.table-tree .table tr.ancestor {
+    background-color: #ffefd5;
 }
 
 .table-tree .table tr.ancestor > td span {
     text-indent: 0 !important;
     font-weight: 800;
+}
+
+.table-tree.table-nestedHead {
+    border: 1px solid #ddd;
+    border-bottom: 0;
+    overflow: hidden;
+}
+
+.table-nestedHead .table-bordered {
+    border-bottom: 0;
+}
+
+.table-body-container .table-bordered > tbody > tr:first-child > td {
+    border-top: 0;
+}
+
+.table-nestedHead .table-bordered > thead > tr:last-child > th {
+    border-top: 0;
 }

@@ -8,7 +8,7 @@ import React, {
 
 import {empty, sort} from './Util';
 
-export default class TreeHead extends Component {
+export default class TreeHeader extends Component {
     constructor(props) {
         super(props);
     }
@@ -63,24 +63,26 @@ export default class TreeHead extends Component {
         let i = 0;
         let renderChildren = sort(children).sorted;
         return (
-            <table className="table table-bordered">
-                {this.colgroupRender(renderChildren, left, right)}
-                <thead>
-                <tr ref="thead">
-                    {!isTree && this.selectRender(selectRow, onSelectAll, checked)}
-                    {  React.Children.map(renderChildren, (elm)=> {
-                        if (left && elm.props.dataFixed !== 'left') return;
-                        if (right && elm.props.dataFixed !== 'right') return;
-                        return React.cloneElement(elm, {key: i++, onSort, sortName, sortOrder});
-                    })}
-                </tr>
-                </thead>
-            </table>
+            <div className="table-container table-header-container" ref="header">
+                <table className="table table-bordered">
+                    {this.colgroupRender(renderChildren, left, right)}
+                    <thead>
+                    <tr ref="thead">
+                        {!isTree && this.selectRender(selectRow, onSelectAll, checked)}
+                        {  React.Children.map(renderChildren, (elm)=> {
+                            if (left && elm.props.dataFixed !== 'left') return;
+                            if (right && elm.props.dataFixed !== 'right') return;
+                            return React.cloneElement(elm, {key: i++, onSort, sortName, sortOrder});
+                        })}
+                    </tr>
+                    </thead>
+                </table>
+            </div>
         )
     }
 }
 
-TreeHead.defaultProps = {
+TreeHeader.defaultProps = {
     left: 0,
     right: 0,
     selectRow: {

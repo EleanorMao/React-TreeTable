@@ -364,7 +364,7 @@ export let list = [{
     "lastUpdateTime": 1470727228000,
     "creater": null,
     "updater": null,
-    "regionRoleName": "产品-安徽省",
+    "regionRoleName": "产品-安徽省管理员-全国",
     "province": "",
     "region": "安徽省",
     "description": "",
@@ -380,7 +380,7 @@ export let list = [{
     "regionRoleName": "管理员-全国",
     "province": "",
     "region": "全国",
-    "description": "hahaha111345345",
+    "description": "hahaha111345345hahaha111345345",
     "systemRoleId": 6,
     "systemRoleName": "管理员"
 }];

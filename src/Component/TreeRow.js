@@ -113,13 +113,19 @@ export default class TreeRow extends Component {
         let {
             data,
             level,
+            hover,
             isTree,
             checked,
             isSelect,
-            selectRow
+            selectRow,
+            hoverStyle,
+            onMouseOut,
+            onMouseOver
         } = this.props;
         return (
-            <tr className={isTree && !level && "ancestor"}
+            <tr style={hover ? hoverStyle : {}}
+                className={isTree && !level && "ancestor"}
+                onMouseOut={onMouseOut} onMouseOver={onMouseOver}
                 onClick={isSelect ? ()=>selectRow.onSelect(!checked, data) : ()=> {
                     return false;
                 }}
