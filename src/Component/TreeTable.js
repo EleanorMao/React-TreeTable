@@ -422,7 +422,7 @@ export default class TreeTable extends Component {
         return output;
     }
 
-    rowsRender(cols, hideSelectRow) {
+    rowsRender(cols, hideSelectRow, right) {
         let {
             hover,
             length,
@@ -466,7 +466,7 @@ export default class TreeTable extends Component {
                     selectRow={selectRow}
                     parent={node.__parent}
                     hoverStyle={hoverStyle}
-                    arrowCol={startArrowCol}
+                    arrowCol={right ? null : startArrowCol}
                     arrowRender={arrowRender}
                     hideSelectRow={hideSelectRow}
                     isSelect={!isTree && isSelect}
@@ -516,7 +516,7 @@ export default class TreeTable extends Component {
                 <div className="table-container table-body-container" style={{height: height || 'auto'}}>
                     <table className="table table-bordered table-striped table-hover">
                         <colgroup ref="right">{this.colgroupRender(this.rightColumnData, 'none')}</colgroup>
-                        <tbody ref="rtbody">{this.rowsRender(this.rightColumnData, true)}</tbody>
+                        <tbody ref="rtbody">{this.rowsRender(this.rightColumnData, true, true)}</tbody>
                     </table>
                 </div>
             )
