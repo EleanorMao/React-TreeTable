@@ -62,7 +62,7 @@ export default class TreeRow extends Component {
 
             const style = {
                 width: key.width,
-                minWidth: key.width,
+                maxWidth: key.width,
                 textAlign: key.dataAlign,
                 display: key.hidden && 'none',
                 backgroundColor: isSelect && checked && selectRow.bgColor

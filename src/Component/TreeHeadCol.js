@@ -42,7 +42,7 @@ class TreeHeadCol extends Component {
 
         const style = {
             width: width,
-            minWidth: width,
+            maxWidth: width,
             textAlign: dataAlign,
             display: hidden && 'none'
         };

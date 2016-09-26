@@ -146,24 +146,24 @@ export default class TreeTable extends Component {
             }
             const result = (width + lastPaddingWidth).toFixed(2) + 'px';
             firstRow[i].style.width = result;
-            firstRow[i].style.minWidth = result;
+            firstRow[i].style.maxWidth = result;
             if (nestedRow && nestedRow[i]) {
                 const display = computedStyle.display;
                 nestedRow[i].style.width = result;
-                nestedRow[i].style.minWidth = result;
+                nestedRow[i].style.maxWidth = result;
                 if (display === 'none') nestedRow[i].style.display = display;
             }
             if (fixedLeftRow && fixedLeftRow[i]) {
                 fixedLeftRow[i].style.width = result;
-                fixedLeftRow[i].style.minWidth = result;
+                fixedLeftRow[i].style.maxWidth = result;
                 fixedLeftHeadRow[i].style.width = result;
-                fixedLeftHeadRow[i].style.minWidth = result;
+                fixedLeftHeadRow[i].style.maxWidth = result;
             }
             if (fixedRightRow && fixedRightRow[i]) {
                 fixedRightRow[i].style.width = result;
-                fixedRightRow[i].style.minWidth = result;
+                fixedRightRow[i].style.maxWidth = result;
                 fixedRightHeadRow[i].style.width = result;
-                fixedRightHeadRow[i].style.minWidth = result;
+                fixedRightHeadRow[i].style.maxWidth = result;
             }
         }
 
@@ -179,11 +179,11 @@ export default class TreeTable extends Component {
                 let height = getComputedStyle(row).height;
                 if (ltbody && ltbody[i]) {
                     ltbody[i].style.height = height;
-                    ltbody[i].style.minHeight = height;
+                    ltbody[i].style.maxHeight = height;
                 }
                 if (rtbody && rtbody[i]) {
                     rtbody[i].style.height = height;
-                    rtbody[i].style.minHeight = height;
+                    rtbody[i].style.maxHeight = height;
                 }
             }
         }
@@ -346,13 +346,13 @@ export default class TreeTable extends Component {
                     if (typeof ValueA === 'string') {
                         return ValueA.localeCompare(ValueB);
                     } else {
-                        return ValueA < ValueB ? -1 : ((ValueA > ValueB) ? 1 : 0);
+                        return ValueA < ValueB ? -1 : (ValueA > ValueB ? 1 : 0);
                     }
                 } else {
                     if (typeof ValueB === 'string') {
                         return ValueB.localeCompare(ValueA);
                     } else {
-                        return ValueB < ValueA ? -1 : ((ValueB > ValueA) ? 1 : 0);
+                        return ValueB < ValueA ? -1 : (ValueB > ValueA ? 1 : 0);
                     }
                 }
             });
@@ -384,6 +384,9 @@ export default class TreeTable extends Component {
         if (!remote) {
             this.setState(old=> {
                 old.length = length;
+                if (!remote && (page - 1) * length > old.renderedList.length) {
+                    old.crtPage = 1;
+                }
                 return old;
             });
         }
@@ -404,7 +407,7 @@ export default class TreeTable extends Component {
         data.map((item, index) => {
             let style = {
                 width: item.width,
-                minWidth: item.width,
+                maxWidth: item.width,
                 textAlign: item.dataAlign,
                 display: item.hidden && 'none'
             };
@@ -737,7 +740,7 @@ TreeTable.defaultProps = {
     remote: false,
     nestedHead: [],
     startArrowCol: 0,
-    lineWrap: 'break',
+    lineWrap: 'ellipsis',
     pagination: false,
     onSortChange: empty,
     sortName: undefined,

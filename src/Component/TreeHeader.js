@@ -37,7 +37,7 @@ export default class TreeHeader extends Component {
                     if (right && elm.props.dataFixed !== 'right') return;
                     let style = {
                         width: elm.props.width,
-                        minWidth: elm.props.width,
+                        maxWidth: elm.props.width,
                         textAlign: elm.props.dataAlign,
                         display: elm.props.hidden && 'none'
                     };

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import {
     TreeTable,
     TreeHeadCol
-} from '../../src/Index.js';
+} from '../../lib/Index.js';
 import {noKeyData, data, list} from './fackData';
 
 const Component = React.Component;
