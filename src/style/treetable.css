@@ -8,8 +8,11 @@
     float: right;
 }
 
-.table-tree-wrapper {
+.react-tree {
     margin: 10px;
+}
+
+.table-tree-wrapper {
     position: relative;
 }
 
@@ -21,8 +24,13 @@
     border: 1px solid #ddd;
 }
 
-.table-tree.table-fixed, .table-tree.table-fixed .table {
+.table-tree.table-fixed,
+.table-tree.table-fixed .table {
     width: auto;
+}
+
+.table-tree .table-bordered {
+    border-top: 0;
 }
 
 .table-tree .table-container {
@@ -30,7 +38,7 @@
     position: relative;
 }
 
-.table .table-header-container {
+.table-fixed .table-container, .table-container.table-header-container {
     overflow: hidden;
 }
 
@@ -39,6 +47,10 @@
 .table-bordered > tbody > tr > td {
     border-left: 0;
     border-width: 1px;
+}
+
+.table-tree .table > thead > tr > th {
+    background: #fff;
 }
 
 .table-tree .table-bordered > tbody > tr > td:last-child,
@@ -56,18 +68,24 @@
     position: absolute;
 }
 
-.table-fixed .table tr td {
-    background: pink !important;
-}
-
 .table-left-fixed {
     left: 0;
     border-right: 0;
+    box-shadow: 4px 0 4px rgba(0, 0, 0, 0.2);
+}
+
+.table-left-fixed .table {
+    border-right: 0
 }
 
 .table-right-fixed {
     right: 0;
     border-left: 0;
+}
+
+.table-right-fixed {
+    border-left: 0;
+    box-shadow: -4px 0 4px rgba(0, 0, 0, 0.2);
 }
 
 .table-tree.ellipsis .table th, .table-tree.ellipsis .table td {
@@ -105,4 +123,13 @@
 .table-tree .table tr.ancestor > td span {
     text-indent: 0 !important;
     font-weight: 800;
+}
+
+.table-tree.table-nestedHead {
+    border-bottom: 0;
+    overflow: hidden;
+}
+
+.table-nestedHead .table-bordered {
+    border-bottom: 0;
 }

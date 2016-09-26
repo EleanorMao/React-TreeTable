@@ -6,35 +6,11 @@ import React, {
     PropTypes
 } from 'react';
 
-import {isObj, empty, sort} from './Util'
-
+import {empty, sort} from './Util';
 
 export default class TreeHead extends Component {
     constructor(props) {
         super(props);
-    }
-
-    nestedHeadRender(neseted, selectRow, isTree, left) {
-        let output = [];
-        const select = !isTree && selectRow.mode !== 'none';
-        neseted.map((throws, index) => {
-            let item =
-                <tr key={'trow' + index}>
-                    {select && <th key='trow-1'/>}
-                    {throws.map((cell, i) => {
-                        let obj = isObj(cell);
-                        let colspan = null;
-                        if (obj && cell.colspan) {
-                            colspan = left ? (cell.colspan < left ? cell.colspan : left) : cell.colspan;
-                        }
-                        return <th colSpan={colspan}
-                                   rowSpan={obj && cell.rowspan || null}
-                                   key={i}>{obj ? cell.label : cell}</th>
-                    })}
-                </tr>;
-            output.push(item);
-        });
-        return output;
     }
 
     selectRender(selectRow, onSelectAll, checked) {
@@ -52,6 +28,25 @@ export default class TreeHead extends Component {
         }
     }
 
+    colgroupRender(renderChildren, left, right) {
+        let i = 0;
+        return (
+            <colgroup ref="colgroup">
+                {  React.Children.map(renderChildren, (elm)=> {
+                    if (left && elm.props.dataFixed !== 'left') return;
+                    if (right && elm.props.dataFixed !== 'right') return;
+                    let style = {
+                        width: elm.props.width,
+                        minWidth: elm.props.width,
+                        textAlign: elm.props.dataAlign,
+                        display: elm.props.hidden && 'none'
+                    };
+                    return <col key={i} style={style}/>
+                })}
+            </colgroup>
+        )
+    }
+
     render() {
         const {
             left,
@@ -63,28 +58,14 @@ export default class TreeHead extends Component {
             sortName,
             sortOrder,
             selectRow,
-            nestedHead,
             onSelectAll
         } = this.props;
         let i = 0;
         let renderChildren = sort(children).sorted;
         return (
             <table className="table table-bordered">
-                <colgroup ref="colgroup">
-                    {  React.Children.map(renderChildren, (elm)=> {
-                        if (left && elm.props.dataFixed !== 'left') return;
-                        if (right && elm.props.dataFixed !== 'right') return;
-                        let style = {
-                            width: elm.props.width,
-                            minWidth: elm.props.width,
-                            textAlign: elm.props.dataAlign,
-                            display: elm.props.hidden && 'none'
-                        };
-                        return <col key={i} style={style}/>
-                    })}
-                </colgroup>
+                {this.colgroupRender(renderChildren, left, right)}
                 <thead>
-                {!!nestedHead.length && this.nestedHeadRender(nestedHead, selectRow, isTree, left)}
                 <tr ref="thead">
                     {!isTree && this.selectRender(selectRow, onSelectAll, checked)}
                     {  React.Children.map(renderChildren, (elm)=> {
@@ -100,6 +81,8 @@ export default class TreeHead extends Component {
 }
 
 TreeHead.defaultProps = {
+    left: 0,
+    right: 0,
     selectRow: {
         mode: 'none',
         bgColor: '#dff0d8',

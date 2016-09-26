@@ -9,10 +9,11 @@ import React, {
     Component,
     PropTypes
 } from 'react';
-import TreeRow  from './TreeRow';
-import TreeHead from './TreeHead';
-import Paging   from './Pagination/Pagination';
-import Dropdown from './Pagination/DropdownList';
+import TreeRow        from './TreeRow';
+import TreeHead       from './TreeHead';
+import Paging         from './Pagination/Pagination';
+import Dropdown       from './Pagination/DropdownList';
+import NestedTreeHead from './NestedTreeHead';
 import {empty, sort, uniqueID, isUndefined, diff, getScrollBarWidth} from './Util'
 
 require('../style/treetable.css');
@@ -113,6 +114,7 @@ export default class TreeTable extends Component {
         const cells = this.refs.thead.refs.thead.childNodes;
         const fixedLeftRow = this.refs.left && this.refs.left.childNodes;
         const fixedRightRow = this.refs.right && this.refs.right.childNodes;
+        const nestedRow = this.refs.nested && this.refs.nested.refs.colgroup.childNodes;
         const fixedLeftHeadRow = this.refs.lthead && this.refs.lthead.refs.colgroup.childNodes;
         const fixedRightHeadRow = this.refs.rthead && this.refs.rthead.refs.colgroup.childNodes;
         const length = cells.length;
@@ -140,9 +142,13 @@ export default class TreeTable extends Component {
                 width = 120;
                 cell.width = width + lastPaddingWidth + 'px';
             }
-            const result = width + lastPaddingWidth + 'px';
+            const result = (width + lastPaddingWidth).toFixed(2) + 'px';
             firstRow[i].style.width = result;
             firstRow[i].style.minWidth = result;
+            if (nestedRow && nestedRow[i]) {
+                nestedRow[i].style.width = result;
+                nestedRow[i].style.minWidth = result;
+            }
             if (fixedLeftRow && fixedLeftRow[i]) {
                 fixedLeftRow[i].style.width = result;
                 fixedLeftRow[i].style.minWidth = result;
@@ -159,8 +165,8 @@ export default class TreeTable extends Component {
 
         if (fixedLeftRow || fixedRightHeadRow) {
             const tbody = this.refs.tbody.childNodes;
-            const ltbody = this.refs.ltbody.childNodes;
-            const rtbody = this.refs.rtbody.childNodes;
+            const ltbody = this.refs.ltbody && this.refs.ltbody.childNodes;
+            const rtbody = this.refs.rtbody && this.refs.rtbody.childNodes;
             const headHeight = getComputedStyle(this.refs.thead.refs.thead).height;
             if (this.refs.lthead)  this.refs.lthead.refs.thead.style.height = headHeight;
             if (this.refs.rthead)  this.refs.rthead.refs.thead.style.height = headHeight;
@@ -181,6 +187,7 @@ export default class TreeTable extends Component {
 
     _scrollHeader(e) {
         this.refs.header.scrollLeft = e.currentTarget.scrollLeft;
+        this.refs.nestedHeader.scrollLeft = e.currentTarget.scrollLeft;
     }
 
     _tryRender() {
@@ -322,20 +329,29 @@ export default class TreeTable extends Component {
             let list = renderedList.slice();
 
             list.sort((a, b) => {
+                let ValueA = a[sortField];
+                let ValueB = b[sortField];
                 if (order === 'asc') {
-                    return a[sortField] - b[sortField];
+                    if (typeof ValueA === 'string') {
+                        return ValueA.localeCompare(ValueB);
+                    } else {
+                        return ValueA < ValueB ? -1 : ((ValueA > ValueB) ? 1 : 0);
+                    }
                 } else {
-                    return b[sortField] - a[sortField];
+                    if (typeof ValueB === 'string') {
+                        return ValueB.localeCompare(ValueA);
+                    } else {
+                        return ValueB < ValueA ? -1 : ((ValueB > ValueA) ? 1 : 0);
+                    }
                 }
             });
 
             dic = this._sortDictionary(list, this._getKeyName());
-
             this.setState(old=> {
-                old.dictionary = dic;
-                old.sortField = sortField;
-                old.renderedList = list;
                 old.order = order;
+                old.dictionary = dic;
+                old.renderedList = list;
+                old.sortField = sortField;
                 return old;
             });
 
@@ -445,12 +461,10 @@ export default class TreeTable extends Component {
     leftBodyRender() {
         if (this.leftColumnData.length) {
             return (
-                <div className="table-bordered table-striped table-hover">
-                    <table className="table">
-                        <colgroup ref="left">{this.colgroupRender(this.leftColumnData)}</colgroup>
-                        <tbody ref="ltbody">{this.rowsRender(this.leftColumnData)}</tbody>
-                    </table>
-                </div>
+                <table className="table table-bordered table-striped table-hover">
+                    <colgroup ref="left">{this.colgroupRender(this.leftColumnData)}</colgroup>
+                    <tbody ref="ltbody">{this.rowsRender(this.leftColumnData)}</tbody>
+                </table>
             )
         }
     }
@@ -458,12 +472,10 @@ export default class TreeTable extends Component {
     rightBodyRender() {
         if (this.rightColumnData.length) {
             return (
-                <div className="table-bordered table-striped table-hover table-right-fixed">
-                    <table className="table">
-                        <colgroup ref="right">{this.colgroupRender(this.rightColumnData)}</colgroup>
-                        <tbody ref="rtbody">{this.rowsRender(this.rightColumnData)}</tbody>
-                    </table>
-                </div>
+                <table className="table table-bordered table-striped table-hover">
+                    <colgroup ref="right">{this.colgroupRender(this.rightColumnData)}</colgroup>
+                    <tbody ref="rtbody">{this.rowsRender(this.rightColumnData)}</tbody>
+                </table>
             )
         }
     }
@@ -570,10 +582,6 @@ export default class TreeTable extends Component {
         )
     }
 
-    mainRender() {
-
-    }
-
     render() {
         const {
             width,
@@ -604,63 +612,74 @@ export default class TreeTable extends Component {
             let renderList = pagination && !remote ? this._sliceData(renderedList, crtPage, length) : renderedList.slice();
             checked = this._getAllValue(renderList.slice(), this._getKeyName()).sort().toString() === selectRow.selected.slice().sort().toString();
         }
-
         return (
-            <div className="table-tree-wrapper" style={{width: width || '100%'}}>
-                <div className={"table-tree " + lineWrap}>
-                    <div className="table-container table-header-container" ref="header">
-                        <TreeHead selectRow={selectRow} nestedHead={nestedHead} ref="thead"
-                                  checked={checked} sortName={remote ? sortName : sortField}
-                                  sortOrder={remote ? sortOrder : order} isTree={isTree}
-                                  onSelectAll={this.handleSelectAll.bind(this)}
-                                  onSort={this.handleSort.bind(this)}
-                        >
-                            {children}
-                        </TreeHead>
-                    </div>
-                    <div className="table-container" style={{height: height || 'auto'}} ref="container">
-                        {this.bodyRender()}
-                    </div>
+            <div className="react-tree">
+                <div className={"table-tree table-nestedHead " + lineWrap} ref="nestedHeader">
+                    <NestedTreeHead
+                        nestedHead={nestedHead} selectRow={selectRow}
+                        isTree={isTree} cols={this.columnData.length}
+                        ref="nested"
+                    />
                 </div>
-                {
-                    !!this.leftColumnData.length &&
-                    <div className={"table-tree table-fixed table-left-fixed " + lineWrap}>
-                        <div className="table-container table-header-container">
-                            <TreeHead selectRow={selectRow} nestedHead={nestedHead} left={this.leftColumnData.length}
-                                      checked={checked} sortName={remote ? sortName : sortField}
+                <div className="table-tree-wrapper" style={{width: width || '100%'}}>
+                    <div className={"table-tree " + lineWrap}>
+                        <div className="table-container table-header-container" ref="header">
+                            <TreeHead selectRow={selectRow} ref="thead" checked={checked}
                                       sortOrder={remote ? sortOrder : order} isTree={isTree}
+                                      sortName={remote ? sortName : sortField}
                                       onSelectAll={this.handleSelectAll.bind(this)}
-                                      onSort={this.handleSort.bind(this)} ref="lthead"
+                                      onSort={this.handleSort.bind(this)}
                             >
                                 {children}
                             </TreeHead>
                         </div>
-                        <div className="table-container" style={{height: height || 'auto'}}>
-                            {this.leftBodyRender()}
+                        <div className="table-container" style={{height: height || 'auto'}} ref="container">
+                            {this.bodyRender()}
                         </div>
                     </div>
-                }
-                {
-                    !!this.rightColumnData.length &&
-                    <div className={"table-tree table-fixed table-right-fixed " + lineWrap}>
-                        <div className="table-container table-header-container">
-                            <TreeHead selectRow={selectRow} nestedHead={nestedHead} right={this.rightColumnData.length}
-                                      checked={checked} sortName={remote ? sortName : sortField}
-                                      sortOrder={remote ? sortOrder : order} isTree={isTree}
-                                      onSelectAll={this.handleSelectAll.bind(this)}
-                                      onSort={this.handleSort.bind(this)} ref="rthead"
-                            >
-                                {children}
-                            </TreeHead>
+                    {
+                        !!this.leftColumnData.length &&
+                        <div className={"table-tree table-fixed table-left-fixed " + lineWrap}>
+                            <div className="table-container table-header-container">
+                                <TreeHead selectRow={selectRow} ref="lthead" checked={checked}
+                                          sortOrder={remote ? sortOrder : order} isTree={isTree}
+                                          sortName={remote ? sortName : sortField}
+                                          onSelectAll={this.handleSelectAll.bind(this)}
+                                          onSort={this.handleSort.bind(this)}
+                                          left={this.leftColumnData.length}
+                                >
+                                    {children}
+                                </TreeHead>
+                            </div>
+                            <div className="table-container" style={{height: height || 'auto'}}>
+                                {this.leftBodyRender()}
+                            </div>
                         </div>
-                        <div className="table-container" style={{height: height || 'auto'}}>
-                            {this.rightBodyRender()}
+                    }
+                    {
+                        !!this.rightColumnData.length &&
+                        <div className={"table-tree table-fixed table-right-fixed " + lineWrap}>
+                            <div className="table-container table-header-container">
+                                <TreeHead selectRow={selectRow} ref="rthead" checked={checked}
+                                          sortOrder={remote ? sortOrder : order} isTree={isTree}
+                                          sortName={remote ? sortName : sortField}
+                                          onSelectAll={this.handleSelectAll.bind(this)}
+                                          onSort={this.handleSort.bind(this)}
+                                          right={this.rightColumnData.length}
+                                >
+                                    {children}
+                                </TreeHead>
+                            </div>
+                            <div className="table-container" style={{height: height || 'auto'}}>
+                                {this.rightBodyRender()}
+                            </div>
                         </div>
-                    </div>
-                }
-                {this.pagingRowRender()}
+                    }
+                    {this.pagingRowRender()}
+                </div>
             </div>
         )
+
     }
 }
 

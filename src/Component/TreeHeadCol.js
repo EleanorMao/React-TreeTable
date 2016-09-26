@@ -12,17 +12,13 @@ class TreeHeadCol extends Component {
         const SortGroup =
             <span className="order">
                 <span className="dropdown">
-                    <span className="caret" onClick={()=>this.props.onSort(dataField, 'desc')}
-                          style={{margin: '10px 0 10px 5px', color: '#ccc'}}/>
+                    <span className="caret" style={{margin: '10px 0 10px 5px', color: '#ccc'}}/>
                 </span>
                 <span className="dropup">
-                    <span className="caret" onClick={()=>this.props.onSort(dataField, 'asc')}
-                          style={{margin: '10px 0', color: '#ccc'}}/>
+                    <span className="caret" style={{margin: '10px 0', color: '#ccc'}}/>
                 </span>
            </span>;
-        const AscCaret = <span className="caret"
-                               onClick={()=>this.props.onSort(sortName, sortOrder === 'desc' ? 'asc' : 'desc')}
-                               style={{margin: '10px 0 10px 5px'}}/>;
+        const AscCaret = <span className="caret" style={{margin: '10px 0 10px 5px'}}/>;
         if (dataField === sortName && sortOrder) {
             return <span className={"order " + (sortOrder === 'desc' ? '' : 'dropup')}>{AscCaret}</span>;
         } else {
@@ -35,6 +31,7 @@ class TreeHeadCol extends Component {
         const {
             width,
             hidden,
+            onSort,
             children,
             dataSort,
             sortName,
@@ -51,7 +48,8 @@ class TreeHeadCol extends Component {
         };
 
         return (
-            <th style={style}>
+            <th style={style}
+                onClick={dataSort ? ()=>onSort(dataField,sortOrder === 'asc' ? 'desc': 'asc') : ()=>{return false;}}>
                 <span>{children}</span>{dataSort && this.caretRender(dataField, sortName, sortOrder)}
             </th>
         );
