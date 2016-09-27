@@ -123,7 +123,7 @@
 }
 
 .table-tree .table tr.ancestor {
-    background-color: #ffefd5;
+    background-color: #ffefd5 !important;
 }
 
 .table-tree .table tr.ancestor > td span {

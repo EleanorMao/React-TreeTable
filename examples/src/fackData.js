@@ -217,7 +217,8 @@ export const data = [{
         c: 32,
         d: 42
     }]
-}, {
+}]
+let a = [{
     a: 2,
     b: 3,
     c: 4,
