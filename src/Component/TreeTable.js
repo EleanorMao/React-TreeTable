@@ -438,7 +438,8 @@ export default class TreeTable extends Component {
             hoverStyle,
             pagination,
             arrowRender,
-            startArrowCol
+            startArrowCol,
+            childrenPropertyName
         } = this.props;
         const isSelect = selectRow.mode !== 'none';
         if (!renderedList.length) {
@@ -466,10 +467,11 @@ export default class TreeTable extends Component {
                     selectRow={selectRow}
                     parent={node.__parent}
                     hoverStyle={hoverStyle}
-                    arrowCol={right ? null : startArrowCol}
                     arrowRender={arrowRender}
                     hideSelectRow={hideSelectRow}
                     isSelect={!isTree && isSelect}
+                    arrowCol={right ? null : startArrowCol}
+                    childrenPropertyName={childrenPropertyName}
                     onClick={this.handleToggle.bind(this)}
                     onMouseOver={this.handleHover.bind(this, i)}
                     onMouseOut={this.handleHover.bind(this, null)}

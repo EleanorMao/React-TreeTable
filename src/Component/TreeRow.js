@@ -44,7 +44,8 @@ export default class TreeRow extends Component {
             arrowCol,
             selectRow,
             arrowRender,
-            hideSelectRow
+            hideSelectRow,
+            childrenPropertyName
         } = this.props;
 
         const _key = hashKey ? data.__uid : data[iskey];
@@ -80,7 +81,7 @@ export default class TreeRow extends Component {
                 arrow = cell || cell === 0 ? 0 : -1;
             }
 
-            let showArrow = data.list || data.chdatalist || data.children;
+            let showArrow = data[childrenPropertyName];
             showArrow = showArrow && showArrow.length > 0;
 
             const type = typeof key.showArrow;
