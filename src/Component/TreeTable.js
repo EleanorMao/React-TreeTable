@@ -602,7 +602,10 @@ export default class TreeTable extends Component {
                             nextLabel={options.nextLabel}
                             sizePerPage={this.state.length}
                             startLabel={options.startLabel}
-                            dataSize={this.state.dictionary.length}
+                            dataSize={isTree ?
+                                this.state.dictionary.length :
+                                this.props.data.length
+                                }
                             onPageChange={this.handleClick.bind(this)}
                         />
                     }
