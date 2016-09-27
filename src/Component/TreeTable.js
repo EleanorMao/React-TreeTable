@@ -575,6 +575,7 @@ export default class TreeTable extends Component {
 
     pagingRender() {
         const {
+            isTree,
             remote,
             options,
             dataSize,
