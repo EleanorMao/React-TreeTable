@@ -471,9 +471,9 @@ export default class TreeTable extends Component {
                     arrowRender={arrowRender}
                     hideSelectRow={hideSelectRow}
                     isSelect={!isTree && isSelect}
+                    onClick={this.handleToggle.bind(this)}
                     hover={hover ? null : isHover === key}
                     arrowCol={right ? null : startArrowCol}
-                    onClick={this.handleToggle.bind(this)}
                     childrenPropertyName={childrenPropertyName}
                     onMouseOver={hover ? this.handleHover.bind(this, key) : ()=> {
                     }}
@@ -546,7 +546,7 @@ export default class TreeTable extends Component {
                 <div style={{margin: '20px 0 0 20px ', display: 'inline-block'}}>
                     {
                         options.paginationShowsTotal === true ?
-                            <div>显示 {start} 至 {to}条 共{data.length}条</div> :
+                            <div>显示 {start} 至 {to}条 共{remote ? dataSize : data.length}条</div> :
                             options.paginationShowsTotal(start, to, dataSize)
                     }
                 </div>
@@ -599,6 +599,7 @@ export default class TreeTable extends Component {
                             nextLabel={options.nextLabel}
                             startLabel={options.startLabel}
                             sizePerPage={options.sizePerPage}
+                            paginationSize={options.paginationSize}
                             onPageChange={options.onPageChange}
                         />
                         :
@@ -609,6 +610,7 @@ export default class TreeTable extends Component {
                             nextLabel={options.nextLabel}
                             sizePerPage={this.state.length}
                             startLabel={options.startLabel}
+                            paginationSize={options.paginationSize}
                             dataSize={isTree ?
                                 this.state.dictionary.length :
                                 this.props.data.length
@@ -775,6 +777,7 @@ TreeTable.defaultProps = {
     },
     options: {
         sizePerPage: 10,
+        paginationSize: 6,
         sizePageList: [10],
         onPageChange: empty,
         onSizePageChange: empty
@@ -824,6 +827,7 @@ TreeTable.propTypes = {
         sizePerPage: PropTypes.number,
         sizePageList: PropTypes.array,
         onSizePageChange: PropTypes.func,
+        paginationSize: PropTypes.number,
         paginationShowsTotal: PropTypes.oneOfType([PropTypes.bool, PropTypes.func])
     })
 };

@@ -27,6 +27,7 @@
     * startLabel 分页器的回到第一页
     * endLabel 分页器的回到最后一页
     * sizePerPage[Number] 每页多长, 默认是十条
+    * paginationSize[Number] 分页器每次显示几个页码
     * onPageChange(page, sizePerPage) 点击分页器时调用
     * paginationShowsTotal[Boolean | Function(start, to , total)] 显示条数导航
 * selectRow[Object] 选择框（仅能在`isTree`是`false`的情况下使用）

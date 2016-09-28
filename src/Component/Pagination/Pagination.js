@@ -8,15 +8,15 @@ export default class Pagination extends Component {
     constructor(props) {
         super(props);
         this.startPage = 1;
-        this.finalStartPage = props.dataSize - props.paginationSize + 1;
+        this.finalStartPage = Math.ceil(props.dataSize / props.sizePerPage) - props.paginationSize + 1;
         this.lastPage = props.paginationSize;
-        this.center = Math.ceil(props.paginationSize / 2);
+        this.center = Math.floor(props.paginationSize / 2);
     }
 
     componentWillReceiveProps(props) {
-        this.finalStartPage = props.dataSize - props.paginationSize + 1;
+        this.finalStartPage = Math.ceil(props.dataSize / props.sizePerPage) - props.paginationSize + 1;
         this.lastPage = props.paginationSize;
-        this.center = Math.ceil(props.paginationSize / 2);
+        this.center = Math.floor(props.paginationSize / 2);
     }
 
     render() {
@@ -36,7 +36,8 @@ export default class Pagination extends Component {
             this.lastPage = Math.min(totalPages, current + paginationSize - this.center - 1);
             if (current > this.finalStartPage) {
                 this.startPage = this.finalStartPage;
-            } else if (this.lastPage - this.startPage !== paginationSize - 1) {
+            }
+            if (this.lastPage - this.startPage !== paginationSize - 1) {
                 this.startPage = current - this.center;
             }
         } else {
