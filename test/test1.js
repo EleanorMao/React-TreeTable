@@ -115,3 +115,181 @@ describe("isTree && key", function () {
         });
     });
 });
+
+describe("width && height", function () {
+    it("set width && height", function () {
+        let table = shallow(
+            <TreeTable data={[{id: 1}, {id: 2}]} iskey="id" width="200px" height="50px">
+                <TreeHeadCol dataField="id">test</TreeHeadCol>
+            </TreeTable>
+        );
+        expect(table.instance().props.width).to.equal('200px');
+        expect(table.instance().props.height).to.equal('50px');
+        table.setProps({width: 200, height: 50});
+        expect(table.instance().props.width).to.equal(200);
+        expect(table.instance().props.height).to.equal(50);
+    });
+});
+
+describe("title && footer", function () {
+    it("default", function () {
+        expect(defNoDataTable.hasClass('table-tree-title')).to.equal(false);
+        expect(defNoDataTable.hasClass('table-tree-footer')).to.equal(false);
+    });
+    it("title && footer", function () {
+        let table = shallow(
+            <TreeTable data={[{id: 1}, {id: 2}]} iskey="id"
+                       footer={()=> {
+                           return '脚'
+                       }} title={()=> {
+                return '头'
+            }}
+            >
+                <TreeHeadCol dataField="id">test</TreeHeadCol>
+            </TreeTable>
+        );
+        expect(table.find('.table-tree-title').text()).to.equal('头');
+        expect(table.find('.table-tree-footer').text()).to.equal('脚');
+    });
+});
+
+describe("hover", function () {
+    it("default", function () {
+        let table = (
+            <TreeTable data={[{id: 1}, {id: 2}]} iskey="id">
+                <TreeHeadCol dataField="id">test</TreeHeadCol>
+            </TreeTable>
+        );
+        expect(shallow(table).instance().props.hover).to.equal(true);
+        let mounted = mount(table), tr = mounted.find('.table-body-container .table tbody tr');
+        expect(mounted.state('isHover')).to.equal(null);
+        tr.first().simulate('mouseover');
+        expect(mounted.state('isHover')).to.equal(1);
+        tr.first().simulate('mouseout');
+        expect(mounted.state('isHover')).to.equal(null);
+        tr.last().simulate('mouseover');
+        expect(mounted.state('isHover')).to.equal(2);
+        tr.last().simulate('mouseout');
+        expect(mounted.state('isHover')).to.equal(null);
+    });
+    it("hover when hashKey", function () {
+        let table = (
+            <TreeTable data={[{id: 1}, {id: 2}]} iskey="id" hashKey={true}>
+                <TreeHeadCol dataField="id">test</TreeHeadCol>
+            </TreeTable>
+        );
+        expect(shallow(table).instance().props.hover).to.equal(true);
+        let mounted = mount(table), tr = mounted.find('.table-body-container .table tbody tr');
+        expect(mounted.state('isHover')).to.equal(null);
+        tr.first().simulate('mouseover');
+        expect(mounted.state('isHover') === 1).to.equal(false);
+        tr.first().simulate('mouseout');
+        expect(mounted.state('isHover')).to.equal(null);
+        tr.last().simulate('mouseover');
+        expect(mounted.state('isHover') === 2).to.equal(false);
+        tr.last().simulate('mouseout');
+        expect(mounted.state('isHover')).to.equal(null);
+    });
+    it("set to false", function () {
+        let table = (
+            <TreeTable data={[{id: 1}, {id: 2}]} iskey="id" hover={false}>
+                <TreeHeadCol dataField="id">test</TreeHeadCol>
+            </TreeTable>
+        );
+        expect(shallow(table).instance().props.hover).to.equal(false);
+        let mounted = mount(table), tr = mounted.find('.table-body-container .table tbody tr');
+        expect(mounted.state('isHover')).to.equal(null);
+        tr.first().simulate('mouseover');
+        expect(mounted.state('isHover')).to.equal(null);
+        tr.first().simulate('mouseout');
+        expect(mounted.state('isHover')).to.equal(null);
+        tr.last().simulate('mouseover');
+        expect(mounted.state('isHover')).to.equal(null);
+        tr.last().simulate('mouseout');
+        expect(mounted.state('isHover')).to.equal(null);
+    });
+});
+
+describe("expand", function () {
+    it("default", function () {
+        let table = (
+            <TreeTable data={[{id: 1}, {id: 2, list: [{id: 3}]}]} iskey="id">
+                <TreeHeadCol dataField="id">test</TreeHeadCol>
+            </TreeTable>
+        );
+        let mounted = mount(table);
+        expect(mounted.find('.table-body-container .table tbody tr').length).to.equal(2);
+        expect(mounted.find('.table-arrow').length).to.equal(1);
+        expect(mounted.find('.table-arrow .fa-chevron-down').length).to.equal(1);
+        expect(mounted.text().replace(/\s+/g, '')).to.equal('test12');
+        mounted.find('.table-body-container .table tbody tr').at(1).find('.table-arrow').simulate('click');
+        expect(mounted.find('.table-body-container .table tbody tr').length).to.equal(3);
+        expect(mounted.find('.table-arrow').length).to.equal(1);
+        expect(mounted.text().replace(/\s+/g, '')).to.equal('test123');
+    });
+    it("arrowRender", function () {
+        let table = (
+            <TreeTable data={[{id: 1}, {id: 2, list: [{id: 3}]}]}
+                       arrowRender={(open)=> {
+                           return <span className="arrowRender">{open ? '关闭' : '打开'}</span>
+                       }}
+                       iskey="id">
+                <TreeHeadCol dataField="id">test</TreeHeadCol>
+            </TreeTable>
+        );
+        let mounted = mount(table);
+        expect(mounted.find('.table-body-container .table tbody tr').length).to.equal(2);
+        expect(mounted.find('.table-arrow').length).to.equal(1);
+        expect(mounted.find('.table-arrow .arrowRender').length).to.equal(1);
+        expect(mounted.find('.table-arrow .arrowRender').text()).to.equal('打开');
+        expect(mounted.text().replace(/\s+/g, '').replace('打开', '')).to.equal('test12');
+        mounted.find('.table-body-container .table tbody tr').at(1).find('.arrowRender').simulate('click');
+        expect(mounted.find('.table-body-container .table tbody tr').length).to.equal(3);
+        expect(mounted.find('.table-arrow').length).to.equal(1);
+        expect(mounted.find('.arrowRender').length).to.equal(1);
+        expect(mounted.find('.table-arrow .arrowRender').text()).to.equal('关闭');
+        expect(mounted.text().replace(/\s+/g, '').replace('关闭', '')).to.equal('test123');
+    });
+    it("childrenPropertyName", function () {
+        let table = (
+            <TreeTable data={[{id: 1}, {id: 2, a: [{id: 3}]}]}
+                       childrenPropertyName="a"
+                       iskey="id">
+                <TreeHeadCol dataField="id">test</TreeHeadCol>
+            </TreeTable>
+        );
+        let mounted = mount(table);
+        expect(mounted.find('.table-body-container .table tbody tr').length).to.equal(2);
+        expect(mounted.find('.table-arrow').length).to.equal(1);
+        expect(mounted.find('.table-arrow .fa-chevron-down').length).to.equal(1);
+        expect(mounted.text().replace(/\s+/g, '')).to.equal('test12');
+        mounted.find('.table-body-container .table tbody tr').at(1).find('.table-arrow').simulate('click');
+        expect(mounted.find('.table-body-container .table tbody tr').length).to.equal(3);
+        expect(mounted.find('.table-arrow').length).to.equal(1);
+        expect(mounted.text().replace(/\s+/g, '')).to.equal('test123');
+    });
+    it("startArrowCol", function () {
+        let table = (
+            <TreeTable data={[{id: 1, a: 11}, {id: 2, a: 22, list: [{id: 3, a: 33}]}]}
+                       startArrowCol={1}
+                       iskey="id">
+                <TreeHeadCol dataField="id">test</TreeHeadCol>
+                <TreeHeadCol dataField="a">test</TreeHeadCol>
+            </TreeTable>
+        );
+        let mounted = mount(table);
+        expect(mounted.find('.table-body-container .table tbody tr').length).to.equal(2);
+        expect(mounted.find('.table-body-container .table tbody tr').find('td').length).to.equal(4);
+        expect(mounted.find('.table-body-container .table tbody tr').at(0).find('td').at(0).find('.table-arrow').length).to.equal(0);
+        expect(mounted.find('.table-body-container .table tbody tr').at(1).find('td').at(1).find('.table-arrow').length).to.equal(1);
+        expect(mounted.find('.table-arrow .fa-chevron-down').length).to.equal(1);
+        expect(mounted.text().replace(/\s+/g, '')).to.equal('testtest111222');
+        mounted.find('.table-body-container .table tbody tr').at(1).find('.table-arrow').simulate('click');
+        expect(mounted.find('.table-body-container .table tbody tr').length).to.equal(3);
+        expect(mounted.find('.table-body-container .table tbody tr').find('td').length).to.equal(6);
+        expect(mounted.find('.table-body-container .table tbody tr').at(0).find('td').at(0).find('.table-arrow').length).to.equal(0);
+        expect(mounted.find('.table-body-container .table tbody tr').at(1).find('td').at(1).find('.table-arrow').length).to.equal(1);
+        expect(mounted.find('.table-arrow').length).to.equal(1);
+        expect(mounted.text().replace(/\s+/g, '')).to.equal('testtest111222333');
+    })
+});

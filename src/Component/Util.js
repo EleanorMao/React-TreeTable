@@ -13,8 +13,13 @@ export let empty = function () {
 export let isUndefined = function (input) {
     return Object.prototype.toString.call(input) === "[object Undefined]";
 };
+
 export let isObj = function (input) {
     return Object.prototype.toString.call(input) === '[object Object]';
+};
+
+export let isArr = function (input) {
+    return Object.prototype.toString.call(input) === '[object Array]';
 };
 
 export let diff = function (a, b) {

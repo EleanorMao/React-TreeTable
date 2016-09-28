@@ -6,7 +6,7 @@ import React, {
     PropTypes
 } from 'react';
 
-import {empty, sort} from './Util';
+import {empty, sort, isArr} from './Util';
 
 export default class TreeHeader extends Component {
     constructor(props) {
@@ -62,7 +62,8 @@ export default class TreeHeader extends Component {
             onSelectAll
         } = this.props;
         let i = 0;
-        let renderChildren = sort(children).sorted;
+        let renderChildren = isArr(children) ? children : [children];
+        renderChildren = sort(renderChildren, 123).sorted;
         return (
             <div className="table-container table-header-container" ref="header">
                 <table className="table table-bordered">

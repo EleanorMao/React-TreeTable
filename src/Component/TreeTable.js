@@ -16,7 +16,7 @@ import Paging           from './Pagination/Pagination';
 import Dropdown         from './Pagination/DropdownList';
 import {empty, sort, uniqueID, isUndefined, diff, getScrollBarWidth} from './Util';
 
-// require('../style/treetable.css');
+require('../style/treetable.css');
 
 export default class TreeTable extends Component {
     constructor(props) {
@@ -759,11 +759,11 @@ TreeTable.defaultProps = {
     remote: false,
     nestedHead: [],
     startArrowCol: 0,
-    lineWrap: 'ellipsis',
     pagination: false,
     onSortChange: empty,
     sortName: undefined,
     sortOrder: undefined,
+    lineWrap: 'ellipsis',
     childrenPropertyName: 'list',
     noTextData: <span>暂无数据</span>,
     hoverStyle: {backgroundColor: '#f5f5f5'},
