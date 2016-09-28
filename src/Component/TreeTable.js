@@ -10,21 +10,20 @@ import React, {
     PropTypes
 } from 'react';
 import TreeRow          from './TreeRow';
-import classSet         from 'classnames';
 import TreeHeader       from './TreeHeader';
+import NestedTreeHeader from './NestedTreeHeader';
 import Paging           from './Pagination/Pagination';
 import Dropdown         from './Pagination/DropdownList';
-import NestedTreeHeader from './NestedTreeHeader';
-import {empty, sort, uniqueID, isUndefined, diff, getScrollBarWidth} from './Util'
+import {empty, sort, uniqueID, isUndefined, diff, getScrollBarWidth} from './Util';
 
-require('../style/treetable.css');
+// require('../style/treetable.css');
 
 export default class TreeTable extends Component {
     constructor(props) {
         super(props);
         let data = this._initDictionary(props);
         this.state = {
-            hover: null,
+            isHover: null,
             order: undefined,
             sortField: undefined,
             renderedList: data.data,
@@ -282,7 +281,7 @@ export default class TreeTable extends Component {
         const that = this;
         const {iskey, hashKey, childrenPropertyName} = this.props;
         const key = this._getKeyName();
-        let callback = function () {
+        let callback = function (data) {
             let childList = data[childrenPropertyName];
             data.__opened = !data.__opened;
             if (!opened) {
@@ -303,7 +302,7 @@ export default class TreeTable extends Component {
                     });
                     return old;
                 })
-            } else { //close
+            } else {
                 childList = that.flatten(childList, childrenPropertyName);
                 that.setState(old => {
                     childList && childList.forEach(item => {
@@ -398,7 +397,7 @@ export default class TreeTable extends Component {
 
     handleHover(hover) {
         this.setState(old => {
-            old.hover = hover;
+            old.isHover = hover;
             return old;
         })
     }
@@ -424,58 +423,65 @@ export default class TreeTable extends Component {
 
     rowsRender(cols, hideSelectRow, right) {
         let {
-            hover,
             length,
             crtPage,
+            isHover,
             renderedList
         } = this.state;
         let {
             iskey,
+            hover,
             isTree,
             remote,
             hashKey,
             selectRow,
+            noTextData,
             hoverStyle,
             pagination,
             arrowRender,
-            startArrowCol
+            startArrowCol,
+            childrenPropertyName
         } = this.props;
         const isSelect = selectRow.mode !== 'none';
         if (!renderedList.length) {
             return (
                 <tr>
-                    <td className="text-center" colSpan={this.columnData.length}><span>暂无数据</span></td>
+                    <td className="text-center" colSpan={this.columnData.length}>{noTextData}</td>
                 </tr>
             );
         }
         let output = [];
         if (pagination && !remote) renderedList = this._sliceData(renderedList, crtPage, length);
-        const key = this._getKeyName();
-        renderedList.forEach((node, i) => {
+        const keyName = this._getKeyName();
+        renderedList.forEach((node) => {
+            let key = node[keyName];
             output.push(
                 <TreeRow
+                    key={key}
                     data={node}
                     cols={cols}
                     iskey={iskey}
-                    key={node[key]}
                     isTree={isTree}
                     hashKey={hashKey}
-                    hover={hover === i}
                     level={node.__level}
                     open={node.__opened}
                     selectRow={selectRow}
                     parent={node.__parent}
                     hoverStyle={hoverStyle}
-                    arrowCol={right ? null : startArrowCol}
                     arrowRender={arrowRender}
                     hideSelectRow={hideSelectRow}
                     isSelect={!isTree && isSelect}
+                    hover={hover ? null : isHover === key}
+                    arrowCol={right ? null : startArrowCol}
                     onClick={this.handleToggle.bind(this)}
-                    onMouseOver={this.handleHover.bind(this, i)}
-                    onMouseOut={this.handleHover.bind(this, null)}
+                    childrenPropertyName={childrenPropertyName}
+                    onMouseOver={hover ? this.handleHover.bind(this, key) : ()=> {
+                    }}
+                    onMouseOut={hover ? this.handleHover.bind(this, null) : ()=> {
+                    }}
                     checked={selectRow.mode === 'checkbox' ?
-                        !!~selectRow.selected.indexOf(node[key]) :
-                    selectRow.selected[0] === node[key]
+                        !!~selectRow.selected.indexOf(key) :
+                    selectRow.selected[0] === key
                     }
                 />
             );
@@ -606,7 +612,7 @@ export default class TreeTable extends Component {
                             dataSize={isTree ?
                                 this.state.dictionary.length :
                                 this.props.data.length
-                                }
+                            }
                             onPageChange={this.handleClick.bind(this)}
                         />
                     }
@@ -757,6 +763,7 @@ TreeTable.defaultProps = {
     sortName: undefined,
     sortOrder: undefined,
     childrenPropertyName: 'list',
+    noTextData: <span>暂无数据</span>,
     hoverStyle: {backgroundColor: '#f5f5f5'},
     selectRow: {
         mode: 'none',
@@ -798,6 +805,7 @@ TreeTable.propTypes = {
     height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     title: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.node, PropTypes.func, PropTypes.element]),
     footer: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.node, PropTypes.func, PropTypes.element]),
+    noTextData: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.node, PropTypes.func, PropTypes.element]),
     selectRow: PropTypes.shape({
         mode: PropTypes.oneOf([
             'none',
