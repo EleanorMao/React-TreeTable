@@ -292,12 +292,11 @@ describe("expand", function () {
         expect(mounted.find('.table-arrow').length).to.equal(1);
         expect(mounted.text().replace(/\s+/g, '')).to.equal('testtest111222333');
     });
-    it("showArrow bool", function () {
-        //TODO: 真正的强制加箭头吗?
+    it("showArrow bool when startArrowCol is 0 (1)", function () {
         let table = (
             <TreeTable data={[{id: 1, a: 11}, {id: 2, a: 22, list: [{id: 3, a: 33}]}]} iskey="id">
                 <TreeHeadCol dataField="id" showArrow={true}>test</TreeHeadCol>
-                <TreeHeadCol dataField="a" showArrow={false}>test</TreeHeadCol>
+                <TreeHeadCol dataField="a">test</TreeHeadCol>
             </TreeTable>
         );
         let mounted = mount(table);
@@ -320,7 +319,7 @@ describe("expand", function () {
         expect(mounted.find('.table-arrow .fa-chevron-down').length).to.equal(3);
         expect(mounted.text().replace(/\s+/g, '')).to.equal('testtest111222333');
     });
-    it("showArrow bool2", function () {
+    it("showArrow bool when startArrowCol is 0 (2)", function () {
         let table = (
             <TreeTable data={[{id: 1, a: 11}, {id: 2, a: 22, list: [{id: 3, a: 33}]}]} iskey="id">
                 <TreeHeadCol dataField="id" showArrow={false}>test</TreeHeadCol>
@@ -330,21 +329,78 @@ describe("expand", function () {
         let mounted = mount(table);
         expect(mounted.find('.table-body-container .table tbody tr').length).to.equal(2);
         expect(mounted.find('.table-body-container .table tbody tr').find('td').length).to.equal(4);
+        expect(mounted.find('.table-body-container .table tbody tr').at(0).find('td').at(0).find('.table-arrow').length).to.equal(0);
+        expect(mounted.find('.table-body-container .table tbody tr').at(0).find('td').at(1).find('.table-arrow').length).to.equal(0);
+        expect(mounted.find('.table-body-container .table tbody tr').at(1).find('td').at(0).find('.table-arrow').length).to.equal(0);
+        expect(mounted.find('.table-body-container .table tbody tr').at(1).find('td').at(1).find('.table-arrow').length).to.equal(0);
+        expect(mounted.find('.table-arrow .fa-chevron-down').length).to.equal(0);
+        expect(mounted.text().replace(/\s+/g, '')).to.equal('testtest111222');
+    });
+    it("showArrow func when startArrowCol is 0 (1)", function () {
+        let table = (
+            <TreeTable data={[{id: 1, a: 11}, {id: 2, a: 22, list: [{id: 3, a: 33}]}]} iskey="id">
+                <TreeHeadCol dataField="id" showArrow={(cell)=> {
+                    if (cell === 1) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }}>test</TreeHeadCol>
+                <TreeHeadCol dataField="a">test</TreeHeadCol>
+            </TreeTable>
+        );
+        let mounted = mount(table);
+        expect(mounted.find('.table-body-container .table tbody tr').length).to.equal(2);
+        expect(mounted.find('.table-body-container .table tbody tr').find('td').length).to.equal(4);
         expect(mounted.find('.table-body-container .table tbody tr').at(0).find('td').at(0).find('.table-arrow').length).to.equal(1);
+        expect(mounted.find('.table-body-container .table tbody tr').at(0).find('td').at(1).find('.table-arrow').length).to.equal(0);
+        expect(mounted.find('.table-body-container .table tbody tr').at(1).find('td').at(0).find('.table-arrow').length).to.equal(0);
+        expect(mounted.find('.table-body-container .table tbody tr').at(1).find('td').at(1).find('.table-arrow').length).to.equal(0);
+        expect(mounted.find('.table-arrow .fa-chevron-down').length).to.equal(1);
+        expect(mounted.text().replace(/\s+/g, '')).to.equal('testtest111222');
+        mounted.find('.table-body-container .table tbody tr').at(0).find('.table-arrow').simulate('click');
+        expect(mounted.find('.table-body-container .table tbody tr').length).to.equal(2);
+        expect(mounted.find('.table-body-container .table tbody tr').at(0).find('td').at(0).find('.table-arrow').length).to.equal(1);
+        expect(mounted.find('.table-body-container .table tbody tr').at(0).find('td').at(1).find('.table-arrow').length).to.equal(0);
+        expect(mounted.find('.table-body-container .table tbody tr').at(1).find('td').at(0).find('.table-arrow').length).to.equal(0);
+        expect(mounted.find('.table-body-container .table tbody tr').at(1).find('td').at(1).find('.table-arrow').length).to.equal(0);
+        expect(mounted.find('.table-arrow .fa-chevron-down').length).to.equal(1);
+        expect(mounted.text().replace(/\s+/g, '')).to.equal('testtest111222');
+    });
+    it("showArrow when startArrowCol is 0 and  data formatted", function () {
+        let table = (
+            <TreeTable data={[{id: 1, a: 11}, {id: 2, a: 22, list: [{id: 3, a: 33}]}]} iskey="id">
+                <TreeHeadCol dataField="id" dataFormat={(cell, level, row, index, col) => {
+                    if (level != 0) {
+                        return '';
+                    } else {
+                        return cell;
+                    }
+                }}>test</TreeHeadCol>
+                <TreeHeadCol dataField="a" showArrow={true}>test</TreeHeadCol>
+            </TreeTable>
+        );
+        let mounted = mount(table);
+        expect(mounted.find('.table-body-container .table tbody tr').length).to.equal(2);
+        expect(mounted.find('.table-body-container .table tbody tr').find('td').length).to.equal(4);
+        expect(mounted.find('.table-body-container .table tbody tr').at(0).find('td').at(0).find('.table-arrow').length).to.equal(0);
         expect(mounted.find('.table-body-container .table tbody tr').at(0).find('td').at(1).find('.table-arrow').length).to.equal(0);
         expect(mounted.find('.table-body-container .table tbody tr').at(1).find('td').at(0).find('.table-arrow').length).to.equal(1);
         expect(mounted.find('.table-body-container .table tbody tr').at(1).find('td').at(1).find('.table-arrow').length).to.equal(0);
-        expect(mounted.find('.table-arrow .fa-chevron-down').length).to.equal(2);
+        expect(mounted.find('.table-arrow .fa-chevron-down').length).to.equal(1);
         expect(mounted.text().replace(/\s+/g, '')).to.equal('testtest111222');
         mounted.find('.table-body-container .table tbody tr').at(1).find('.table-arrow').simulate('click');
         expect(mounted.find('.table-body-container .table tbody tr').length).to.equal(3);
-        expect(mounted.find('.table-body-container .table tbody tr').at(0).find('td').at(0).find('.table-arrow').length).to.equal(1);
+        expect(mounted.find('.table-body-container .table tbody tr').at(0).find('td').at(0).find('.table-arrow').length).to.equal(0);
         expect(mounted.find('.table-body-container .table tbody tr').at(0).find('td').at(1).find('.table-arrow').length).to.equal(0);
         expect(mounted.find('.table-body-container .table tbody tr').at(1).find('td').at(0).find('.table-arrow').length).to.equal(1);
         expect(mounted.find('.table-body-container .table tbody tr').at(1).find('td').at(1).find('.table-arrow').length).to.equal(0);
-        expect(mounted.find('.table-body-container .table tbody tr').at(2).find('td').at(0).find('.table-arrow').length).to.equal(1);
-        expect(mounted.find('.table-body-container .table tbody tr').at(2).find('td').at(1).find('.table-arrow').length).to.equal(0);
-        expect(mounted.find('.table-arrow .fa-chevron-down').length).to.equal(3);
-        expect(mounted.text().replace(/\s+/g, '')).to.equal('testtest111222333');
+        expect(mounted.find('.table-body-container .table tbody tr').at(2).find('td').at(0).find('.table-arrow').length).to.equal(0);
+        expect(mounted.find('.table-body-container .table tbody tr').at(2).find('td').at(1).find('.table-arrow').length).to.equal(1);
+        expect(mounted.find('.table-arrow .fa-chevron-down').length).to.equal(2);
+        expect(mounted.text().replace(/\s+/g, '')).to.equal('testtest11122233');
+    });
+    it("onArrowClick", function () {
+
     });
 });

@@ -1,3 +1,4 @@
+require('./ignore').install('.css');
 require('babel-register')();
 
 var jsdom = require('jsdom').jsdom;
