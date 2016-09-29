@@ -44,7 +44,7 @@
     * onSelectAll[Function(isSelected, data)] 选中全部时的回调函数
 * arrowRender[Function(open)] 自定义展开按钮样式
 * onSortChange[Function(sortName, sortOrder)] 排序时候调用, `sortOrder`是`asc`或`desc`
-* onArrowClick[Function(collapse, data，parent)] 点击展开按钮的时候会把数据丢给你可以处理，会返回`collapsed`,`data`, `parent`三个参数和一个callback`callback`，务必要`callback(data)`(为了处理异步的情况)。`collapse`为`false`的时候意味着操作是打开(当前叶子节点是关闭状态)，如果是`true`说明操作是关闭(当前叶子节点是展开的)。如果有子节点的数据是通过异步请求搞进去的这种需求，请通过引用的原理来处理。
+* onArrowClick[Function(collapse, data，parent)] 点击展开按钮的时候会把数据丢给你可以处理，会返回`collapse`,`data`, `parent`三个参数和一个callback`callback`，务必要`callback(data)`(为了处理异步的情况)。`collapse`为`false`的时候意味着操作是打开(当前叶子节点是关闭状态)，如果是`true`说明操作是关闭(当前叶子节点是展开的)。如果有子节点的数据是通过异步请求搞进去的这种需求，请通过引用的原理来处理。
 
 ### TreeHeadCol
 * dataField[String] 数据的key值
