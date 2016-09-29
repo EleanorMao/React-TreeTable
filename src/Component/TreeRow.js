@@ -9,23 +9,15 @@ const Component = React.Component;
 export default class TreeRow extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            open: props.open
-        }
     }
 
     handleToggle(e) {
+        const {open, data, parent} = this.props;
         e.stopPropagation();
-        let data = extend({}, {
-            opened: this.state.open
-        }, {
-            data: this.props.data
+        let options = extend({}, {
+            open, data, parent
         });
-        this.setState(old => {
-            old.open = !old.open;
-            return old;
-        });
-        this.props.onClick(data);
+        this.props.onClick(options);
     }
 
     cellRender() {
@@ -87,11 +79,10 @@ export default class TreeRow extends Component {
             const type = typeof key.showArrow;
 
             if (type === 'function') {
-                key.showArrow.call(null, data[key.id], level, data, i, col);
+                showArrow = key.showArrow.call(null, data[key.id], level, data, i, col);
             } else if (type === 'boolean') {
                 showArrow = key.showArrow;
             }
-
             output.push(
                 <td style={style}
                     key={'' + _key + i}

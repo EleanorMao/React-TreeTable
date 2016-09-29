@@ -14,7 +14,7 @@ import TreeHeader       from './TreeHeader';
 import NestedTreeHeader from './NestedTreeHeader';
 import Paging           from './Pagination/Pagination';
 import Dropdown         from './Pagination/DropdownList';
-import {empty, sort, uniqueID, isUndefined, diff, getScrollBarWidth} from './Util';
+import {empty, sort, uniqueID, diff, getScrollBarWidth} from './Util';
 
 require('../style/treetable.css');
 
@@ -34,31 +34,51 @@ export default class TreeTable extends Component {
     }
 
     _initDictionary(props) {
-        let dictionary = [],
-            key = props.iskey,
-            hashKey = props.hashKey,
-            data = props.data.slice();
-        if (props.isTree) {
-            data.forEach(item => {
-                if (isUndefined(item.__level))item.__level = 0;
-                if (hashKey) {
-                    if (!item.__uid) item.__uid = uniqueID();
-                    dictionary.push(item.__uid);
-                    return;
-                }
-                item.__opened = false;
-                dictionary.push(item[key]);
-            });
+        let dictionary = [], data = props.data.slice();
+        const {
+            uid,
+            iskey,
+            isTree,
+            hashKey,
+            expandAll,
+            expandRowKeys,
+            childrenPropertyName
+        } = props;
+        let keyName = hashKey ? uid : iskey;
+        if (isTree) {
+            if (expandAll) {
+                dictionary = this._recursion(data, hashKey, keyName, childrenPropertyName);
+            } else if (expandRowKeys && expandRowKeys.length) {
+                dictionary = expandRowKeys.slice();
+            }
         }
         return {data, dictionary};
     }
 
-    _sortDictionary(data, key) {
+    _recursion(data, hashKey, keyName, childrenPropertyName) {
         let dictionary = [];
-        data.map(item=> {
-            dictionary.push(item[key]);
-        });
+        for (let i = 0; i < data.length; i++) {
+            let item = data[i];
+            if (hashKey && !item[keyName]) item[keyName] = uniqueID(); //引用大法好
+            if (item[childrenPropertyName] && item[childrenPropertyName].length) {
+                dictionary.push(item[keyName]);
+                data = data.concat(item[childrenPropertyName]);
+            }
+        }
         return dictionary;
+    }
+
+    _flatten(data, childrenPropertyName, hashKey, keyName) {
+        let output = [];
+        for (let i = 0; i < data.length; i++) {
+            let item = data[i];
+            if (hashKey && !item[keyName]) item[keyName] = uniqueID();
+            if (item[childrenPropertyName]) {
+                output.push(item[keyName]);
+                data = data.concat(item[childrenPropertyName]);
+            }
+        }
+        return output;
     }
 
     _initColumnData() {
@@ -107,8 +127,8 @@ export default class TreeTable extends Component {
     }
 
     _getKeyName() {
-        const {hashKey, iskey} =this.props;
-        return hashKey ? '__uid' : iskey;
+        const {hashKey, iskey, uid} =this.props;
+        return hashKey ? uid : iskey;
     }
 
     _adjustWidth() {
@@ -159,7 +179,7 @@ export default class TreeTable extends Component {
                 fixedLeftHeadRow[i].style.width = result;
                 fixedLeftHeadRow[i].style.maxWidth = result;
             }
-            if (fixedRightRow && fixedRightRow[i]) {
+            if (fixedRightRow && fixedRightRow[i] && !cell.dataset.input) {
                 fixedRightRow[i].style.width = result;
                 fixedRightRow[i].style.maxWidth = result;
                 fixedRightHeadRow[i].style.width = result;
@@ -250,75 +270,44 @@ export default class TreeTable extends Component {
             dictionary: data.dictionary,
             length: nextProps.options.sizePerPage || 0,
             crtPage: nextProps.pagination && nextProps.options.page || this.state.crtPage
-        })
+        });
     }
 
-    flatten(data, childrenPropertyName) {
-        let output = [],
-            index = 0;
-        data.forEach(item => {
-            let children = item[childrenPropertyName];
-            if (children) {
-                output[index++] = item;
-                item = this.flatten(children, childrenPropertyName);
-                let j = 0, len = item.length;
-                output.length += len;
-                while (j < len) {
-                    output[index++] = item[j++]
-                }
-            } else {
-                output[index++] = item;
-            }
-        });
-        return output;
-    }
 
     handleToggle(option) {
         const {
             data,
-            opened
+            open,
+            parent
         } = option;
         const that = this;
-        const {iskey, hashKey, childrenPropertyName} = this.props;
-        const key = this._getKeyName();
-        let callback = function (data) {
-            let childList = data[childrenPropertyName];
-            data.__opened = !data.__opened;
-            if (!opened) {
-                let target = data[key];
-                let index = that.state.dictionary.indexOf(target) + 1;
+        const {hashKey, clickToCloseAll, childrenPropertyName} = this.props;
+        const keyName = this._getKeyName();
+        let callback = (data) => {
+            let childList = data && data[childrenPropertyName] || [];
+            if (clickToCloseAll) {
+                childList = this._flatten(childList, childrenPropertyName, hashKey, keyName);
+            }
+            if (!open) {
                 that.setState(old => {
-                    childList && childList.forEach(item => {
-                        item.__parent = data;
-                        item.__opened = false;
-                        item.__level = data.__level + 1;
-                        let id = item[iskey];
-                        if (hashKey) {
-                            if (!item.__uid) item.__uid = uniqueID();
-                            id = item.__uid;
-                        }
-                        old.dictionary.splice(index, 0, id);
-                        old.renderedList.splice(index++, 0, item);
-                    });
+                    if (hashKey && !data[keyName]) data[keyName] = uniqueID();
+                    old.dictionary.push(data[keyName]);
                     return old;
                 })
             } else {
-                childList = that.flatten(childList, childrenPropertyName);
                 that.setState(old => {
-                    childList && childList.forEach(item => {
-                        item.__opened = true;
-                        let id = item[key];
-                        let i = old.dictionary.indexOf(id);
-                        if (i > -1) {
-                            old.dictionary.splice(i, 1);
-                            old.renderedList.splice(i, 1);
+                    old.dictionary.splice(old.dictionary.indexOf(data[keyName]), 1);
+                    clickToCloseAll && childList && childList.forEach(item => {
+                        let index = old.dictionary.indexOf(item);
+                        if (~index) {
+                            old.dictionary.splice(index, 1);
                         }
                     });
                     return old;
                 })
             }
         };
-        this.props.onArrowClick(opened, data, callback);
+        this.props.onArrowClick(open, data, callback, parent);
     }
 
     handleSelectAll(checked) {
@@ -334,9 +323,8 @@ export default class TreeTable extends Component {
         if (remote) {
             onSortChange(sortField, order)
         } else {
-            const {dictionary, renderedList} = this.state;
+            const {renderedList} = this.state;
 
-            let dic = dictionary.slice();
             let list = renderedList.slice();
 
             list.sort((a, b) => {
@@ -357,10 +345,8 @@ export default class TreeTable extends Component {
                 }
             });
 
-            dic = this._sortDictionary(list, this._getKeyName());
             this.setState(old=> {
                 old.order = order;
-                old.dictionary = dic;
                 old.renderedList = list;
                 old.sortField = sortField;
                 return old;
@@ -421,108 +407,124 @@ export default class TreeTable extends Component {
         return output;
     }
 
-    rowsRender(cols, hideSelectRow, right) {
-        let {
-            length,
-            crtPage,
+    rowsRender(data, cols, level, parent, hideSelectRow, right) {
+        const {
             isHover,
-            renderedList
+            dictionary
         } = this.state;
-        let {
-            iskey,
+        const {
             hover,
+            iskey,
             isTree,
-            remote,
             hashKey,
             selectRow,
-            noTextData,
             hoverStyle,
-            pagination,
             arrowRender,
             startArrowCol,
             childrenPropertyName
         } = this.props;
         const isSelect = selectRow.mode !== 'none';
-        if (!renderedList.length) {
-            return (
-                <tr>
-                    <td className="text-center" colSpan={this.columnData.length}>{noTextData}</td>
-                </tr>
-            );
-        }
-        let output = [];
-        if (pagination && !remote) renderedList = this._sliceData(renderedList, crtPage, length);
         const keyName = this._getKeyName();
-        renderedList.forEach((node) => {
-            let key = node[keyName];
-            output.push(
-                <TreeRow
-                    key={key}
-                    data={node}
-                    cols={cols}
-                    iskey={iskey}
-                    isTree={isTree}
-                    hashKey={hashKey}
-                    level={node.__level}
-                    open={node.__opened}
-                    selectRow={selectRow}
-                    parent={node.__parent}
-                    hoverStyle={hoverStyle}
-                    arrowRender={arrowRender}
-                    hideSelectRow={hideSelectRow}
-                    isSelect={!isTree && isSelect}
-                    onClick={this.handleToggle.bind(this)}
-                    hover={hover ? null : isHover === key}
-                    arrowCol={right ? null : startArrowCol}
-                    childrenPropertyName={childrenPropertyName}
-                    onMouseOver={hover ? this.handleHover.bind(this, key) : ()=> {
-                    }}
-                    onMouseOut={hover ? this.handleHover.bind(this, null) : ()=> {
-                    }}
-                    checked={selectRow.mode === 'checkbox' ?
-                        !!~selectRow.selected.indexOf(key) :
-                    selectRow.selected[0] === key
-                    }
-                />
-            );
-        });
+        let output = [];
+
+        if (data && data.length) {
+            for (let i = 0; i < data.length; i++) {
+                let node = data[i];
+                if (hashKey && !node[keyName]) node[keyName] = uniqueID();
+                let key = node[keyName];
+                let opened = !!~dictionary.indexOf(key);
+                output.push(
+                    <TreeRow
+                        key={key}
+                        data={node}
+                        cols={cols}
+                        level={level}
+                        iskey={iskey}
+                        open={opened}
+                        parent={parent}
+                        isTree={isTree}
+                        hashKey={hashKey}
+                        selectRow={selectRow}
+                        hover={isHover === key}
+                        hoverStyle={hoverStyle}
+                        arrowRender={arrowRender}
+                        hideSelectRow={hideSelectRow}
+                        isSelect={!isTree && isSelect}
+                        onClick={this.handleToggle.bind(this)}
+                        arrowCol={right ? null : startArrowCol}
+                        childrenPropertyName={childrenPropertyName}
+                        onMouseOut={hover ? this.handleHover.bind(this, null) : ()=> {
+                        }}
+                        onMouseOver={hover ? this.handleHover.bind(this, key) : ()=> {
+                        }}
+                        checked={selectRow.mode === 'checkbox' ?
+                            !!~selectRow.selected.indexOf(key) : selectRow.selected[0] === key}
+                    />
+                );
+                if (opened) {
+                    output = output.concat(this.rowsRender(node[childrenPropertyName], cols, level + 1, node, hideSelectRow, right));
+                }
+            }
+        }
         return output;
     }
 
-    bodyRender(height, selectRow) {
+    blankRender(data, colSpan, showText) {
+        if (data.length) return null;
+        return (
+            <tr>
+                <td className="text-center" colSpan={colSpan}>{showText && this.props.noDataText}</td>
+            </tr>
+        );
+    }
+
+    bodyRender(data, height, selectRow) {
         return (
             <div className="table-container table-body-container" style={{height: height || 'auto'}}
                  ref="container">
                 <table className="table table-bordered table-striped table-hover" ref="body">
-                    <colgroup
-                        ref="colgroup">{this.colgroupRender(this.columnData, selectRow.hideSelectRow ? 'none' : selectRow.mode)}</colgroup>
-                    <tbody ref="tbody">{this.rowsRender(this.columnData, selectRow.hideSelectRow)}</tbody>
+                    <colgroup ref="colgroup">
+                        {this.colgroupRender(this.columnData, selectRow.hideSelectRow ? 'none' : selectRow.mode)}
+                    </colgroup>
+                    <tbody ref="tbody">
+                    {this.blankRender(data, this.columnData.length, true)}
+                    {this.rowsRender(data, this.columnData, 0, null, selectRow.hideSelectRow)}
+                    </tbody>
                 </table>
             </div>
         )
     }
 
-    leftBodyRender(height, selectRow) {
+    leftBodyRender(data, height, selectRow) {
         if (this.leftColumnData.length) {
             return (
                 <div className="table-container table-body-container" style={{height: height || 'auto'}}>
                     <table className="table table-bordered table-striped table-hover">
-                        <colgroup
-                            ref="left">{this.colgroupRender(this.leftColumnData, selectRow.hideSelectRow ? 'none' : selectRow.mode)}</colgroup>
-                        <tbody ref="ltbody">{this.rowsRender(this.leftColumnData, selectRow.hideSelectRow)}</tbody>
+                        <colgroup ref="left">
+                            {this.colgroupRender(this.leftColumnData, selectRow.hideSelectRow ? 'none' : selectRow.mode)}
+                        </colgroup>
+                        <tbody ref="ltbody">
+                        {this.blankRender(data, this.leftColumnData.length)}
+                        {this.rowsRender(data, this.leftColumnData, 0, null, selectRow.hideSelectRow)}
+                        </tbody>
                     </table>
                 </div>
             )
         }
     }
 
-    rightBodyRender(height) {
+    rightBodyRender(data, height) {
         if (this.rightColumnData.length) {
             return (
                 <div className="table-container table-body-container" style={{height: height || 'auto'}}>
                     <table className="table table-bordered table-striped table-hover">
-                        <colgroup ref="right">{this.colgroupRender(this.rightColumnData, 'none')}</colgroup>
-                        <tbody ref="rtbody">{this.rowsRender(this.rightColumnData, true, true)}</tbody>
+                        <colgroup ref="right">
+                            {this.colgroupRender(this.rightColumnData, 'none')}
+                        </colgroup>
+                        <tbody ref="rtbody">
+                        {this.blankRender(data, this.rightColumnData.length)}
+                        {this.rowsRender(data, this.rightColumnData, 0, null, true, true)}
+                        </tbody>
                     </table>
                 </div>
             )
@@ -581,7 +583,6 @@ export default class TreeTable extends Component {
 
     pagingRender() {
         const {
-            isTree,
             remote,
             options,
             dataSize,
@@ -610,11 +611,8 @@ export default class TreeTable extends Component {
                             nextLabel={options.nextLabel}
                             sizePerPage={this.state.length}
                             startLabel={options.startLabel}
+                            dataSize={this.props.data.length}
                             paginationSize={options.paginationSize}
-                            dataSize={isTree ?
-                                this.state.dictionary.length :
-                                this.props.data.length
-                            }
                             onPageChange={this.handleClick.bind(this)}
                         />
                     }
@@ -672,7 +670,6 @@ export default class TreeTable extends Component {
             nestedHead,
             pagination
         } = this.props;
-
         const {
             order,
             length,
@@ -682,9 +679,8 @@ export default class TreeTable extends Component {
         } = this.state;
 
         let checked = false;
-
+        const renderList = pagination && !remote ? this._sliceData(renderedList, crtPage, length) : renderedList.slice();
         if (selectRow.mode !== 'none') {
-            let renderList = pagination && !remote ? this._sliceData(renderedList, crtPage, length) : renderedList.slice();
             checked = this._getAllValue(renderList.slice(), this._getKeyName()).sort().toString() === selectRow.selected.slice().sort().toString();
         }
         return (
@@ -710,7 +706,7 @@ export default class TreeTable extends Component {
                         >
                             {children}
                         </TreeHeader>
-                        {this.bodyRender(height, selectRow)}
+                        {this.bodyRender(renderList, height, selectRow)}
                     </div>
                     {
                         !!this.leftColumnData.length &&
@@ -725,7 +721,7 @@ export default class TreeTable extends Component {
                             >
                                 {children}
                             </TreeHeader>
-                            {this.leftBodyRender(height, selectRow)}
+                            {this.leftBodyRender(renderList, height, selectRow)}
                         </div>
                     }
                     {
@@ -739,7 +735,7 @@ export default class TreeTable extends Component {
                             >
                                 {children}
                             </TreeHeader>
-                            {this.rightBodyRender(height)}
+                            {this.rightBodyRender(renderList, height)}
                         </div>
                     }
                     {this.footerRender()}
@@ -756,16 +752,19 @@ TreeTable.defaultProps = {
     dataSize: 0,
     hover: true,
     isTree: true,
+    uid: '__uid',
     remote: false,
     nestedHead: [],
     startArrowCol: 0,
+    expandAll: false,
     pagination: false,
     onSortChange: empty,
     sortName: undefined,
     sortOrder: undefined,
     lineWrap: 'ellipsis',
+    clickToCloseAll: true,
     childrenPropertyName: 'list',
-    noTextData: <span>暂无数据</span>,
+    noDataText: <span>暂无数据</span>,
     hoverStyle: {backgroundColor: '#f5f5f5'},
     selectRow: {
         mode: 'none',
@@ -791,24 +790,28 @@ TreeTable.propTypes = {
     data: PropTypes.array,
     remote: PropTypes.bool,
     hover: PropTypes.bool,
+    uid: PropTypes.string,
     isTree: PropTypes.bool,
     hashKey: PropTypes.bool,
     iskey: PropTypes.string,
+    expandAll: PropTypes.bool,
     dataSize: PropTypes.number,
     pagination: PropTypes.bool,
     arrowRender: PropTypes.func,
     onArrowClick: PropTypes.func,
     onSortChange: PropTypes.func,
     hoverStyle: PropTypes.object,
+    expandRowKeys: PropTypes.array,
     startArrowCol: PropTypes.number,
+    clickToCloseAll: PropTypes.bool,
     childrenPropertyName: PropTypes.string,
-    lineWrap: PropTypes.oneOf(['ellipsis', 'break']),
     nestedHead: PropTypes.arrayOf(PropTypes.array),
+    lineWrap: PropTypes.oneOf(['ellipsis', 'break']),
     width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     title: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.node, PropTypes.func, PropTypes.element]),
     footer: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.node, PropTypes.func, PropTypes.element]),
-    noTextData: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.node, PropTypes.func, PropTypes.element]),
+    noDataText: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.node, PropTypes.func, PropTypes.element]),
     selectRow: PropTypes.shape({
         mode: PropTypes.oneOf([
             'none',

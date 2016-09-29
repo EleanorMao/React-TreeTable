@@ -16,12 +16,12 @@ export default class TreeHeader extends Component {
     selectRender(mode, onSelectAll, checked) {
         if (mode === 'checkbox') {
             return (
-                <th onClick={()=>onSelectAll(!checked)} style={{textAlign: 'center', width: 30}}>
+                <th onClick={()=>onSelectAll(!checked)} style={{textAlign: 'center', width: 30}} data-input={mode}>
                     <input type={mode} checked={checked} readOnly={true}/>
                 </th>
             )
         } else if (mode === 'radio') {
-            return <th/>
+            return <th data-input={mode}/>
         } else {
             return false;
         }

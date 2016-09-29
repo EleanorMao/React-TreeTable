@@ -10,7 +10,7 @@ function contains(root, el) {
     if (root.contains && el.nodeType === 1)
         return root.contains(el) && root !== el;
 
-    while ((el = el.parentNode))
+    while (el = el.parentNode)
         if (el === root) return true;
 
     return false;
@@ -32,6 +32,15 @@ export default class DropdownList extends Component {
                 })
             }
         }.bind(this))
+    }
+
+    componentWillReceiveProps() {
+        if (this.state.toggle) {
+            this.setState(old=> {
+                old.toggle = false;
+                return old;
+            })
+        }
     }
 
     handleToggle() {
@@ -56,7 +65,10 @@ export default class DropdownList extends Component {
                             return (
                                 <li key={index}>
                                     <a href="#"
-                                       onClick={(e)=>{e.preventDefault(); onClick(item)}}>{item}</a>
+                                       onClick={(e)=> {
+                                           e.preventDefault();
+                                           onClick(item)
+                                       }}>{item}</a>
                                 </li>);
                         })
                     }

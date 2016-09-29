@@ -4,7 +4,11 @@ import {
     TreeTable,
     TreeHeadCol
 } from '../../lib/Index.js';
-import {noKeyData, data, list} from './fackData';
+import {
+    noKeyData,
+    data,
+    list
+} from './fackData';
 
 const Component = React.Component;
 
@@ -13,10 +17,22 @@ class Main extends Component {
         super();
         this.state = {
             page: 1,
+            list: [],
             length: 10,
+            data: data,
             selected: [],
-            data: data
+            expandRowKeys: []
         }
+    }
+
+    componentWillMount() {
+        fetch('http://localhost:3000/list').then(res => {
+            return res.json();
+        }).then(json => {
+            this.setState({
+                list: json
+            })
+        })
     }
 
     handleClick(display, data, callback) {
@@ -32,6 +48,70 @@ class Main extends Component {
         }
     }
 
+    handleArrowClick(display, data, cb) {
+        if (!display && data.chdatalist && !data.chdatalist.length) {
+            this.setState(old => {
+                old.loading = true;
+                return old;
+            });
+            fetch(`http://localhost:3000/detail?year=${data.year}&time=${data.time}&datatype=0`).then(res => {
+                return res.json();
+            }).then(json => {
+                data.chdatalist = json;
+                cb(data);
+                this.setState(old => {
+                    old.loading = false;
+                    old.expandRowKeys.push(data.uniqueKey);
+                    return old;
+                });
+            });
+        } else {
+            cb(data);
+            if (display) {
+                this.setState(old => {
+                    old.expandRowKeys.splice(old.expandRowKeys.indexOf(data.uniqueKey), 1);
+                    return old;
+                });
+            } else {
+                this.setState(old => {
+                    old.expandRowKeys.push(data.uniqueKey);
+                    return old;
+                });
+            }
+        }
+    }
+
+    headRender() {
+        return [{
+            id: 'columnName',
+            name: ' '
+        }, {
+            id: 'rate',
+            name: '提货费率'
+        }, {
+            id: 'averageCost',
+            name: '提货单均成本'
+        }, {
+            id: 'cost',
+            name: '提货成本'
+        }, {
+            id: 'orderMoney',
+            name: '提货订单金额'
+        }, {
+            id: 'orderNum',
+            name: '提货订单量'
+        }, {
+            id: 'customerNum',
+            name: '提货客户数'
+        }, {
+            id: 'volume',
+            name: '提货体积'
+        }, {
+            id: 'weight',
+            name: '提货重量'
+        }];
+    }
+
     showArrow(cell, level, row, index, col) {
         if (row.a == 1) {
             return false
@@ -42,11 +122,7 @@ class Main extends Component {
     render() {
         const dataFormat = {
             "a": function (cell, level, row) {
-                if (level != 0) {
-                    return '';
-                } else {
-                    return cell + ' I am row a'
-                }
+                return cell + ' I am level ' + level
             },
             "b": function (cell, level, row, index, col) {
                 if (level != 0) {
@@ -74,12 +150,6 @@ class Main extends Component {
                 }
             }
         };
-        const nestedHead = [
-            ['第一列', {
-                colspan: 2,
-                label: '喵呜'
-            }]
-        ];
         const options = {
             page: 1,
             sizePerPage: 1,
@@ -89,31 +159,13 @@ class Main extends Component {
 
             }
         };
-        const that = this;
-        const options2 = {
-            page: this.state.page,
-            sizePerPage: this.state.length,
-            sizePageList: [10, 20, 30],
-            paginationShowsTotal: true,
-            onPageChange: function (page, sizePerPage) {
-                fetch('http://localhost:3000/get').then(res => {
-                    return res.json();
-                }).then(json => {
-                    that.setState({
-                        page: page,
-                        data: json,
-                        length: sizePerPage
-                    })
-                })
-            }
-        };
 
         const selectRow = {
             mode: "checkbox",
             bgColor: "rgb(238, 193, 213)",
             selected: this.state.selected,
             hideSelectRow: false,
-            onSelectAll: (checked, currentSelected)=> {
+            onSelectAll: (checked, currentSelected) => {
                 if (checked) {
                     let checkedList = currentSelected.map(item => {
                         return item.id;
@@ -153,22 +205,17 @@ class Main extends Component {
                     <TreeTable
                         iskey="a"
                         data={data}
-                        dataSize={20}
-                        remote={true}
                         nestedHead={[[{
                             label: '全国',
                             colspan: 4,
                             rowspan: 2
                         }, 'a', 'a', 'a', 'a'], ['b', 'b', 'b', 'b']]}
-                        startArrowCol={1}
-                        pagination={false}
-                        arrowRender={(open)=>{return <a>{open ? '关闭' : '打开'}</a>}}
                     >
                         <TreeHeadCol width={200} dataField="a" dataFormat={dataFormat.a}>第一列</TreeHeadCol>
                         <TreeHeadCol dataField="b" dataSort={true} width={200}
-                                     dataFormat={dataFormat.b}>第二列</TreeHeadCol>
-                        <TreeHeadCol width={200} dataField="c" dataSort={true} dataFormat={dataFormat.c}
-                        >第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列第三列</TreeHeadCol>
+                                     dataFormat={dataFormat.a}>第二列</TreeHeadCol>
+                        <TreeHeadCol width={200} dataField="c" dataSort={true}
+                                     dataFormat={dataFormat.a}>第三列</TreeHeadCol>
                         <TreeHeadCol width={200} dataField="d" hidden={false}>第四列</TreeHeadCol>
                         <TreeHeadCol width={200} dataField="d" hidden={false}>第五列</TreeHeadCol>
                         <TreeHeadCol dataField="d" hidden={false}>第六列</TreeHeadCol>
@@ -185,8 +232,9 @@ class Main extends Component {
                         data={noKeyData}
                         pagination={true}
                         options={options}
+                        onArrowClick={this.handleClick.bind(this)}
                     >
-                        <TreeHeadCol dataField="a" dataAlign="center">第一列</TreeHeadCol>
+                        <TreeHeadCol dataField="a">第一列</TreeHeadCol>
                         <TreeHeadCol dataField="b">第二列</TreeHeadCol>
                         <TreeHeadCol dataField="c">第三列</TreeHeadCol>
                         <TreeHeadCol dataField="d">第四列</TreeHeadCol>
@@ -229,6 +277,19 @@ class Main extends Component {
                         <TreeHeadCol dataAlign='center' width="150px" dataFormat={()=> {
                             return <a href="#">freedom!</a>
                         }}>操作</TreeHeadCol>
+                    </TreeTable>
+                </div>
+                <div style={style}>
+                    <TreeTable iskey='uniqueKey'
+                               childrenPropertyName='chdatalist'
+                               data={this.state.list} hover={false} onArrowClick={this.handleArrowClick.bind(this)}
+                    >
+                        {
+                            this.headRender().map((item, index)=> {
+                                return <TreeHeadCol key={index} dataAlign='center' showArrow={true}
+                                                    dataField={item.id}>{item.name}</TreeHeadCol>
+                            })
+                        }
                     </TreeTable>
                 </div>
             </div>
