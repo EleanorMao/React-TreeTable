@@ -2,6 +2,7 @@
  * Created by elly on 16/5/31.
  */
 const webpack = require('webpack');
+const Nyan = require('nyan-progress-webpack-plugin');
 const openBrowserPlugin = require('open-browser-webpack-plugin');
 
 module.exports = {
@@ -22,6 +23,7 @@ module.exports = {
         }]
     },
     plugins: [
+        new Nyan(),
         new webpack.HotModuleReplacementPlugin(),
         new openBrowserPlugin({url: 'http://localhost:9010'})
     ]
