@@ -36,13 +36,13 @@ export default class TreeRow extends Component {
             arrowCol,
             selectRow,
             arrowRender,
-            hideSelectRow,
+            hideSelectColumn,
             childrenPropertyName
         } = this.props;
 
         const _key = hashKey ? data.__uid : data[iskey];
 
-        if (isSelect && !hideSelectRow) {
+        if (isSelect && !hideSelectColumn) {
             output.push(
                 <td key={_key} style={{backgroundColor: checked && selectRow.bgColor, textAlign: 'center'}}>
                     <input type={selectRow.mode} checked={checked} readOnly={true}/>
@@ -131,7 +131,7 @@ export default class TreeRow extends Component {
 TreeRow.defaultProps = {
     level: 0,
     hashKey: false,
-    hideSelectRow: false,
+    hideSelectColumn: false,
     arrowRender: (open)=> {
         return (
             <i

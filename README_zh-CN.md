@@ -2,63 +2,62 @@
 A kind of Table _(┐「ε:)_❤
 将树形结构数据渲染成表格形式
 
-## api
-[中文API][./README_zh-CN.md]
+## 参数提供
 ### TreeTable
-* data[Array]   data you want display on table (default leaf node property name is `list`)
-* childrenPropertyName[String] customize leaf node property, default is `list`
-* iskey[String] key of column
-* hashKey[Boolean]   default is `fasle`, if data not have a unique key, then set it to `true`, `react-treetable` will init a `uid` default property name is `__uid`
-* uid[String] default is `__uid`, property for init `uid`
-* isTree[Boolean]  default is `true`, tell table is data a tree. If you set it to `false`, when you want to render a normal table , to some extent, can save performance , but please don't set `hashKey` to `true`
-* remote[Boolean] if set `true` , which means you want to handle data change, `react-treetable` will give control of `onPageChange`, `onSortChange`, `sortName`, `sortOrder` to parent component
-* dataSize[Number] total size of data, only useful when remote `enabled`
-* sortOrder[String] sort order, `asc` or `desc`
-* sortName[String] sort field in table
-* onSortChange[Function(sortName, sortOrder)] sort function, `sortOrder` will be `asc` or `desc`
-* expandAll[Boolean] default is `false`, expand all rows initially
-* expandRowKeys[Array] expanded rows keys
-* clickToCloseAll[Boolean] collapse all leaf when click to collapse, default is `true`
-* startArrowCol[Number] set expand arrow button show start from `startArrowCol` column, default is `0`
-* arrowRender[Function(open)] render function of expand arrow button
-* onArrowClick[Function(collapse, data，parent)] function when click expand arrow button, arguments -> `collapse`,`data`, `parent`, and one callback `callback`, be sure `callback(data)`(since I should deal width async😢. ps: if you want add leaf when expand like me, please use references of data)。`collapse` means whether or not you are collapsing the row ?
-* pagination[Boolean] default is `false`, set `true` to enable pagination
-* options[Object] configuration of pagination
-    * page[Number] means the page you want to show as default
-    * prevLabel[String | Number | Node] customize previous page button
-    * nextLabel[String | Number | Node] customize next page button
-    * startLabel[String | Number | Node] customize page button of back to first page
-    * endLabel[String | Number | Node] customize page button of back to last page
-    * sizePerPage[Number] size per page, default is `10`
-    * paginationSize[Number] pagination bar length, default is `6`
-    * onPageChange[Function(page, sizePerPage)] callback when page changed
-    * paginationShowsTotal[Boolean | Function(start, to , total)] display a text that the total number and current lines displayed, default is `false`
-* selectRow[Object] configuration of row selection (be sure `isTree` is `false`）
-    * mode['none', 'radio', 'checkbox'] type of selector, default is `none`
-    * bgColor[String] background color of tag `tr` when selected
-    * selected[Array] selected row keys
-    * hideSelectColumn[Boolean] hide select column or not default is `false`
-    * onSelect[Function(isSelected, row)] callback when select
-    * onSelectAll[Function(isSelected, data)] callback when select all
-* hover[Boolean] default is `true`
-* hoverStyle[Object] default is `{backgroundColor: '#f5f5f5'}`, will effect tag `tr`
-* width[Number | String] width
-* height[Number | String] height
-* title[Function(data) | String | Number | Node] table title
-* footer[Function(data) | String | Number | Node] table footer
-* nestedHead[Array] nestedHead([[],[]]), `string` or `{label: '', colspan: 1, rowspan: 1}`
+* iskey[String] 作为key用的那个字段的名字
+* data[Array]   数据入口, 子节点默认为`list`
+* hover[Boolean] 默认是`true`， 开启就有hover效果
+* hoverStyle[Object] 默认是`{backgroundColor: '#f5f5f5'}`
+* isTree[Boolean]  是否是树形结构，开启后不能是有hashKey模式，一定程度上节省了性能
+* hashKey[Boolean]   默认是`fasle`, 如果没有唯一的id, 那就传`true`, 本表格会帮你造一个`uid`
+* uid[String] hashKey时候的uid的key值，默认是`__uid`
+* width[Number | String] 宽度
+* height[Number | String] 高度
+* title[Function(data) | String | Number | Node] 头部
+* footer[Function(data) | String | Number | Node] 脚部
+* remote[Boolean] 如果是true则将翻页`onPageChange`的控制权和排序`onSortChange`,`sortName`,`sortOrder`交给父组件
+* dataSize[Number] 数据总条数，仅在开启remote后有用
+* sortName[String] 排序的列名
+* sortOrder[String] `asc`或`desc`
+* pagination[Boolean] 默认是`false`, 是否开启分页器
+* expandAll[Boolean] 是否默认展开所有的数据
+* expandRowKeys[Array] 展开的节点key名
+* clickToCloseAll[Boolean] 点击关闭时是否关闭所有子节点，默认`true`
+* childrenPropertyName[String] 自定义子节点的名字，默认`list`
+* startArrowCol[Number] 设置后展开箭头将从第`startArrowCol`开始出现(从0开始), 默认是`0`
+* nestedHead[Array] 套头，是[[],[]]格式， 里面的数组设置套头的格式，可以是字符串或是对象，对象的话可用参数为colspan和label还有rowspan
+* options[Object] 分页器配置
+    * page[Number] 默认显示的当前页, 默认是第一页
+    * prevLabel 分页器的上一页
+    * startLabel 分页器的下一页
+    * startLabel 分页器的回到第一页
+    * endLabel 分页器的回到最后一页
+    * sizePerPage[Number] 每页多长, 默认是十条
+    * paginationSize[Number] 分页器每次显示几个页码
+    * onPageChange(page, sizePerPage) 点击分页器时调用
+    * paginationShowsTotal[Boolean | Function(start, to , total)] 显示条数导航
+* selectRow[Object] 选择框（仅能在`isTree`是`false`的情况下使用）
+    * mode['none', 'radio', 'checkbox'] 选择框的类型
+    * bgColor[String] 选中后的背景色
+    * selected[Array] 选中的由每行key值组成的数组
+    * hideSelectRow[Boolean] 是否隐藏选中框
+    * onSelect[Function(isSelected, row)] 选中单行时的回调函数
+    * onSelectAll[Function(isSelected, data)] 选中全部时的回调函数
+* arrowRender[Function(open)] 自定义展开按钮样式
+* onSortChange[Function(sortName, sortOrder)] 排序时候调用, `sortOrder`是`asc`或`desc`
+* onArrowClick[Function(collapse, data，parent)] 点击展开按钮的时候会把数据丢给你可以处理，会返回`collapse`,`data`, `parent`三个参数和一个callback`callback`，务必要`callback(data)`(为了处理异步的情况)。`collapse`为`false`的时候意味着操作是打开(当前叶子节点是关闭状态)，如果是`true`说明操作是关闭(当前叶子节点是展开的)。如果有子节点的数据是通过异步请求搞进去的这种需求，请通过引用的原理来处理。
 
 ### TreeHeadCol
-* dataField[String] key of column
-* dataAlign[String] text align of column
-* dataFixed[String] this column will be fixed when table scroll, `left`, `right` or `auto`, default is `auto`
-* dataSort[Boolean] enable table sorting, default is `false`(only sort the first level of data when isTree)
-* dataFormat[Function(cell, level, row, index, col)] customize format function
-* hidden[Boolean] hide this column or not, default is `false`
-* width[Number | String] width of column
-* showArrow[Function(cell, level, row, index, col) | Boolean] force to show expand arrow button(on startArrowCol basis)
+* dataField[String] 数据的key值
+* dataAlign[String] textAlign的姿势
+* dataFixed[String] 固定的位置, `left` 或者 `right` 或者 `auto`
+* dataSort[Boolean] 是否开启排序(默认只排序最外层数据<-产品说的) 
+* dataFormat[Function(cell, level, row, index, col)] 自定义渲染方法
+* hidden[Boolean] 是否隐藏
+* width[Number | String] 宽度
+* showArrow[Function(cell, level, row, index, col) | Boolean] 强制该列是否显示展开箭头(在startArrowCol的基础上)
 
-## example code⬇
+## 让我们用代码说话⬇
 
 ```javascript
 import React, {Component} from 'react';
@@ -363,7 +362,8 @@ ReactDOM.render(<Main/>, document.querySelector('.main'));
 
 ```
 
-## run example
+## 如何跑example
+到 github 克隆一份, 然后
 
 ```
     npm install
@@ -371,10 +371,10 @@ ReactDOM.render(<Main/>, document.querySelector('.main'));
     npm run dev
 ```
 
-then open
+最后访问
 ```
     localhost:9010
 ```
 
-## ps
-really tired to  calculate column width _(:з」∠)_
+## 另外
+算宽度好累_(:з」∠)_

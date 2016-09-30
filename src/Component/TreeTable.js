@@ -407,7 +407,7 @@ export default class TreeTable extends Component {
         return output;
     }
 
-    rowsRender(data, cols, level, parent, hideSelectRow, right) {
+    rowsRender(data, cols, level, parent, hideSelectColumn, right) {
         const {
             isHover,
             dictionary
@@ -448,7 +448,7 @@ export default class TreeTable extends Component {
                         hover={isHover === key}
                         hoverStyle={hoverStyle}
                         arrowRender={arrowRender}
-                        hideSelectRow={hideSelectRow}
+                        hideSelectColumn={hideSelectColumn}
                         isSelect={!isTree && isSelect}
                         onClick={this.handleToggle.bind(this)}
                         arrowCol={right ? null : startArrowCol}
@@ -462,7 +462,7 @@ export default class TreeTable extends Component {
                     />
                 );
                 if (opened) {
-                    output = output.concat(this.rowsRender(node[childrenPropertyName], cols, level + 1, node, hideSelectRow, right));
+                    output = output.concat(this.rowsRender(node[childrenPropertyName], cols, level + 1, node, hideSelectColumn, right));
                 }
             }
         }
@@ -484,11 +484,11 @@ export default class TreeTable extends Component {
                  ref="container">
                 <table className="table table-bordered table-striped table-hover" ref="body">
                     <colgroup ref="colgroup">
-                        {this.colgroupRender(this.columnData, selectRow.hideSelectRow ? 'none' : selectRow.mode)}
+                        {this.colgroupRender(this.columnData, selectRow.hideSelectColumn ? 'none' : selectRow.mode)}
                     </colgroup>
                     <tbody ref="tbody">
                     {this.blankRender(data, this.columnData.length, true)}
-                    {this.rowsRender(data, this.columnData, 0, null, selectRow.hideSelectRow)}
+                    {this.rowsRender(data, this.columnData, 0, null, selectRow.hideSelectColumn)}
                     </tbody>
                 </table>
             </div>
@@ -501,11 +501,11 @@ export default class TreeTable extends Component {
                 <div className="table-container table-body-container" style={{height: height || 'auto'}}>
                     <table className="table table-bordered table-striped table-hover">
                         <colgroup ref="left">
-                            {this.colgroupRender(this.leftColumnData, selectRow.hideSelectRow ? 'none' : selectRow.mode)}
+                            {this.colgroupRender(this.leftColumnData, selectRow.hideSelectColumn ? 'none' : selectRow.mode)}
                         </colgroup>
                         <tbody ref="ltbody">
                         {this.blankRender(data, this.leftColumnData.length)}
-                        {this.rowsRender(data, this.leftColumnData, 0, null, selectRow.hideSelectRow)}
+                        {this.rowsRender(data, this.leftColumnData, 0, null, selectRow.hideSelectColumn)}
                         </tbody>
                     </table>
                 </div>
@@ -772,7 +772,7 @@ TreeTable.defaultProps = {
         onSelect: empty,
         onSelectAll: empty,
         bgColor: '#dff0d8',
-        hideSelectRow: false
+        hideSelectColumn: false
     },
     options: {
         sizePerPage: 10,
@@ -822,7 +822,7 @@ TreeTable.propTypes = {
         bgColor: PropTypes.string,
         selected: PropTypes.array,
         onSelectAll: PropTypes.func,
-        hideSelectRow: PropTypes.bool
+        hideSelectColumn: PropTypes.bool
     }),
     options: PropTypes.shape({
         page: PropTypes.number,

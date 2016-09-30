@@ -31,7 +31,7 @@ export default class TreeHeader extends Component {
         let i = 0;
         return (
             <colgroup ref="colgroup">
-                {selectRow.mode !== 'none' && !selectRow.hideSelectRow && !isTree &&
+                {selectRow.mode !== 'none' && !selectRow.hideSelectColumn && !isTree &&
                 <col key="select" style={{textAlign: 'center', width: 30}}/>}
                 {  React.Children.map(renderChildren, (elm)=> {
                     if (left && elm.props.dataFixed !== 'left') return;
@@ -70,7 +70,7 @@ export default class TreeHeader extends Component {
                     {this.colgroupRender(renderChildren, selectRow, isTree, left, right)}
                     <thead>
                     <tr ref="thead">
-                        {!isTree && !selectRow.hideSelectRow && this.selectRender(selectRow.mode, onSelectAll, checked)}
+                        {!isTree && !selectRow.hideSelectColumn && this.selectRender(selectRow.mode, onSelectAll, checked)}
                         {  React.Children.map(renderChildren, (elm)=> {
                             if (left && elm.props.dataFixed !== 'left') return;
                             if (right && elm.props.dataFixed !== 'right') return;
