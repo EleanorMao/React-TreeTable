@@ -280,8 +280,8 @@ class Main extends Component {
                     </TreeTable>
                 </div>
                 <div style={style}>
-                    <TreeTable iskey='uniqueKey'
-                               childrenPropertyName='chdatalist'
+                    <TreeTable iskey='uniqueKey' 
+                               childrenPropertyName='chdatalist' expandRowKeys={this.state.expandRowKeys}
                                data={this.state.list} hover={false} onArrowClick={this.handleArrowClick.bind(this)}
                     >
                         {
