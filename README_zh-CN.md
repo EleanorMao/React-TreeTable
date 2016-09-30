@@ -40,7 +40,7 @@ A kind of Table _(┐「ε:)_❤
     * mode['none', 'radio', 'checkbox'] 选择框的类型
     * bgColor[String] 选中后的背景色
     * selected[Array] 选中的由每行key值组成的数组
-    * hideSelectRow[Boolean] 是否隐藏选中框
+    * hideSelectColumn[Boolean] 是否隐藏选中框
     * onSelect[Function(isSelected, row)] 选中单行时的回调函数
     * onSelectAll[Function(isSelected, data)] 选中全部时的回调函数
 * arrowRender[Function(open)] 自定义展开按钮样式
@@ -225,7 +225,7 @@ class Main extends Component {
             mode: "checkbox",
             bgColor: "rgb(238, 193, 213)",
             selected: this.state.selected,
-            hideSelectRow: false,
+            hideSelectColumn: false,
             onSelectAll: (checked, currentSelected) => {
                 if (checked) {
                     let checkedList = currentSelected.map(item => {

@@ -226,7 +226,7 @@ class Main extends Component {
             mode: "checkbox",
             bgColor: "rgb(238, 193, 213)",
             selected: this.state.selected,
-            hideSelectRow: false,
+            hideSelectColumn: false,
             onSelectAll: (checked, currentSelected) => {
                 if (checked) {
                     let checkedList = currentSelected.map(item => {
