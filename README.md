@@ -1,9 +1,9 @@
 # React-TreeTable
-A kind of Table _(┐「ε:)_❤
-将树形结构数据渲染成表格形式
+    A kind of Table _(┐「ε:)_❤
+    将树形结构数据渲染成表格形式
 
 ## api
-[中文API][./README_zh-CN.md]
+[中文API](./README_zh-CN.md)
 ### TreeTable
 * data[Array]   data you want display on table (default leaf node property name is `list`)
 * childrenPropertyName[String] customize leaf node property, default is `list`
