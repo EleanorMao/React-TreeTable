@@ -5,58 +5,58 @@
 ## api
 [中文API](./README_zh-CN.md)
 ### TreeTable
-* data[Array]   data you want display on table (default leaf node property name is `list`)
-* childrenPropertyName[String] customize leaf node property, default is `list`
-* iskey[String] key of column
-* hashKey[Boolean]   default is `fasle`, if data not have a unique key, then set it to `true`, `react-treetable` will init a `uid` default property name is `__uid`
-* uid[String] default is `__uid`, property for init `uid`
-* isTree[Boolean]  default is `true`, tell table is data a tree. If you set it to `false`, when you want to render a normal table , to some extent, can save performance , but please don't set `hashKey` to `true`
-* remote[Boolean] if set `true` , which means you want to handle data change, `react-treetable` will give control of `onPageChange`, `onSortChange`, `sortName`, `sortOrder` to parent component
-* dataSize[Number] total size of data, only useful when remote `enabled`
-* sortOrder[String] sort order, `asc` or `desc`
-* sortName[String] sort field in table
-* onSortChange[Function(sortName, sortOrder)] sort function, `sortOrder` will be `asc` or `desc`
-* expandAll[Boolean] default is `false`, expand all rows initially
-* expandRowKeys[Array] expanded rows keys
-* clickToCloseAll[Boolean] collapse all leaf when click to collapse, default is `true`
-* startArrowCol[Number] set expand arrow button show start from `startArrowCol` column, default is `0`
-* arrowRender[Function(open)] render function of expand arrow button
-* onArrowClick[Function(collapse, data，parent)] function when click expand arrow button, arguments -> `collapse`,`data`, `parent`, and one callback `callback`, be sure `callback(data)`(since I should deal width async😢. ps: if you want add leaf when expand like me, please use references of data)。`collapse` means whether or not you are collapsing the row ?
-* pagination[Boolean] default is `false`, set `true` to enable pagination
-* options[Object] configuration of pagination
-    * page[Number] means the page you want to show as default
-    * prevLabel[String | Number | Node] customize previous page button
-    * nextLabel[String | Number | Node] customize next page button
-    * startLabel[String | Number | Node] customize page button of back to first page
-    * endLabel[String | Number | Node] customize page button of back to last page
-    * sizePerPage[Number] size per page, default is `10`
-    * paginationSize[Number] pagination bar length, default is `6`
-    * onPageChange[Function(page, sizePerPage)] callback when page changed
-    * paginationShowsTotal[Boolean | Function(start, to , total)] display a text that the total number and current lines displayed, default is `false`
-* selectRow[Object] configuration of row selection (be sure `isTree` is `false`）
-    * mode['none', 'radio', 'checkbox'] type of selector, default is `none`
-    * bgColor[String] background color of tag `tr` when selected
-    * selected[Array] selected row keys
-    * hideSelectColumn[Boolean] hide select column or not default is `false`
-    * onSelect[Function(isSelected, row)] callback when select
-    * onSelectAll[Function(isSelected, data)] callback when select all
-* hover[Boolean] default is `true`
-* hoverStyle[Object] default is `{backgroundColor: '#f5f5f5'}`, will effect tag `tr`
-* width[Number | String] width
-* height[Number | String] height
-* title[Function(data) | String | Number | Node] table title
-* footer[Function(data) | String | Number | Node] table footer
-* nestedHead[Array] nestedHead([[],[]]), `string` or `{label: '', colspan: 1, rowspan: 1}`
+* **data[Array]**   data you want display on table (default leaf node property name is `list`)
+* **childrenPropertyName[String]** customize leaf node property, default is `list`
+* **iskey[String]** key of column
+* **hashKey[Boolean]**   default is `fasle`, if data not have a unique key, then set it to `true`, `react-treetable` will init a `uid` default property name is `__uid`
+* **uid[String]** default is `__uid`, property for init `uid`
+* **isTree[Boolean]**  default is `true`, tell table is data a tree. If you set it to `false`, when you want to render a normal table , to some extent, can save performance , but please don't set `hashKey` to `true`
+* **remote[Boolean]** if set `true` , which means you want to handle data change, `react-treetable` will give control of `onPageChange`, `onSortChange`, `sortName`, `sortOrder` to parent component
+* **dataSize[Number]** total size of data, only useful when remote `enabled`
+* **sortOrder[String]** sort order, `asc` or `desc`
+* **sortName[String]** sort field in table
+* **onSortChange[Function(sortName, sortOrder)]** sort function, `sortOrder` will be `asc` or `desc`
+* **expandAll[Boolean]** default is `false`, expand all rows initially
+* **expandRowKeys[Array]** expanded rows keys
+* **clickToCloseAll[Boolean]** collapse all leaf when click to collapse, default is `true`
+* **startArrowCol[Number]** set expand arrow button show start from `startArrowCol` column, default is `0`
+* **arrowRender[Function(open)]** render function of expand arrow button
+* **onArrowClick[Function(collapse, data，parent)]** function when click expand arrow button, arguments -> `collapse`,`data`, `parent`, and one callback `callback`, be sure `callback(data)`(since I should deal width async😢. ps: if you want add leaf when expand like me, please use references of data)。`collapse` means whether or not you are collapsing the row ?
+* **pagination[Boolean]** default is `false`, set `true` to enable pagination
+* **options[Object]** configuration of pagination
+    * **page[Number]** means the page you want to show as default
+    * **prevLabel[String | Number | Node]** customize previous page button
+    * **nextLabel[String | Number | Node]** customize next page button
+    * **startLabel[String | Number | Node]** customize page button of back to first page
+    * **endLabel[String | Number | Node]** customize page button of back to last page
+    * **sizePerPage[Number]** size per page, default is `10`
+    * **paginationSize[Number]** pagination bar length, default is `6`
+    * **onPageChange[Function(page, sizePerPage)]** callback when page changed
+    * **paginationShowsTotal[Boolean | Function(start, to , total)]** display a text that the total number and current lines displayed, default is `false`
+* **selectRow[Object]** configuration of row selection (be sure `isTree` is `false`）
+    * **mode['none', 'radio', 'checkbox']** type of selector, default is `none`
+    * **bgColor[String]** background color of tag `tr` when selected
+    * **selected[Array]** selected row keys
+    * **hideSelectColumn[Boolean]** hide select column or not default is `false`
+    * **onSelect[Function(isSelected, row)]** callback when select
+    * **onSelectAll[Function(isSelected, data)]** callback when select all
+* **hover[Boolean]** default is `true`
+* **hoverStyle[Object]** default is `{backgroundColor: '#f5f5f5'}`, will effect tag `tr`
+* **width[Number | String]** width
+* **height[Number | String]** height
+* **title[Function(data) | String | Number | Node]** table title
+* **footer[Function(data) | String | Number | Node]** table footer
+* **nestedHead[Array]** nestedHead([[],[]]), `string` or `{label: '', colspan: 1, rowspan: 1}`
 
 ### TreeHeadCol
-* dataField[String] key of column
-* dataAlign[String] text align of column
-* dataFixed[String] this column will be fixed when table scroll, `left`, `right` or `auto`, default is `auto`
-* dataSort[Boolean] enable table sorting, default is `false`(only sort the first level of data when isTree)
-* dataFormat[Function(cell, level, row, index, col)] customize format function
-* hidden[Boolean] hide this column or not, default is `false`
-* width[Number | String] width of column
-* showArrow[Function(cell, level, row, index, col) | Boolean] force to show expand arrow button(on startArrowCol basis)
+* **dataField[String]** key of column
+* **dataAlign[String]** text align of column
+* **dataFixed[String]** this column will be fixed when table scroll, `left`, `right` or `auto`, default is `auto`
+* **dataSort[Boolean]** enable table sorting, default is `false`(only sort the first level of data when isTree)
+* **dataFormat[Function(cell, level, row, index, col)]** customize format function
+* **hidden[Boolean]** hide this column or not, default is `false`
+* **width[Number | String]** width of column
+* **showArrow[Function(cell, level, row, index, col) | Boolean]** force to show expand arrow button(on startArrowCol basis)
 
 ## example code⬇
 
