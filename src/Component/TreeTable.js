@@ -81,9 +81,9 @@ export default class TreeTable extends Component {
         return output;
     }
 
-    _initColumnData() {
+    _initColumnData(props) {
         let columnData = [];
-        React.Children.map(this.props.children, function (column) {
+        React.Children.map(props.children, function (column) {
             columnData.push({
                 width: column.props.width,
                 id: column.props.dataField,
@@ -243,7 +243,7 @@ export default class TreeTable extends Component {
     }
 
     componentWillMount() {
-        this._initColumnData();
+        this._initColumnData(this.props);
         this._tryRender();
     }
 
@@ -263,7 +263,7 @@ export default class TreeTable extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        this._initColumnData();
+        this._initColumnData(nextProps);
         let data = this._initDictionary(nextProps);
         this.setState({
             renderedList: data.data,
@@ -539,7 +539,7 @@ export default class TreeTable extends Component {
             dataSize,
             pagination
         } = this.props;
-        if (pagination && options.paginationShowsTotal) {
+        if (pagination && options.paginationShowsTotal && data.length) {
             const len = remote ? options.sizePerPage : this.state.length;
             const current = remote ? (options.page - 1) * len : (this.state.crtPage - 1) * len;
             const start = remote ? current + 1 : Math.min(data.length, current + 1);
