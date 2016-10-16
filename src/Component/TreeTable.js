@@ -539,7 +539,7 @@ export default class TreeTable extends Component {
             dataSize,
             pagination
         } = this.props;
-        if (pagination && options.paginationShowsTotal && data.length) {
+        if (pagination && options.paginationShowsTotal) {
             const len = remote ? options.sizePerPage : this.state.length;
             const current = remote ? (options.page - 1) * len : (this.state.crtPage - 1) * len;
             const start = remote ? current + 1 : Math.min(data.length, current + 1);
@@ -622,7 +622,7 @@ export default class TreeTable extends Component {
     }
 
     pagingRowRender() {
-        if (!this.props.pagination) return null;
+        if (!this.props.pagination || !this.props.data.length) return null;
         return (
             <div className="row">
                 <div className="col-sm-6">
