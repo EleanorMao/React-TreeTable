@@ -50,7 +50,9 @@ class TreeHeadCol extends Component {
 
         return (
             <th style={style} colSpan={colSpan || null}
-                onClick={dataSort ? ()=>onSort(dataField,sortOrder === 'asc' ? 'desc': 'asc') : ()=>{return false;}}>
+                onClick={dataSort ? ()=>onSort(dataField, sortOrder === 'asc' ? 'desc' : 'asc') : ()=> {
+                    return false;
+                }}>
                 <span>{children}</span>{dataSort && this.caretRender(dataField, sortName, sortOrder)}
             </th>
         );
