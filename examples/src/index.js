@@ -205,6 +205,7 @@ class Main extends Component {
                     <TreeTable
                         iskey="a"
                         data={data}
+                        height="100px"
                         nestedHead={[[{
                             label: '全国',
                             colspan: 4,
@@ -212,17 +213,13 @@ class Main extends Component {
                         }, 'a', 'a', 'a', 'a'], ['b', 'b', 'b', 'b']]}
                     >
                         <TreeHeadCol width={200} dataField="a" dataFormat={dataFormat.a}>第一列</TreeHeadCol>
-                        <TreeHeadCol dataField="b" dataSort={true} width={200}
-                                     dataFormat={dataFormat.a}>第二列</TreeHeadCol>
-                        <TreeHeadCol width={200} dataField="c" dataSort={true}
-                                     dataFormat={dataFormat.a}>第三列</TreeHeadCol>
-                        <TreeHeadCol width={200} dataField="d" hidden={false}>第四列</TreeHeadCol>
-                        <TreeHeadCol width={200} dataField="d" hidden={false}>第五列</TreeHeadCol>
-                        <TreeHeadCol dataField="d" hidden={false}>第六列</TreeHeadCol>
-                        <TreeHeadCol dataField="d" hidden={true}>第七列</TreeHeadCol>
-                        <TreeHeadCol width={150} dataFormat={()=> {
-                            return <a href="#">freedom!</a>
-                        }}>操作</TreeHeadCol>
+                        <TreeHeadCol dataField="b" dataSort={true} width={200} dataFormat={dataFormat.a}>第二列</TreeHeadCol>
+                        <TreeHeadCol width={200} dataField="c" dataSort={true} dataFormat={dataFormat.a}>第三列</TreeHeadCol>
+                        <TreeHeadCol width={200} dataField="d">第四列</TreeHeadCol>
+                        <TreeHeadCol width={200} dataField="d" hidden={true}>第五列</TreeHeadCol>
+                        <TreeHeadCol dataField="d">第六列</TreeHeadCol>
+                        <TreeHeadCol dataField="d">第七列</TreeHeadCol>
+                        <TreeHeadCol width={150} dataFormat={()=> {return <a href="#">freedom!</a>}}>操作</TreeHeadCol>
                     </TreeTable>
                 </div>
                 <div style={style}>
@@ -280,13 +277,14 @@ class Main extends Component {
                     </TreeTable>
                 </div>
                 <div style={style}>
-                    <TreeTable iskey='uniqueKey' 
+                    <TreeTable iskey='uniqueKey'
                                childrenPropertyName='chdatalist' expandRowKeys={this.state.expandRowKeys}
                                data={this.state.list} hover={false} onArrowClick={this.handleArrowClick.bind(this)}
                     >
                         {
                             this.headRender().map((item, index)=> {
-                                return <TreeHeadCol key={index} dataAlign='center' showArrow={true}
+                                return <TreeHeadCol key={index} showArrow={true}
+                                                    hidden={!Math.round(Math.random())}
                                                     dataField={item.id}>{item.name}</TreeHeadCol>
                             })
                         }
