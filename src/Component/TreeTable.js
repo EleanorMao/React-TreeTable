@@ -89,6 +89,8 @@ export default class TreeTable extends Component {
                 id: column.props.dataField,
                 name: column.props.children,
                 hidden: column.props.hidden,
+                render: column.props.render,
+                colSpan: column.props.colSpan,
                 showArrow: column.props.showArrow,
                 dataAlign: column.props.dataAlign,
                 dataFixed: column.props.dataFixed,
@@ -140,9 +142,7 @@ export default class TreeTable extends Component {
         const fixedLeftHeadRow = this.refs.lthead && this.refs.lthead.refs.colgroup.childNodes;
         const fixedRightHeadRow = this.refs.rthead && this.refs.rthead.refs.colgroup.childNodes;
         const length = cells.length;
-
         if (firstRow.length !== length) return;
-
         const scrollBarWidth = getScrollBarWidth();
         const haveScrollBar = this.refs.body.offsetWidth !== this.refs.thead.refs.header.offsetWidth;
         let lastChild = this._getLastChild(this.columnData);
@@ -167,6 +167,7 @@ export default class TreeTable extends Component {
             const result = (width + lastPaddingWidth).toFixed(2) + 'px';
             firstRow[i].style.width = result;
             firstRow[i].style.maxWidth = result;
+
             if (nestedRow && nestedRow[i]) {
                 const display = computedStyle.display;
                 nestedRow[i].style.width = result;
@@ -438,6 +439,7 @@ export default class TreeTable extends Component {
                         key={key}
                         data={node}
                         cols={cols}
+                        colIndex={i}
                         level={level}
                         iskey={iskey}
                         open={opened}
@@ -448,8 +450,8 @@ export default class TreeTable extends Component {
                         hover={isHover === key}
                         hoverStyle={hoverStyle}
                         arrowRender={arrowRender}
-                        hideSelectColumn={hideSelectColumn}
                         isSelect={!isTree && isSelect}
+                        hideSelectColumn={hideSelectColumn}
                         onClick={this.handleToggle.bind(this)}
                         arrowCol={right ? null : startArrowCol}
                         childrenPropertyName={childrenPropertyName}
