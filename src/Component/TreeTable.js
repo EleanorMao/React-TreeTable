@@ -134,23 +134,29 @@ export default class TreeTable extends Component {
     }
 
     _adjustWidth() {
-        const firstRow = this.refs.colgroup.childNodes;
-        const cells = this.refs.thead.refs.thead.childNodes;
-        const fixedLeftRow = this.refs.left && this.refs.left.childNodes;
-        const fixedRightRow = this.refs.right && this.refs.right.childNodes;
-        const nestedRow = this.refs.nested && this.refs.nested.refs.colgroup.childNodes;
-        const fixedLeftHeadRow = this.refs.lthead && this.refs.lthead.refs.colgroup.childNodes;
-        const fixedRightHeadRow = this.refs.rthead && this.refs.rthead.refs.colgroup.childNodes;
-        const isNoData = this.refs.tbody.firstChild.childElementCount === 1;
-        const length = cells.length;
-        if (firstRow.length !== length) return;
-        const scrollBarWidth = getScrollBarWidth();
-        const haveScrollBar = this.refs.body.offsetWidth !== this.refs.thead.refs.header.offsetWidth;
-        let lastChild = this._getLastChild(this.columnData);
+        const refs = this.refs,
+            firstRow = refs.colgroup.childNodes,
+            cells = refs.thead.refs.thead.childNodes,
+            fixedLeftRow = refs.left && refs.left.childNodes,
+            fixedRightRow = refs.right && refs.right.childNodes,
+            nestedRow = refs.nested && refs.nested.refs.colgroup.childNodes,
+            fixedLeftHeadRow = refs.lthead && refs.lthead.refs.colgroup.childNodes,
+            fixedRightHeadRow = refs.rthead && refs.rthead.refs.colgroup.childNodes,
+            isNoData = refs.tbody.firstChild.childElementCount === 1,
+            length = cells.length,
+            rightFixedLength = fixedRightRow ? length - fixedRightRow.length : 0;
+
+        if (firstRow.length !== length)return;
+
+        const scrollBarWidth = getScrollBarWidth(),
+            haveScrollBar = refs.body.offsetWidth !== refs.thead.refs.header.offsetWidth;
+
+        let lastChild = this._getLastChild(this.columnData), fixedRightWidth = 0;
         lastChild = this.props.selectRow.mode !== 'none' ? lastChild + 1 : lastChild;
 
         for (let i = 0; i < length; i++) {
             const cell = cells[i];
+            const rightIndex = i - rightFixedLength;
             const computedStyle = getComputedStyle(cell);
             let width = parseFloat(computedStyle.width.replace('px', ''));
             if (!-[1,]) {
@@ -160,11 +166,14 @@ export default class TreeTable extends Component {
                 const borderLeftWidth = parseFloat(computedStyle.borderLeftWidth.replace('px', ''));
                 width = width + paddingLeftWidth + paddingRightWidth + borderRightWidth + borderLeftWidth;
             }
+
             const lastPaddingWidth = -(lastChild === i && haveScrollBar ? scrollBarWidth : 0);
+
             if (!width) {
                 width = 120;
                 cell.width = width + lastPaddingWidth + 'px';
             }
+
             const result = (width + lastPaddingWidth).toFixed(2) + 'px';
 
             if (!isNoData) {
@@ -178,27 +187,35 @@ export default class TreeTable extends Component {
                 nestedRow[i].style.maxWidth = width.toFixed(2) + 'px';
                 if (display === 'none') nestedRow[i].style.display = display;
             }
+
             if (fixedLeftRow && fixedLeftRow[i]) {
                 fixedLeftRow[i].style.width = result;
                 fixedLeftRow[i].style.maxWidth = result;
                 fixedLeftHeadRow[i].style.width = result;
                 fixedLeftHeadRow[i].style.maxWidth = result;
             }
-            if (fixedRightRow && fixedRightRow[i] && !cell.dataset.input) {
-                fixedRightRow[i].style.width = result;
-                fixedRightRow[i].style.maxWidth = result;
-                fixedRightHeadRow[i].style.width = result;
-                fixedRightHeadRow[i].style.maxWidth = result;
+
+            if (fixedRightRow && fixedRightRow[rightIndex] && !cell.dataset.input) {
+                fixedRightWidth += width;
+                fixedRightRow[rightIndex].style.width = result;
+                fixedRightRow[rightIndex].style.maxWidth = result;
+                fixedRightHeadRow[rightIndex].style.width = width.toFixed(2) + 'px';
+                fixedRightHeadRow[rightIndex].style.maxWidth = width.toFixed(2) + 'px';
             }
+
+        }
+
+        if (fixedRightWidth) {
+            refs.rightBody.style.width = fixedRightWidth - (haveScrollBar ? scrollBarWidth : 0) + 'px';
         }
 
         if (fixedLeftRow || fixedRightRow) {
-            const tbody = this.refs.tbody.childNodes;
-            const ltbody = this.refs.ltbody && this.refs.ltbody.childNodes;
-            const rtbody = this.refs.rtbody && this.refs.rtbody.childNodes;
-            const headHeight = getComputedStyle(this.refs.thead.refs.thead).height;
-            if (this.refs.lthead)  this.refs.lthead.refs.thead.style.height = headHeight;
-            if (this.refs.rthead)  this.refs.rthead.refs.thead.style.height = headHeight;
+            const tbody = refs.tbody.childNodes;
+            const ltbody = refs.ltbody && refs.ltbody.childNodes;
+            const rtbody = refs.rtbody && refs.rtbody.childNodes;
+            const headHeight = getComputedStyle(refs.thead.refs.thead).height;
+            if (refs.lthead)  refs.lthead.refs.thead.style.height = headHeight;
+            if (refs.rthead)  refs.rthead.refs.thead.style.height = headHeight;
             for (let i = 0; i < tbody.length; i++) {
                 let row = tbody[i];
                 let height = getComputedStyle(row).height;
@@ -217,6 +234,15 @@ export default class TreeTable extends Component {
     _scrollHeader(e) {
         this.refs.thead.refs.header.scrollLeft = e.currentTarget.scrollLeft;
         if (this.refs.nested) this.refs.nested.refs.header.scrollLeft = e.currentTarget.scrollLeft;
+    }
+
+    _scrollHeight(e) {
+        if (this.refs.leftContainer) {
+            this.refs.leftContainer.scrollTop = e.currentTarget.scrollTop;
+        }
+        if (this.refs.rightContainer && this.refs.leftContainer) {
+            this.refs.container.scrollTop = e.currentTarget.scrollTop;
+        }
     }
 
     _tryRender() {
@@ -256,11 +282,23 @@ export default class TreeTable extends Component {
         this._adjustWidth();
         window.addEventListener('resize', this._adjustWidth.bind(this));
         this.refs.container.addEventListener('scroll', this._scrollHeader.bind(this));
+        if (this.refs.rightContainer) {
+            this.refs.rightContainer.addEventListener('scroll', this._scrollHeight.bind(this));
+        }
+        if (this.refs.leftContainer && !this.refs.rightContainer) {
+            this.refs.container.addEventListener('scroll', this._scrollHeight.bind(this));
+        }
     }
 
     componentWillUnmount() {
         window.removeEventListener('resize', this._adjustWidth.bind(this));
         this.refs.container.removeEventListener('scroll', this._scrollHeader.bind(this));
+        if (this.refs.rightContainer) {
+            this.refs.rightContainer.removeEventListener('scroll', this._scrollHeight.bind(this));
+        }
+        if (this.refs.leftContainer && !this.refs.rightContainer) {
+            this.refs.container.removeEventListener('scroll', this._scrollHeight.bind(this));
+        }
     }
 
     componentDidUpdate() {
@@ -504,7 +542,8 @@ export default class TreeTable extends Component {
     leftBodyRender(data, height, selectRow) {
         if (this.leftColumnData.length) {
             return (
-                <div className="table-container table-body-container" style={{height: height || 'auto'}}>
+                <div className="table-container table-body-container" style={{height: height || 'auto'}}
+                     ref="leftContainer">
                     <table className="table table-bordered table-striped table-hover">
                         <colgroup ref="left">
                             {this.colgroupRender(this.leftColumnData, selectRow.hideSelectColumn ? 'none' : selectRow.mode)}
@@ -522,8 +561,9 @@ export default class TreeTable extends Component {
     rightBodyRender(data, height) {
         if (this.rightColumnData.length) {
             return (
-                <div className="table-container table-body-container" style={{height: height || 'auto'}}>
-                    <table className="table table-bordered table-striped table-hover">
+                <div className="table-container table-body-container" style={{height: height || 'auto'}}
+                     ref="rightContainer">
+                    <table className="table table-bordered table-striped table-hover" ref="rightBody">
                         <colgroup ref="right">
                             {this.colgroupRender(this.rightColumnData, 'none')}
                         </colgroup>

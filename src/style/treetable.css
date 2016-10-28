@@ -89,11 +89,11 @@
 .table-right-fixed {
     right: 0;
     border-left: 0;
+    box-shadow: -4px 0 4px rgba(0, 0, 0, 0.2);
 }
 
-.table-right-fixed {
-    border-left: 0;
-    box-shadow: -4px 0 4px rgba(0, 0, 0, 0.2);
+.table-right-fixed .table-container {
+    overflow: auto;
 }
 
 .react-tree.ellipsis .table th, .react-tree.ellipsis .table td {
