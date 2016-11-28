@@ -303,6 +303,13 @@ export default class TreeTable extends Component {
 
     componentDidUpdate() {
         this._adjustWidth();
+        this.refs.container.addEventListener('scroll', this._scrollHeader.bind(this));
+        if (this.refs.rightContainer) {
+            this.refs.rightContainer.addEventListener('scroll', this._scrollHeight.bind(this));
+        }
+        if (this.refs.leftContainer && !this.refs.rightContainer) {
+            this.refs.container.addEventListener('scroll', this._scrollHeight.bind(this));
+        }
     }
 
     componentWillReceiveProps(nextProps) {
