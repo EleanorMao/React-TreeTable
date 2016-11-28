@@ -1,5 +1,5 @@
 # React-TreeTable
-A kind of Table _(┐「ε:)_❤
+A kind of Table _(┐「ε:)_
 将树形结构数据渲染成表格形式
 
 ## 参数提供
