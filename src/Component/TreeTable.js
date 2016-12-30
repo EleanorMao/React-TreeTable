@@ -252,7 +252,8 @@ export default class TreeTable extends Component {
     }
 
     _tryRender() {
-        const {isTree, iskey, hashKey, selectRow, nestedHead, leftColumnData, rightColumnData} = this.props;
+        const {isTree, iskey, hashKey, selectRow, nestedHead} = this.props;
+        const {leftColumnData, rightColumnData}= this.state;
         const warning = 'color:red';
         if (isTree && !(iskey || hashKey)) {
             throw new Error('You need choose one configuration to set key field: `iskey` or `hashkey`!!');
