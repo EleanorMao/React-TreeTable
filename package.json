@@ -5,7 +5,7 @@
   "main": "lib/Index.js",
   "scripts": {
     "build": "babel src --out-dir lib & cp -r src/style lib",
-    "dev": "webpack-dev-server --inline --hot --progress --colors --content-base ./examples --config webpack.config.example.js --port 9010",
+    "dev": "webpack-dev-server --inline --hot --progress --colors --content-base ./examples --config webpack.config.example.js --host 0.0.0.0 --port 9010",
     "test": "mocha --compilers js:babel-register --require ./test/setup.js",
     "mock": "json-server --watch db.json --port 3000",
     "eslint": "eslint src"

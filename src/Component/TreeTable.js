@@ -243,11 +243,12 @@ export default class TreeTable extends Component {
     }
 
     _scrollHeight(e) {
-        if (this.refs.leftContainer) {
-            this.refs.leftContainer.scrollTop = e.currentTarget.scrollTop;
-        }
-        if (this.refs.rightContainer && this.refs.leftContainer) {
+        this.refs.leftContainer.scrollTop = e.currentTarget.scrollTop;
+        if (e.currentTarget == this.refs.rightContainer) {
             this.refs.container.scrollTop = e.currentTarget.scrollTop;
+        }
+        if (e.currentTarget == this.refs.container) {
+            this.refs.rightContainer.scrollTop = e.currentTarget.scrollTop;
         }
     }
 
@@ -289,34 +290,19 @@ export default class TreeTable extends Component {
         this._adjustWidth();
         window.addEventListener('resize', this._adjustWidth.bind(this));
         this.refs.container.addEventListener('scroll', this._scrollHeader.bind(this));
-        if (this.refs.rightContainer) {
-            this.refs.rightContainer.addEventListener('scroll', this._scrollHeight.bind(this));
-        }
-        if (this.refs.leftContainer && !this.refs.rightContainer) {
-            this.refs.container.addEventListener('scroll', this._scrollHeight.bind(this));
-        }
+        this.refs.container.addEventListener('scroll', this._scrollHeight.bind(this));
+        this.refs.rightContainer.addEventListener('scroll', this._scrollHeight.bind(this));
     }
 
     componentWillUnmount() {
         window.removeEventListener('resize', this._adjustWidth.bind(this));
-        let {rightContainer, leftContainer, container}= this.refs;
+        let {rightContainer, container}= this.refs;
         container.removeEventListener('scroll', this._scrollHeader.bind(this));
-        if (rightContainer) {
-            rightContainer.removeEventListener('scroll', this._scrollHeight.bind(this));
-        }
-        if (leftContainer && !rightContainer) {
-            container.removeEventListener('scroll', this._scrollHeight.bind(this));
-        }
+        container.removeEventListener('scroll', this._scrollHeight.bind(this));
+        rightContainer.removeEventListener('scroll', this._scrollHeight.bind(this));
     }
 
     componentDidUpdate() {
-        let {rightContainer, leftContainer, container}= this.refs;
-        if (rightContainer) {
-            rightContainer.addEventListener('scroll', this._scrollHeight.bind(this));
-        }
-        if (leftContainer && !rightContainer) {
-            container.addEventListener('scroll', this._scrollHeight.bind(this));
-        }
         this._adjustWidth();
         this._adjustWidth();
     }
@@ -556,42 +542,36 @@ export default class TreeTable extends Component {
         )
     }
 
-    leftBodyRender(data, height, selectRow) {
+    leftBodyRender(data, selectRow) {
         let leftColumnData = this.state.leftColumnData;
         if (leftColumnData.length) {
             return (
-                <div className="table-container table-body-container" style={{height: height || 'auto'}}
-                     ref="leftContainer">
-                    <table className="table table-bordered table-striped table-hover">
-                        <colgroup ref="left">
-                            {this.colgroupRender(leftColumnData, selectRow.hideSelectColumn ? 'none' : selectRow.mode)}
-                        </colgroup>
-                        <tbody ref="ltbody">
-                        {this.blankRender(data, leftColumnData.length)}
-                        {this.rowsRender(data, leftColumnData, 0, null, selectRow.hideSelectColumn)}
-                        </tbody>
-                    </table>
-                </div>
+                <table className="table table-bordered table-striped table-hover">
+                    <colgroup ref="left">
+                        {this.colgroupRender(leftColumnData, selectRow.hideSelectColumn ? 'none' : selectRow.mode)}
+                    </colgroup>
+                    <tbody ref="ltbody">
+                    {this.blankRender(data, leftColumnData.length)}
+                    {this.rowsRender(data, leftColumnData, 0, null, selectRow.hideSelectColumn)}
+                    </tbody>
+                </table>
             )
         }
     }
 
-    rightBodyRender(data, height) {
+    rightBodyRender(data) {
         let rightColumnData = this.state.rightColumnData;
         if (rightColumnData.length) {
             return (
-                <div className="table-container table-body-container" style={{height: height || 'auto'}}
-                     ref="rightContainer">
-                    <table className="table table-bordered table-striped table-hover" ref="rightBody">
-                        <colgroup ref="right">
-                            {this.colgroupRender(rightColumnData, 'none')}
-                        </colgroup>
-                        <tbody ref="rtbody">
-                        {this.blankRender(data, rightColumnData.length)}
-                        {this.rowsRender(data, rightColumnData, 0, null, true, true)}
-                        </tbody>
-                    </table>
-                </div>
+                <table className="table table-bordered table-striped table-hover" ref="rightBody">
+                    <colgroup ref="right">
+                        {this.colgroupRender(rightColumnData, 'none')}
+                    </colgroup>
+                    <tbody ref="rtbody">
+                    {this.blankRender(data, rightColumnData.length)}
+                    {this.rowsRender(data, rightColumnData, 0, null, true, true)}
+                    </tbody>
+                </table>
             )
         }
     }
@@ -751,6 +731,11 @@ export default class TreeTable extends Component {
         if (selectRow.mode !== 'none') {
             checked = this._getAllValue(renderList.slice(), this._getKeyName()).sort().toString() === selectRow.selected.slice().sort().toString();
         }
+        let paddingBottom = 0;
+        let container = this.refs.container;
+        if (container && typeof height == "number" && (container.scrollWidth > container.clientWidth)) {
+            paddingBottom = height - container.clientHeight;
+        }
         return (
             <div className={"react-tree " + lineWrap}>
                 {this.titleRender()}
@@ -776,9 +761,9 @@ export default class TreeTable extends Component {
                         </TreeHeader>
                         {this.bodyRender(renderList, height, selectRow)}
                     </div>
-                    {
-                        !!leftColumnData.length &&
-                        <div className="table-tree table-fixed table-left-fixed">
+                    <div className="table-tree table-fixed table-left-fixed">
+                        {
+                            !!leftColumnData.length &&
                             <TreeHeader
                                 ref="lthead" isTree={isTree} left={leftColumnData.length}
                                 onSelectAll={this.handleSelectAll.bind(this)}
@@ -789,12 +774,18 @@ export default class TreeTable extends Component {
                             >
                                 {children}
                             </TreeHeader>
-                            {this.leftBodyRender(renderList, height, selectRow)}
+                        }
+                        <div
+                            ref="leftContainer"
+                            className="table-container table-body-container"
+                            style={{height: height || 'auto', paddingBottom: paddingBottom}}
+                        >
+                            {this.leftBodyRender(renderList, selectRow)}
                         </div>
-                    }
-                    {
-                        !!rightColumnData.length &&
-                        <div className="table-tree table-fixed table-right-fixed">
+                    </div>
+                    <div className="table-tree table-fixed table-right-fixed">
+                        {
+                            !!rightColumnData.length &&
                             <TreeHeader
                                 ref="rthead" isTree={isTree} right={rightColumnData.length}
                                 sortName={remote ? sortName : sortField}
@@ -803,9 +794,12 @@ export default class TreeTable extends Component {
                             >
                                 {children}
                             </TreeHeader>
-                            {this.rightBodyRender(renderList, height)}
+                        }
+                        <div className="table-container table-body-container" style={{height: height || 'auto'}}
+                             ref="rightContainer">
+                            {this.rightBodyRender(renderList)}
                         </div>
-                    }
+                    </div>
                     {this.footerRender()}
                 </div>
                 {this.pagingRowRender()}
