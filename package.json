@@ -1,6 +1,6 @@
 {
   "name": "react-treetable",
-  "version": "5.3.12",
+  "version": "5.3.13",
   "description": "Table That Could Render Tree Structure",
   "main": "lib/Index.js",
   "scripts": {
