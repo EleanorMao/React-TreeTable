@@ -733,8 +733,8 @@ export default class TreeTable extends Component {
         }
         let paddingBottom = 0;
         let container = this.refs.container;
-        if (container && typeof height == "number" && (container.scrollWidth > container.clientWidth)) {
-            paddingBottom = height - container.clientHeight;
+        if (container && typeof parseFloat(height) == "number" && (container.scrollWidth > container.clientWidth)) {
+            paddingBottom = parseFloat(height) - container.clientHeight;
         }
         return (
             <div className={"react-tree " + lineWrap}>
