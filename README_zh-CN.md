@@ -3,6 +3,7 @@ A kind of Table _(┐「ε:)_
 将树形结构数据渲染成表格形式
 
 ## 参数提供
+### 箭头样式用到了fontawesome，如果你不需要自定义它的话，记得引入fontawesome么么扎(* ￣3)(ε￣ *)
 ### TreeTable
 * iskey[String] 作为key用的那个字段的名字
 * data[Array]   数据入口, 子节点默认为`list`
