@@ -4,6 +4,7 @@
 
 ## api
 [中文API](./README_zh-CN.md)
+### I'm using `fontawesome` in my arrow button, if you don't want to custom the button, remember require it in your app 
 ### TreeTable
 * **data[Array]**   data you want display on table (default leaf node property name is `list`)
 * **childrenPropertyName[String]** customize leaf node property, default is `list`
