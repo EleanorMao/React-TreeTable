@@ -3,7 +3,7 @@
  */
 const webpack = require('webpack');
 const Nyan = require('nyan-progress-webpack-plugin');
-const openBrowserPlugin = require('open-browser-webpack-plugin');
+// const openBrowserPlugin = require('open-browser-webpack-plugin');
 
 module.exports = {
     entry: './examples/src/index.js',
@@ -25,6 +25,6 @@ module.exports = {
     plugins: [
         new Nyan(),
         new webpack.HotModuleReplacementPlugin(),
-        new openBrowserPlugin({url: 'http://localhost:9010'})
+        // new openBrowserPlugin({url: 'http://localhost:9010'})
     ]
 };
