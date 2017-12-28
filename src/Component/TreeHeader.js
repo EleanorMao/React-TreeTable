@@ -1,12 +1,9 @@
 /**
- * Created by BG236557 on 2016/9/19.
+ * Created by EleanorMao on 2016/9/19.
  */
-import React, {
-    Component,
-    PropTypes
-} from 'react';
+import React, {Component} from 'react';
 
-import {empty, sort, isArr} from './Util';
+import {empty, sort} from './Util';
 
 export default class TreeHeader extends Component {
     constructor(props) {
@@ -16,12 +13,12 @@ export default class TreeHeader extends Component {
     selectRender(mode, onSelectAll, checked) {
         if (mode === 'checkbox') {
             return (
-                <th onClick={()=>onSelectAll(!checked)} style={{textAlign: 'center', width: 30}} data-input={mode}>
+                <th onClick={() => onSelectAll(!checked)} style={{textAlign: 'center', width: 30}} data-input={mode}>
                     <input type={mode} checked={checked} readOnly={true}/>
                 </th>
-            )
+            );
         } else if (mode === 'radio') {
-            return <th data-input={mode}/>
+            return <th data-input={mode}/>;
         } else {
             return false;
         }
@@ -31,9 +28,10 @@ export default class TreeHeader extends Component {
         let i = 0;
         return (
             <colgroup ref="colgroup">
-                {selectRow.mode !== 'none' && !selectRow.hideSelectColumn && !isTree &&
+                {!!selectRow.mode && selectRow.mode !== 'none' && !selectRow.hideSelectColumn && !isTree &&
                 <col key="select" style={{textAlign: 'center', width: 30}}/>}
-                {  React.Children.map(renderChildren, (elm)=> {
+                {React.Children.map(renderChildren, (elm) => {
+                    if (!elm) return;
                     if (left && elm.props.dataFixed !== 'left') return;
                     if (right && elm.props.dataFixed !== 'right') return;
                     let style = {
@@ -42,10 +40,10 @@ export default class TreeHeader extends Component {
                         textAlign: elm.props.dataAlign,
                         display: elm.props.hidden && 'none'
                     };
-                    return <col key={i} style={style}/>
+                    return <col key={i} style={style}/>;
                 })}
             </colgroup>
-        )
+        );
     }
 
     render() {
@@ -59,19 +57,21 @@ export default class TreeHeader extends Component {
             sortName,
             sortOrder,
             selectRow,
+            dataLength,
             onSelectAll
         } = this.props;
         let i = 0, colSpan, target;
-        let renderChildren = isArr(children) ? children : [children];
-        renderChildren = sort(renderChildren, 123).sorted;
+        let renderChildren = React.Children.toArray(children);
+        renderChildren = sort(renderChildren).sorted;
         return (
             <div className="table-container table-header-container" ref="header">
                 <table className="table table-bordered">
                     {this.colgroupRender(renderChildren, selectRow, isTree, left, right)}
                     <thead>
                     <tr ref="thead">
-                        {!isTree && !selectRow.hideSelectColumn && this.selectRender(selectRow.mode, onSelectAll, checked)}
-                        {  React.Children.map(renderChildren, (elm)=> {
+                        {!isTree && !selectRow.hideSelectColumn && this.selectRender(selectRow.mode, onSelectAll, dataLength && checked)}
+                        {React.Children.map(renderChildren, (elm) => {
+                            if (!elm) return;
                             if (left && elm.props.dataFixed !== 'left') return;
                             if (right && elm.props.dataFixed !== 'right') return;
                             if (colSpan && target < i && i < colSpan) {
@@ -88,7 +88,7 @@ export default class TreeHeader extends Component {
                     </thead>
                 </table>
             </div>
-        )
+        );
     }
 }
 

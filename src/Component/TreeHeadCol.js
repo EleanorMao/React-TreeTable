@@ -1,7 +1,26 @@
-import React, {
-    Component,
-    PropTypes
-} from 'react';
+import React, {Component} from 'react';
+import PropTypes          from 'prop-types';
+
+const SortGroup = () => {
+    return (
+        <span className="order" key="sort-group">
+            <span className="dropdown">
+                <span className="caret" style={{margin: '10px 0 10px 5px', color: '#ccc'}}/>
+            </span>
+            <span className="dropup">
+                <span className="caret" style={{margin: '10px 0', color: '#ccc'}}/>
+            </span>
+        </span>
+    );
+};
+
+const SingleSort = (sortOrder) => {
+    return (
+        <span className={"order " + (sortOrder === 'desc' ? '' : 'dropup')} key="single-sort">
+            <span className="caret" style={{margin: '10px 0 10px 5px'}}/>
+        </span>
+    );
+};
 
 class TreeHeadCol extends Component {
     constructor(props) {
@@ -9,22 +28,7 @@ class TreeHeadCol extends Component {
     }
 
     caretRender(dataField, sortName, sortOrder) {
-        const SortGroup =
-            <span className="order">
-                <span className="dropdown">
-                    <span className="caret" style={{margin: '10px 0 10px 5px', color: '#ccc'}}/>
-                </span>
-                <span className="dropup">
-                    <span className="caret" style={{margin: '10px 0', color: '#ccc'}}/>
-                </span>
-           </span>;
-        const AscCaret = <span className="caret" style={{margin: '10px 0 10px 5px'}}/>;
-        if (dataField === sortName && sortOrder) {
-            return <span className={"order " + (sortOrder === 'desc' ? '' : 'dropup')}>{AscCaret}</span>;
-        } else {
-            return SortGroup;
-        }
-
+        return dataField === sortName && sortOrder ? SingleSort(sortOrder) : SortGroup();
     }
 
     render() {
@@ -50,7 +54,7 @@ class TreeHeadCol extends Component {
 
         return (
             <th style={style} colSpan={colSpan || null}
-                onClick={dataSort ? ()=>onSort(dataField, sortOrder === 'asc' ? 'desc' : 'asc') : ()=> {
+                onClick={dataSort ? () => onSort(dataField, sortOrder === 'asc' ? 'desc' : 'asc') : () => {
                     return false;
                 }}>
                 <span>{children}</span>{dataSort && this.caretRender(dataField, sortName, sortOrder)}

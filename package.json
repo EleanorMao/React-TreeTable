@@ -26,7 +26,8 @@
   },
   "homepage": "https://github.com/EleanorMao/React-TreeTable#readme",
   "dependencies": {
-    "classnames": "^2.2.5"
+    "classnames": "^2.2.5",
+    "prop-types": "^15.6.0"
   },
   "devDependencies": {
     "babel-cli": "^6.9.0",

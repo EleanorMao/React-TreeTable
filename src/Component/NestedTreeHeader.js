@@ -1,12 +1,9 @@
 /**
- * Created by elly on 16/9/26.
+ * Created by EleanorMao on 16/9/26.
  */
-import React, {
-    Component,
-    PropTypes
-} from 'react';
-
-import {isObj} from './Util';
+import React, {Component} from 'react';
+import PropTypes          from 'prop-types';
+import {isObj}            from './Util';
 
 export default class NestedTreeHeader extends Component {
     constructor(props) {
@@ -16,7 +13,7 @@ export default class NestedTreeHeader extends Component {
     nestedHeadRender() {
         let output = [];
         const {nestedHead, isTree, selectRow} = this.props;
-        const select = !isTree && selectRow.mode !== 'none';
+        const select = !isTree && selectRow.mode && selectRow.mode !== 'none';
         nestedHead.map((throws, index) => {
             let item =
                 <tr key={'trow' + index}>
@@ -25,7 +22,7 @@ export default class NestedTreeHeader extends Component {
                         let obj = isObj(cell);
                         return <th colSpan={obj && cell.colspan || null}
                                    rowSpan={obj && cell.rowspan || null}
-                                   key={i}>{obj ? cell.label : cell}</th>
+                                   key={i}>{obj ? cell.label : cell}</th>;
                     })}
                 </tr>;
             output.push(item);
@@ -36,8 +33,8 @@ export default class NestedTreeHeader extends Component {
     colgroupRender() {
         const cols = this.props.cols;
         let output = [];
-        cols.map((item, i)=> {
-            output.push(<col key={i} style={{display: item.hidden && 'none'}}/>)
+        cols.map((item, i) => {
+            output.push(<col key={i} style={{display: item.hidden && 'none'}}/>);
         });
         return output;
     }
@@ -50,7 +47,7 @@ export default class NestedTreeHeader extends Component {
                     <thead>{this.nestedHeadRender()}</thead>
                 </table>
             </div>
-        )
+        );
     }
 }
 

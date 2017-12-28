@@ -1,19 +1,17 @@
 /**
- * Created by Elly on 2016/5/26.
+ * Created by Eleanor Mao on 2016/5/26.
  * Tree Table
  * @version 4.0
  * Author: Eleanor Mao
  * require bootstrap.css
  */
-import React, {
-    Component,
-    PropTypes
-} from 'react';
-import TreeRow          from './TreeRow';
-import TreeHeader       from './TreeHeader';
-import NestedTreeHeader from './NestedTreeHeader';
-import Paging           from './Pagination/Pagination';
-import Dropdown         from './Pagination/DropdownList';
+import React, {Component}                               from 'react';
+import TreeRow                                          from './TreeRow';
+import PropTypes                                        from 'prop-types';
+import TreeHeader                                       from './TreeHeader';
+import NestedTreeHeader                                 from './NestedTreeHeader';
+import Paging                                           from './Pagination/Pagination';
+import Dropdown                                         from './Pagination/DropdownList';
 import {empty, sort, uniqueID, diff, getScrollBarWidth} from './Util';
 
 require('../style/treetable.css');
@@ -33,7 +31,7 @@ export default class TreeTable extends Component {
             dictionary: data.dictionary,
             crtPage: props.pagination && props.options.page || 1,
             length: props.pagination && props.options.sizePerPage || 0
-        }
+        };
     }
 
     _initDictionary(props) {
@@ -41,13 +39,14 @@ export default class TreeTable extends Component {
         const {
             uid,
             iskey,
+            isKey,
             isTree,
             hashKey,
             expandAll,
             expandRowKeys,
             childrenPropertyName
         } = props;
-        let keyName = hashKey ? uid : iskey;
+        let keyName = hashKey ? uid : iskey || isKey;
         if (isTree) {
             if (expandAll) {
                 dictionary = this._recursion(data, hashKey, keyName, childrenPropertyName);
@@ -101,7 +100,7 @@ export default class TreeTable extends Component {
             });
         });
         let sortedData = sort(columnData);
-        this.setState(old=> {
+        this.setState(old => {
             old.columnData = sortedData.sorted;
             old.leftColumnData = sortedData.left;
             old.rightColumnData = sortedData.right;
@@ -135,11 +134,12 @@ export default class TreeTable extends Component {
     }
 
     _getKeyName() {
-        const {hashKey, iskey, uid} =this.props;
-        return hashKey ? uid : iskey;
+        const {hashKey, iskey, isKey, uid} = this.props;
+        return hashKey ? uid : iskey || isKey;
     }
 
     _adjustWidth() {
+        if (!this.refs.colgroup) return;
         const refs = this.refs,
             firstRow = refs.colgroup.childNodes,
             cells = refs.thead.refs.thead.childNodes,
@@ -152,13 +152,13 @@ export default class TreeTable extends Component {
             length = cells.length,
             rightFixedLength = fixedRightRow ? length - fixedRightRow.length : 0;
 
-        if (firstRow.length !== length)return;
+        if (firstRow.length !== length) return;
 
         const scrollBarWidth = getScrollBarWidth(),
             haveScrollBar = refs.body.offsetWidth !== refs.thead.refs.header.offsetWidth;
 
         let lastChild = this._getLastChild(this.state.columnData), fixedRightWidth = 0;
-        lastChild = this.props.selectRow.mode !== 'none' ? lastChild + 1 : lastChild;
+        lastChild = this.props.selectRow.mode && this.props.selectRow.mode !== 'none' ? lastChild + 1 : lastChild;
 
         for (let i = 0; i < length; i++) {
             const cell = cells[i];
@@ -212,7 +212,7 @@ export default class TreeTable extends Component {
         }
 
         if (fixedRightWidth) {
-            refs.rightBody.style.width = fixedRightWidth - (haveScrollBar ? scrollBarWidth : 0) + 'px';
+            refs.rightBody.style.width = fixedRightWidth + 'px';
         }
 
         if (fixedLeftRow || fixedRightRow) {
@@ -220,8 +220,8 @@ export default class TreeTable extends Component {
             const ltbody = refs.ltbody && refs.ltbody.childNodes;
             const rtbody = refs.rtbody && refs.rtbody.childNodes;
             const headHeight = getComputedStyle(refs.thead.refs.thead).height;
-            if (refs.lthead)  refs.lthead.refs.thead.style.height = headHeight;
-            if (refs.rthead)  refs.rthead.refs.thead.style.height = headHeight;
+            if (refs.lthead) refs.lthead.refs.thead.style.height = headHeight;
+            if (refs.rthead) refs.rthead.refs.thead.style.height = headHeight;
             for (let i = 0; i < tbody.length; i++) {
                 let row = tbody[i];
                 let height = getComputedStyle(row).height;
@@ -253,15 +253,15 @@ export default class TreeTable extends Component {
     }
 
     _tryRender() {
-        const {isTree, iskey, hashKey, selectRow, nestedHead} = this.props;
-        const {leftColumnData, rightColumnData}= this.state;
+        const {isTree, iskey, isKey, hashKey, selectRow, nestedHead} = this.props;
+        const {leftColumnData, rightColumnData} = this.state;
         const warning = 'color:red';
-        if (isTree && !(iskey || hashKey)) {
-            throw new Error('You need choose one configuration to set key field: `iskey` or `hashkey`!!');
+        if (isTree && !((iskey || isKey) || hashKey)) {
+            throw new Error('You need choose one configuration to set key field: `iskey(isKey)` or `hashkey`!!');
         }
 
         if (!isTree && hashKey) {
-            console.warn('%c!Warning: If you set props `isTree` to `false`, `hashKey` need to be false and set props `iskey` instead!!', warning);
+            console.warn('%c!Warning: If you set props `isTree` to `false`, `hashKey` need to be false and set props `iskey(isKey)` instead!!', warning);
         }
 
         if (nestedHead.length && (leftColumnData.length || rightColumnData.length)) {
@@ -296,15 +296,14 @@ export default class TreeTable extends Component {
 
     componentWillUnmount() {
         window.removeEventListener('resize', this._adjustWidth.bind(this));
-        let {rightContainer, container}= this.refs;
+        let {rightContainer, container} = this.refs;
         container.removeEventListener('scroll', this._scrollHeader.bind(this));
         container.removeEventListener('scroll', this._scrollHeight.bind(this));
         rightContainer.removeEventListener('scroll', this._scrollHeight.bind(this));
     }
 
     componentDidUpdate() {
-        this._adjustWidth();
-        this._adjustWidth();
+        setTimeout(this._adjustWidth.bind(this), 0);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -338,7 +337,7 @@ export default class TreeTable extends Component {
                     if (hashKey && !data[keyName]) data[keyName] = uniqueID();
                     old.dictionary.push(data[keyName]);
                     return old;
-                })
+                });
             } else {
                 that.setState(old => {
                     old.dictionary.splice(old.dictionary.indexOf(data[keyName]), 1);
@@ -349,7 +348,7 @@ export default class TreeTable extends Component {
                         }
                     });
                     return old;
-                })
+                });
             }
         };
         this.props.onArrowClick(open, data, callback, parent);
@@ -357,16 +356,16 @@ export default class TreeTable extends Component {
 
     handleSelectAll(checked) {
         if (checked) {
-            this.props.selectRow.onSelectAll(checked, this.state.renderedList.slice())
+            this.props.selectRow.onSelectAll(checked, this.state.renderedList.slice());
         } else {
-            this.props.selectRow.onSelectAll(checked, [])
+            this.props.selectRow.onSelectAll(checked, []);
         }
     }
 
     handleSort(sortField, order) {
         const {remote, onSortChange} = this.props;
         if (remote) {
-            onSortChange(sortField, order)
+            onSortChange(sortField, order);
         } else {
             const {renderedList} = this.state;
 
@@ -390,7 +389,7 @@ export default class TreeTable extends Component {
                 }
             });
 
-            this.setState(old=> {
+            this.setState(old => {
                 old.order = order;
                 old.renderedList = list;
                 old.sortField = sortField;
@@ -413,7 +412,7 @@ export default class TreeTable extends Component {
         const {remote, options} = this.props;
         const page = remote ? options.page : this.state.crtPage;
         if (!remote) {
-            this.setState(old=> {
+            this.setState(old => {
                 old.length = length;
                 if (!remote && (page - 1) * length > old.renderedList.length) {
                     old.crtPage = 1;
@@ -430,13 +429,13 @@ export default class TreeTable extends Component {
         this.setState(old => {
             old.isHover = hover;
             return old;
-        })
+        });
     }
 
     colgroupRender(data, mode) {
         let output = [];
-        if (mode !== 'none') {
-            output.push(<col key="select" style={{textAlign: 'center', width: 30}}/>)
+        if (mode && mode !== 'none') {
+            output.push(<col key="select" style={{textAlign: 'center', width: 30}}/>);
         }
         data.map((item, index) => {
             let style = {
@@ -447,7 +446,7 @@ export default class TreeTable extends Component {
             };
             output.push(
                 <col style={style} key={index}/>
-            )
+            );
         });
         return output;
     }
@@ -460,6 +459,7 @@ export default class TreeTable extends Component {
         const {
             hover,
             iskey,
+            isKey,
             isTree,
             hashKey,
             selectRow,
@@ -468,7 +468,7 @@ export default class TreeTable extends Component {
             startArrowCol,
             childrenPropertyName
         } = this.props;
-        const isSelect = selectRow.mode !== 'none';
+        const isSelect = selectRow.mode && selectRow.mode !== 'none';
         const keyName = this._getKeyName();
         let output = [];
 
@@ -485,11 +485,11 @@ export default class TreeTable extends Component {
                         cols={cols}
                         colIndex={i}
                         level={level}
-                        iskey={iskey}
                         open={opened}
                         parent={parent}
                         isTree={isTree}
                         hashKey={hashKey}
+                        iskey={iskey || isKey}
                         selectRow={selectRow}
                         hover={isHover === key}
                         hoverStyle={hoverStyle}
@@ -499,12 +499,12 @@ export default class TreeTable extends Component {
                         onClick={this.handleToggle.bind(this)}
                         arrowCol={right ? null : startArrowCol}
                         childrenPropertyName={childrenPropertyName}
-                        onMouseOut={hover ? this.handleHover.bind(this, null) : ()=> {
+                        onMouseOut={hover ? this.handleHover.bind(this, null) : () => {
                         }}
-                        onMouseOver={hover ? this.handleHover.bind(this, key) : ()=> {
+                        onMouseOver={hover ? this.handleHover.bind(this, key) : () => {
                         }}
                         checked={selectRow.mode === 'checkbox' ?
-                            !!~selectRow.selected.indexOf(key) : selectRow.selected[0] === key}
+                            !!~selectRow.selected.indexOf(key) : selectRow.selected && selectRow.selected[0] === key}
                     />
                 );
                 if (opened) {
@@ -539,7 +539,7 @@ export default class TreeTable extends Component {
                     </tbody>
                 </table>
             </div>
-        )
+        );
     }
 
     leftBodyRender(data, selectRow) {
@@ -555,7 +555,7 @@ export default class TreeTable extends Component {
                     {this.rowsRender(data, leftColumnData, 0, null, selectRow.hideSelectColumn)}
                     </tbody>
                 </table>
-            )
+            );
         }
     }
 
@@ -572,7 +572,7 @@ export default class TreeTable extends Component {
                     {this.rowsRender(data, rightColumnData, 0, null, true, true)}
                     </tbody>
                 </table>
-            )
+            );
         }
     }
 
@@ -597,7 +597,7 @@ export default class TreeTable extends Component {
                             options.paginationShowsTotal(start, to, dataSize)
                     }
                 </div>
-            )
+            );
         }
     }
 
@@ -636,7 +636,7 @@ export default class TreeTable extends Component {
         if (pagination) {
             return (
                 <div className="fr">
-                    {  remote ?
+                    {remote ?
                         <Paging
                             dataSize={dataSize}
                             current={options.page}
@@ -662,7 +662,7 @@ export default class TreeTable extends Component {
                         />
                     }
                 </div>
-            )
+            );
         }
     }
 
@@ -678,7 +678,7 @@ export default class TreeTable extends Component {
                     {this.pagingRender()}
                 </div>
             </div>
-        )
+        );
     }
 
     titleRender() {
@@ -728,13 +728,18 @@ export default class TreeTable extends Component {
 
         let checked = false;
         const renderList = pagination && !remote ? this._sliceData(renderedList, crtPage, length) : renderedList.slice();
-        if (selectRow.mode !== 'none') {
-            checked = this._getAllValue(renderList.slice(), this._getKeyName()).sort().toString() === selectRow.selected.slice().sort().toString();
+        if (selectRow.mode && selectRow.mode !== 'none' && selectRow.selected && selectRow.selected.length) {
+            checked = !this._getAllValue(renderList.slice(), this._getKeyName()).filter(v => {
+                return !~selectRow.selected.indexOf(v);
+            }).length;
         }
         let paddingBottom = 0;
         let container = this.refs.container;
-        if (container && typeof parseFloat(height) == "number" && (container.scrollWidth > container.clientWidth)) {
+        if (container && typeof parseFloat(height) === "number" && (container.scrollWidth > container.clientWidth)) {
             paddingBottom = parseFloat(height) - container.clientHeight;
+        }
+        if (isNaN(paddingBottom)) {
+            paddingBottom = 0;
         }
         return (
             <div className={"react-tree " + lineWrap}>
@@ -756,6 +761,7 @@ export default class TreeTable extends Component {
                             sortOrder={remote ? sortOrder : order}
                             sortName={remote ? sortName : sortField}
                             onSort={this.handleSort.bind(this)}
+                            dataLength={renderedList.length}
                         >
                             {children}
                         </TreeHeader>
@@ -765,7 +771,9 @@ export default class TreeTable extends Component {
                         {
                             !!leftColumnData.length &&
                             <TreeHeader
-                                ref="lthead" isTree={isTree} left={leftColumnData.length}
+                                ref="lthead" isTree={isTree}
+                                left={leftColumnData.length}
+                                dataLength={renderedList.length}
                                 onSelectAll={this.handleSelectAll.bind(this)}
                                 selectRow={selectRow} checked={checked}
                                 sortName={remote ? sortName : sortField}
@@ -778,7 +786,7 @@ export default class TreeTable extends Component {
                         <div
                             ref="leftContainer"
                             className="table-container table-body-container"
-                            style={{height: height || 'auto', paddingBottom: paddingBottom}}
+                            style={{height: height || 'auto', paddingBottom}}
                         >
                             {this.leftBodyRender(renderList, selectRow)}
                         </div>
@@ -787,7 +795,9 @@ export default class TreeTable extends Component {
                         {
                             !!rightColumnData.length &&
                             <TreeHeader
-                                ref="rthead" isTree={isTree} right={rightColumnData.length}
+                                ref="rthead" isTree={isTree}
+                                right={rightColumnData.length}
+                                dataLength={renderedList.length}
                                 sortName={remote ? sortName : sortField}
                                 sortOrder={remote ? sortOrder : order}
                                 onSort={this.handleSort.bind(this)}
@@ -804,7 +814,7 @@ export default class TreeTable extends Component {
                 </div>
                 {this.pagingRowRender()}
             </div>
-        )
+        );
 
     }
 }
@@ -856,6 +866,7 @@ TreeTable.propTypes = {
     isTree: PropTypes.bool,
     hashKey: PropTypes.bool,
     iskey: PropTypes.string,
+    isKey: PropTypes.string,
     expandAll: PropTypes.bool,
     dataSize: PropTypes.number,
     pagination: PropTypes.bool,

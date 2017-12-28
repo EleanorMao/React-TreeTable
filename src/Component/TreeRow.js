@@ -1,10 +1,8 @@
 /**
- * Created by BG236557 on 2016/5/27.
+ * Created by EleanorMao on 2016/5/27.
  */
-import React from 'react';
-import {extend} from './Util'
-
-const Component = React.Component;
+import React, {Component} from 'react';
+import {extend}           from './Util';
 
 export default class TreeRow extends Component {
     constructor(props) {
@@ -36,6 +34,7 @@ export default class TreeRow extends Component {
             arrowCol,
             colIndex,
             selectRow,
+            showTitle,
             arrowRender,
             hideSelectColumn,
             childrenPropertyName
@@ -49,7 +48,7 @@ export default class TreeRow extends Component {
                 <td key={_key} style={{backgroundColor: checked && selectRow.bgColor, textAlign: 'center'}}>
                     <input type={selectRow.mode} checked={checked} readOnly={true}/>
                 </td>
-            )
+            );
         }
 
         cols.map((key, i, col) => {
@@ -65,7 +64,7 @@ export default class TreeRow extends Component {
             };
 
             if (dataFormat) {
-                cell = dataFormat(data[key.id], level, data, i, col)
+                cell = dataFormat(data[key.id], level, data, i, col);
             }
             if (colSpan && colTarget < i && i < colSpan) return;
             if (key.render) {
@@ -73,7 +72,7 @@ export default class TreeRow extends Component {
                 colSpan = props.colSpan + i;
                 colTarget = i;
             }
-            if (props.colSpan === 0 || props.rowSpan === 0)return;
+            if (props.colSpan === 0 || props.rowSpan === 0) return;
             if (i > arrowCol) {
                 arrow++;
             } else if (i === arrowCol) {
@@ -95,6 +94,10 @@ export default class TreeRow extends Component {
                     key={'' + _key + i}
                     colSpan={props.colSpan}
                     rowSpan={props.rowSpan}
+                    title={typeof showTitle === 'boolean' ?
+                        (~['string', 'number'].indexOf(typeof cell) ? cell : null) : (
+                            typeof showTitle === 'function' ? showTitle(cell, data[key.id], level, data) : null
+                        )}
                 >
                     <span style={{marginLeft: level * 10 + 'px'}}>
                         {cell}
@@ -105,7 +108,7 @@ export default class TreeRow extends Component {
                         }
                     </span>
                 </td>
-            )
+            );
         });
         return output;
     }
@@ -124,16 +127,16 @@ export default class TreeRow extends Component {
             onMouseOver
         } = this.props;
         return (
-            <tr style={hover ? hoverStyle : {}}
+            <tr style={hover ? hoverStyle : null}
                 className={isTree && !level && "ancestor" || null}
                 onMouseOut={onMouseOut} onMouseOver={onMouseOver}
-                onClick={isSelect ? ()=>selectRow.onSelect(!checked, data) : ()=> {
+                onClick={isSelect ? () => selectRow.onSelect(!checked, data) : () => {
                     return false;
                 }}
             >
                 {this.cellRender()}
             </tr>
-        )
+        );
     }
 }
 
@@ -141,12 +144,12 @@ TreeRow.defaultProps = {
     level: 0,
     hashKey: false,
     hideSelectColumn: false,
-    arrowRender: (open)=> {
+    arrowRender: (open) => {
         return (
             <i
                 className="fa fa-chevron-down"
                 style={open ? {transform: 'rotate(-90deg)'} : {}}
             > </i>
-        )
+        );
     }
 };
