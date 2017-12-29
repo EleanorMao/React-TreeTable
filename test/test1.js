@@ -42,6 +42,16 @@ describe("no-data", function () {
         table.setProps({data: [{id: 1}, {id: 2}]});
         expect(table.find('.table-tree .table-body-container .table tbody tr')).to.have.length(2);
     });
+    it("set nextProps `data` have data2", function () {
+        let table = mount(
+            <TreeTable data={[]} isKey="id">
+                <TreeHeadCol dataField="id">test</TreeHeadCol>
+            </TreeTable>
+        );
+        expect(table.find('.table-tree .table-body-container .table tbody tr td').text()).to.equal('暂无数据');
+        table.setProps({data: [{id: 1}, {id: 2}]});
+        expect(table.find('.table-tree .table-body-container .table tbody tr')).to.have.length(2);
+    });
 });
 
 describe("lineWrap", function () {

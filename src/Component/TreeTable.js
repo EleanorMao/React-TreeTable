@@ -22,16 +22,26 @@ export default class TreeTable extends Component {
         let data = this._initDictionary(props);
         this.state = {
             isHover: null,
-            order: undefined,
             columnData: [],
+            order: undefined,
             leftColumnData: [],
             rightColumnData: [],
             sortField: undefined,
             renderedList: data.data,
             dictionary: data.dictionary,
             crtPage: props.pagination && props.options.page || 1,
+            allChecked: this._isAllChecked(data.data, props.selectRow),
             length: props.pagination && props.options.sizePerPage || 0
         };
+    }
+
+    _isAllChecked(list, selectRow) {
+        if (list && list.length && selectRow && selectRow.mode && selectRow.mode !== 'node' && selectRow.selected && selectRow.selected.length) {
+            return !this._getAllValue(list.slice(), this._getKeyName()).filter(v => {
+                return !~selectRow.selected.indexOf(v);
+            }).length;
+        }
+        return false;
     }
 
     _initDictionary(props) {
@@ -313,6 +323,7 @@ export default class TreeTable extends Component {
             renderedList: data.data,
             dictionary: data.dictionary,
             length: nextProps.options.sizePerPage || 0,
+            allChecked: this._isAllChecked(data.data, nextProps.selectRow),
             crtPage: nextProps.pagination && nextProps.options.page || this.state.crtPage
         });
     }
@@ -720,26 +731,19 @@ export default class TreeTable extends Component {
             length,
             crtPage,
             sortField,
+            allChecked,
             columnData,
             renderedList,
             leftColumnData,
             rightColumnData
         } = this.state;
 
-        let checked = false;
         const renderList = pagination && !remote ? this._sliceData(renderedList, crtPage, length) : renderedList.slice();
-        if (selectRow.mode && selectRow.mode !== 'none' && selectRow.selected && selectRow.selected.length) {
-            checked = !this._getAllValue(renderList.slice(), this._getKeyName()).filter(v => {
-                return !~selectRow.selected.indexOf(v);
-            }).length;
-        }
         let paddingBottom = 0;
         let container = this.refs.container;
         if (container && typeof parseFloat(height) === "number" && (container.scrollWidth > container.clientWidth)) {
             paddingBottom = parseFloat(height) - container.clientHeight;
-        }
-        if (isNaN(paddingBottom)) {
-            paddingBottom = 0;
+            if (isNaN(paddingBottom)) paddingBottom = 0;
         }
         return (
             <div className={"react-tree " + lineWrap}>
@@ -757,7 +761,7 @@ export default class TreeTable extends Component {
                         <TreeHeader
                             ref="thead" isTree={isTree}
                             onSelectAll={this.handleSelectAll.bind(this)}
-                            selectRow={selectRow} checked={checked}
+                            selectRow={selectRow} checked={allChecked}
                             sortOrder={remote ? sortOrder : order}
                             sortName={remote ? sortName : sortField}
                             onSort={this.handleSort.bind(this)}
@@ -775,7 +779,7 @@ export default class TreeTable extends Component {
                                 left={leftColumnData.length}
                                 dataLength={renderedList.length}
                                 onSelectAll={this.handleSelectAll.bind(this)}
-                                selectRow={selectRow} checked={checked}
+                                selectRow={selectRow} checked={allChecked}
                                 sortName={remote ? sortName : sortField}
                                 sortOrder={remote ? sortOrder : order}
                                 onSort={this.handleSort.bind(this)}
