@@ -16,81 +16,93 @@ import {empty, sort, uniqueID, diff, getScrollBarWidth} from './Util';
 
 require('../style/treetable.css');
 
+function sliceData(data, page, length) {
+    return data.slice((page - 1) * length, page * length);
+}
+
+function getAllValue(data, isKey) {
+    if (data && data.length) {
+        return data.map(row => {
+            return row[isKey];
+        });
+    }
+    return [];
+}
+
+function getAllKey(data, hashKey, keyName, childrenPropertyName) {
+    let output = [];
+    for (let i = 0; i < data.length; i++) {
+        let item = data[i];
+        if (hashKey && !item[keyName]) item[keyName] = uniqueID(); //引用大法好
+        if (item[childrenPropertyName] && item[childrenPropertyName].length) {
+            output.push(item[keyName]);
+            data = data.concat(item[childrenPropertyName]);
+        }
+    }
+    return output;
+}
+
+function initDictionary(props) {
+    let dictionary = [], data = props.data.slice();
+    if (props.isTree) {
+        const {
+            uid,
+            iskey,
+            isKey,
+            hashKey,
+            expandAll,
+            expandRowKeys,
+            childrenPropertyName
+        } = props;
+        let keyName = hashKey ? uid : (iskey || isKey);
+        if (expandAll) {
+            dictionary = getAllKey(data, hashKey, keyName, childrenPropertyName);
+        } else if (expandRowKeys && expandRowKeys.length) {
+            dictionary = expandRowKeys.slice();
+        }
+    }
+    return {data, dictionary};
+}
+
+function getLastChild(data) {
+    let invalid = [],
+        list = [];
+    for (let i = 0, len = data.length; i < len; i++) {
+        if (data[i].hidden) {
+            invalid.push(i);
+        }
+        list.push(i);
+    }
+    let diffList = diff(list, invalid);
+    return diffList[diffList.length - 1];
+}
+
 export default class TreeTable extends Component {
     constructor(props) {
         super(props);
-        let data = this._initDictionary(props);
+        let {data, dictionary} = initDictionary(props);
         this.state = {
+            dictionary,
             isHover: null,
             columnData: [],
             order: undefined,
             leftColumnData: [],
+            renderedList: data,
             rightColumnData: [],
             sortField: undefined,
-            renderedList: data.data,
-            dictionary: data.dictionary,
             crtPage: props.pagination && props.options.page || 1,
-            allChecked: this._isAllChecked(data.data, props.selectRow),
+            allChecked: this._isAllChecked(data, props.selectRow),
             length: props.pagination && props.options.sizePerPage || 0
         };
     }
 
     _isAllChecked(list, selectRow) {
         if (list && list.length && selectRow && selectRow.mode && selectRow.mode !== 'node' && selectRow.selected && selectRow.selected.length) {
-            return !this._getAllValue(list.slice(), this._getKeyName()).filter(v => {
+            return !getAllValue(list.slice(), this._getKeyName()).filter(v => {
                 return !~selectRow.selected.indexOf(v);
             }).length;
         }
         return false;
-    }
-
-    _initDictionary(props) {
-        let dictionary = [], data = props.data.slice();
-        const {
-            uid,
-            iskey,
-            isKey,
-            isTree,
-            hashKey,
-            expandAll,
-            expandRowKeys,
-            childrenPropertyName
-        } = props;
-        let keyName = hashKey ? uid : iskey || isKey;
-        if (isTree) {
-            if (expandAll) {
-                dictionary = this._recursion(data, hashKey, keyName, childrenPropertyName);
-            } else if (expandRowKeys && expandRowKeys.length) {
-                dictionary = expandRowKeys.slice();
-            }
-        }
-        return {data, dictionary};
-    }
-
-    _recursion(data, hashKey, keyName, childrenPropertyName) {
-        let dictionary = [];
-        for (let i = 0; i < data.length; i++) {
-            let item = data[i];
-            if (hashKey && !item[keyName]) item[keyName] = uniqueID(); //引用大法好
-            if (item[childrenPropertyName] && item[childrenPropertyName].length) {
-                dictionary.push(item[keyName]);
-                data = data.concat(item[childrenPropertyName]);
-            }
-        }
-        return dictionary;
-    }
-
-    _flatten(data, childrenPropertyName, hashKey, keyName) {
-        let output = [];
-        for (let i = 0; i < data.length; i++) {
-            let item = data[i];
-            if (hashKey && !item[keyName]) item[keyName] = uniqueID();
-            if (item[childrenPropertyName]) {
-                output.push(item[keyName]);
-                data = data.concat(item[childrenPropertyName]);
-            }
-        }
-        return output;
     }
 
     _initColumnData(props) {
@@ -118,34 +130,9 @@ export default class TreeTable extends Component {
         });
     }
 
-    _getAllValue(data, iskey) {
-        let output = [];
-        for (let i = 0, len = data.length; i < len; i++) {
-            output.push(data[i][iskey]);
-        }
-        return output;
-    }
-
-    _getLastChild(data) {
-        let unavail = [],
-            list = [];
-        for (let i = 0, len = data.length; i < len; i++) {
-            if (data[i].hidden) {
-                unavail.push(i);
-            }
-            list.push(i);
-        }
-        let diffList = diff(list, unavail);
-        return diffList[diffList.length - 1];
-    }
-
-    _sliceData(data, page, length) {
-        return data.slice((page - 1) * length, page * length);
-    }
-
     _getKeyName() {
         const {hashKey, iskey, isKey, uid} = this.props;
-        return hashKey ? uid : iskey || isKey;
+        return hashKey ? uid : (iskey || isKey);
     }
 
     _adjustWidth() {
@@ -167,7 +154,7 @@ export default class TreeTable extends Component {
         const scrollBarWidth = getScrollBarWidth(),
             haveScrollBar = refs.body.offsetWidth !== refs.thead.refs.header.offsetWidth;
 
-        let lastChild = this._getLastChild(this.state.columnData), fixedRightWidth = 0;
+        let lastChild = getLastChild(this.state.columnData), fixedRightWidth = 0;
         lastChild = this.props.selectRow.mode && this.props.selectRow.mode !== 'none' ? lastChild + 1 : lastChild;
 
         for (let i = 0; i < length; i++) {
@@ -318,16 +305,15 @@ export default class TreeTable extends Component {
 
     componentWillReceiveProps(nextProps) {
         this._initColumnData(nextProps);
-        let data = this._initDictionary(nextProps);
+        let {data, dictionary} = initDictionary(nextProps);
         this.setState({
-            renderedList: data.data,
-            dictionary: data.dictionary,
+            dictionary,
+            renderedList: data,
             length: nextProps.options.sizePerPage || 0,
-            allChecked: this._isAllChecked(data.data, nextProps.selectRow),
+            allChecked: this._isAllChecked(data, nextProps.selectRow),
             crtPage: nextProps.pagination && nextProps.options.page || this.state.crtPage
         });
     }
-
 
     handleToggle(option) {
         const {
@@ -341,7 +327,7 @@ export default class TreeTable extends Component {
         let callback = (data) => {
             let childList = data && data[childrenPropertyName] || [];
             if (clickToCloseAll) {
-                childList = this._flatten(childList, childrenPropertyName, hashKey, keyName);
+                childList = getAllKey(childList, hashKey, keyName, childrenPropertyName);
             }
             if (!open) {
                 that.setState(old => {
@@ -738,7 +724,7 @@ export default class TreeTable extends Component {
             rightColumnData
         } = this.state;
 
-        const renderList = pagination && !remote ? this._sliceData(renderedList, crtPage, length) : renderedList.slice();
+        const renderList = pagination && !remote ? sliceData(renderedList, crtPage, length) : renderedList;
         let paddingBottom = 0;
         let container = this.refs.container;
         if (container && typeof parseFloat(height) === "number" && (container.scrollWidth > container.clientWidth)) {
