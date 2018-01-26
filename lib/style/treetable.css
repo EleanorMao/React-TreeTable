@@ -94,6 +94,7 @@
 
 .table-right-fixed .table-container {
     overflow: auto;
+    overflow-x: hidden;
 }
 
 .react-tree.ellipsis .table th, .react-tree.ellipsis .table td {

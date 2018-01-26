@@ -152,7 +152,7 @@ export default class TreeTable extends Component {
         if (firstRow.length !== length) return;
 
         const scrollBarWidth = getScrollBarWidth(),
-            haveScrollBar = refs.body.offsetWidth !== refs.thead.refs.header.offsetWidth;
+            haveScrollBar = refs.container.offsetHeight < refs.container.scrollHeight;
 
         let lastChild = getLastChild(this.state.columnData), fixedRightWidth = 0;
         lastChild = this.props.selectRow.mode && this.props.selectRow.mode !== 'none' ? lastChild + 1 : lastChild;
@@ -209,10 +209,16 @@ export default class TreeTable extends Component {
         }
 
         if (fixedRightWidth) {
-            refs.rightBody.style.width = fixedRightWidth + 'px';
+            refs.rightContainer.style.width = fixedRightWidth + 'px';
         }
 
         if (fixedLeftRow || fixedRightRow) {
+            const getBoundingClientRect = refs.container.getBoundingClientRect;
+            const height = getBoundingClientRect ? getBoundingClientRect().height : refs.container.offsetHeight;
+            const haveVerticalScrollBar = refs.container.offsetWidth < refs.container.scrollWidth;
+            const fixedTableHeight = height - (haveVerticalScrollBar ? scrollBarWidth : 0);
+            refs.leftContainer.style.height = fixedTableHeight + 'px';
+            refs.rightContainer.style.height = fixedTableHeight + 'px';
             const tbody = refs.tbody.childNodes;
             const ltbody = refs.ltbody && refs.ltbody.childNodes;
             const rtbody = refs.rtbody && refs.rtbody.childNodes;
@@ -725,12 +731,6 @@ export default class TreeTable extends Component {
         } = this.state;
 
         const renderList = pagination && !remote ? sliceData(renderedList, crtPage, length) : renderedList;
-        let paddingBottom = 0;
-        let container = this.refs.container;
-        if (container && typeof parseFloat(height) === "number" && (container.scrollWidth > container.clientWidth)) {
-            paddingBottom = parseFloat(height) - container.clientHeight;
-            if (isNaN(paddingBottom)) paddingBottom = 0;
-        }
         return (
             <div className={"react-tree " + lineWrap}>
                 {this.titleRender()}
@@ -776,7 +776,7 @@ export default class TreeTable extends Component {
                         <div
                             ref="leftContainer"
                             className="table-container table-body-container"
-                            style={{height: height || 'auto', paddingBottom}}
+                            style={{height: height || 'auto'}}
                         >
                             {this.leftBodyRender(renderList, selectRow)}
                         </div>
