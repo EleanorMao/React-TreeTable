@@ -27,7 +27,9 @@ export default class TreeHeader extends Component {
     colgroupRender(renderChildren, selectRow, isTree, left, right) {
         let i = 0;
         return (
-            <colgroup ref="colgroup">
+            <colgroup ref={(c) => {
+                this._colgroup = c;
+            }}>
                 {!!selectRow.mode && selectRow.mode !== 'none' && !selectRow.hideSelectColumn && !isTree &&
                 <col key="select" style={{textAlign: 'center', width: 30}}/>}
                 {React.Children.map(renderChildren, (elm) => {
@@ -64,11 +66,17 @@ export default class TreeHeader extends Component {
         let renderChildren = React.Children.toArray(children);
         renderChildren = sort(renderChildren).sorted;
         return (
-            <div className="table-container table-header-container" ref="header">
-                <table className="table table-bordered">
+            <div className="table-container table-header-container" ref={(c) => {
+                this._header = c;
+            }}>
+                <table className="table table-bordered" ref={(c) => {
+                    this._table = c;
+                }}>
                     {this.colgroupRender(renderChildren, selectRow, isTree, left, right)}
                     <thead>
-                    <tr ref="thead">
+                    <tr ref={(c) => {
+                        this._thead = c;
+                    }}>
                         {!isTree && !selectRow.hideSelectColumn && this.selectRender(selectRow.mode, onSelectAll, dataLength && checked)}
                         {React.Children.map(renderChildren, (elm) => {
                             if (!elm) return;

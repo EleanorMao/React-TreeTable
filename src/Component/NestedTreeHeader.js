@@ -41,9 +41,13 @@ export default class NestedTreeHeader extends Component {
 
     render() {
         return (
-            <div className={"table-tree table-nestedHead " + this.props.lineWrap} ref="header">
+            <div className={"table-tree table-nestedHead " + this.props.lineWrap} ref={(c) => {
+                this._header = c;
+            }}>
                 <table className="table table-bordered table-striped table-hover">
-                    <colgroup ref="colgroup">{this.colgroupRender()}</colgroup>
+                    <colgroup ref={(c) => {
+                        this._colgroup = c;
+                    }}>{this.colgroupRender()}</colgroup>
                     <thead>{this.nestedHeadRender()}</thead>
                 </table>
             </div>
